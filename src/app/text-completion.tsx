@@ -16,7 +16,7 @@ export const TextCompletion = ({
   lastName,
   saleService
 }: TextCompletionProps) => {
-  const [_, setChatResponse] = useState('');
+  const [, setChatResponse] = useState('');
   const [markdown, setMarkdown] = useState('');
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export const TextCompletion = ({
 
     fetchData();
     return () => {};
-  }, []);
+  }, [firstName, lastName, saleService]);
 
   return (
     markdown.length > 0 && (

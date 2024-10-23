@@ -1,9 +1,6 @@
 import { client } from '@/lib/openai/client';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { remark } from 'remark';
-import html from 'remark-html';
-
 export async function POST(request: NextRequest) {
   const { firstName, lastName, service } = await request.json();
 
