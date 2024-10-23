@@ -1,4 +1,4 @@
-import { convertToCoreMessages, Message, streamText } from 'ai';
+import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 // import { customModel } from "@/ai";
@@ -10,7 +10,7 @@ const openai = createOpenAI({
 
 export async function POST(request: Request) {
   const {
-    id,
+    // id,
     firstName,
     lastName,
     prompt,
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     //   //   },
     //   // },
     // },
-    onFinish: async ({ responseMessages }) => {
+    onFinish: async ({}) => {
       // if (session.user && session.user.id) {
       //   try {
       //     await saveChat({

@@ -1,7 +1,6 @@
 'use client';
 
-import { Attachment, ChatRequestOptions, CreateMessage, Message } from 'ai';
-import { motion } from 'framer-motion';
+import { Attachment, ChatRequestOptions } from 'ai';
 import React, {
   useRef,
   useEffect,
@@ -13,29 +12,29 @@ import React, {
 } from 'react';
 import { toast } from 'sonner';
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
+import { ArrowUpIcon, StopIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
 import useWindowSize from './use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 
-const suggestedActions = [
-  {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?'
-  },
-  {
-    title: "Answer like I'm 5,",
-    label: 'why is the sky blue?',
-    action: "Answer like I'm 5, why is the sky blue?"
-  }
-];
+// const suggestedActions = [
+//   {
+//     title: 'What is the weather',
+//     label: 'in San Francisco?',
+//     action: 'What is the weather in San Francisco?'
+//   },
+//   {
+//     title: "Answer like I'm 5,",
+//     label: 'why is the sky blue?',
+//     action: "Answer like I'm 5, why is the sky blue?"
+//   }
+// ];
 
 export function MultimodalInput({
   input,
-  setInput,
+  // setInput,
   isLoading,
   stop,
   attachments,
@@ -86,10 +85,10 @@ export function MultimodalInput({
     }
   };
 
-  const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(event.target.value);
-    adjustHeight();
-  };
+  // const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //   setInput(event.target.value);
+  //   adjustHeight();
+  // };
 
   const onFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setFirstName(event.target.value);
@@ -139,6 +138,7 @@ export function MultimodalInput({
         toast.error(error);
       }
     } catch (error) {
+      console.error(error);
       toast.error('Failed to upload file, please try again!');
     }
   };

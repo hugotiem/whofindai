@@ -1,7 +1,7 @@
 'use client';
 
 import { Attachment, Message } from 'ai';
-import { useChat, useCompletion } from 'ai/react';
+import { useCompletion } from 'ai/react';
 import { useState } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
@@ -12,7 +12,7 @@ import { Overview } from './overview';
 
 export function Chat({
   id,
-  initialMessages
+  // initialMessages
 }: {
   id?: string;
   initialMessages?: Array<Message>;
