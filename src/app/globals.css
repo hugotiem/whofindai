@@ -78,6 +78,36 @@ body {
   }
 }
 
+.markdown h1 {
+}
+
+.markdown h2 {
+}
+
+.markdown h3 {
+  font-size: x-large;
+  font-weight: bold;
+  padding: .7em 0;
+}
+
+.markdown h4 {
+  font-size: large;
+  font-weight: bold;
+}
+
+.markdown p {
+}
+
+.markdown ol {
+}
+
+.markdown ul {
+  list-style: inside;
+  padding-left: 1em;
+  padding-top: .7em;
+  padding-bottom: .7em;
+}
+
 @layer base {
   * {
     @apply border-border;
