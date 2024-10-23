@@ -20,7 +20,7 @@ const items = [
     title: 'History',
     url: '#',
     icon: Inbox
-  },
+  }
 ];
 
 export function AppSidebar() {
