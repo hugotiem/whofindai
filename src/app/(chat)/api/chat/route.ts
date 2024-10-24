@@ -11,14 +11,12 @@ const openai = createOpenAI({
 export async function POST(request: Request) {
   const {
     // id,
-    firstName,
-    lastName,
+    fullName,
     prompt,
     company
   }: {
     id: string;
-    firstName: string;
-    lastName: string;
+    fullName: string;
     service: string;
     company: string;
     prompt: string;
@@ -39,7 +37,7 @@ export async function POST(request: Request) {
     prompt: `
         Using the inputs provided below:
 
-        Person’s Name: ${firstName} ${lastName}
+        Person’s Name: ${fullName}
         Company Name: ${company}
         Product/Service: ${prompt}
         Create a detailed profile that includes the following:

@@ -42,8 +42,7 @@ export function MultimodalInput({
   completion,
   // append,
   handleSubmit,
-  setFirstName,
-  setLastName,
+  setFullName,
   handleInputChange,
   setCompany
 }: {
@@ -53,9 +52,12 @@ export function MultimodalInput({
   stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
-  setFirstName: (value: string) => void;
-  setLastName: (value: string) => void;
-  handleInputChange: (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
+  setFullName: (value: string) => void;
+  handleInputChange: (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => void;
   setCompany: (value: string) => void;
   completion: string;
   // append: (
@@ -90,11 +92,11 @@ export function MultimodalInput({
   //   adjustHeight();
   // };
 
-  const onFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setFirstName(event.target.value);
+  const onFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setFullName(event.target.value);
 
-  const onLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setLastName(event.target.value);
+  // const onLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+  //   setLastName(event.target.value);
 
   const onCompanyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setCompany(event.target.value);
@@ -177,13 +179,13 @@ export function MultimodalInput({
           <>
             <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[500px]">
               <Input
-                placeholder="FirstName"
-                onChange={onFirstNameChange}
+                placeholder="fullName"
+                onChange={onFullNameChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
               <Input
-                placeholder="LastName"
-                onChange={onLastNameChange}
+                placeholder="Company"
+                onChange={onCompanyChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
               {/* {suggestedActions.map((suggestedAction, index) => (
@@ -213,13 +215,13 @@ export function MultimodalInput({
                 </motion.div>
               ))} */}
             </div>
-            <div className="gap-2 w-full md:px-0 mx-auto md:max-w-[500px]">
+            {/* <div className="gap-2 w-full md:px-0 mx-auto md:max-w-[500px]">
               <Input
                 placeholder="Company"
                 onChange={onCompanyChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
-            </div>
+            </div> */}
           </>
         )}
 
