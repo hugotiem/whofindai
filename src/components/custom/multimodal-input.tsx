@@ -40,7 +40,6 @@ export function MultimodalInput({
   attachments,
   setAttachments,
   completion,
-  // append,
   handleSubmit,
   setFullName,
   handleInputChange,
@@ -60,10 +59,6 @@ export function MultimodalInput({
   ) => void;
   setCompany: (value: string) => void;
   completion: string;
-  // append: (
-  //   message: Message | CreateMessage,
-  //   chatRequestOptions?: ChatRequestOptions
-  // ) => Promise<string | null | undefined>;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;

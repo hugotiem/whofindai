@@ -1,7 +1,8 @@
-import { Home, Inbox } from 'lucide-react';
+import { CirclePlus, Inbox } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -9,25 +10,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { UserSidebarItem } from './custom/user-sidebar-item';
 
 const items = [
   {
-    title: 'Home',
+    title: 'New profile',
     url: '#',
-    icon: Home
-  },
-  {
-    title: 'History',
-    url: '#',
-    icon: Inbox
+    icon: CirclePlus
   }
 ];
 
 export function AppSidebar() {
-  
   return (
     <Sidebar>
       <SidebarContent>
+        <div>WhoFindAI.com</div>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -45,7 +42,14 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>History</SidebarGroupLabel>
+          <SidebarGroupContent></SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <UserSidebarItem />
+      </SidebarFooter>
     </Sidebar>
   );
 }

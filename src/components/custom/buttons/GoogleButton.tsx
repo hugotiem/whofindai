@@ -23,18 +23,18 @@ const GoogleButton = ({ autoLogin = true, onClick }: GoogleButtonRrops) => {
     if (loading) return;
     setLoading(true);
 
-    // signInWithGoogle(() => showProgress())
-    //   .then((_) => {
-    //     router.replace('/api/auth/session/create');
-    //   })
-    //   .catch((e) => {
-    //     setLoading(false);
-    //   });
+    signInWithGoogle();
+    // .then((_) => {
+    //   router.replace('/api/auth/session/create');
+    // })
+    // .catch((e) => {
+    //   setLoading(false);
+    // });
   };
 
   return (
     <Button
-      className="relative"
+      className="relative w-full"
       onSubmit={() => {}}
       onClick={autoLogin ? handleLogin : onClick}
       variant="outline"
