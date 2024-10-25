@@ -28,10 +28,9 @@ export async function POST(request: Request) {
   //   return new Response("Unauthorized", { status: 401 });
   // }
 
-  // const coreMessages = convertToCoreMessages(messages);
 
   const result = await streamText({
-    model: openai('llama-3.1-sonar-small-128k-online'),
+    model: openai('llama-3.1-sonar-large-128k-online'),
     system:
       "You are an AI language model designed to assist sales professionals in preparing for meetings by generating detailed profiles of potential clients. Based on a person's name, company, and the product/service offered, you will create a structured overview with actionable insights to help guide engagement during the meeting.",
     prompt: `

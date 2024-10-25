@@ -19,7 +19,6 @@ export function Chat({
   initialMessages?: Array<Message>;
 }) {
   const [fullName, setFullName] = useState<string>('');
-  // const [saleService, setSaleService] = useState<string>('');
   const [company, setCompany] = useState<string>('');
 
   const {
@@ -42,7 +41,7 @@ export function Chat({
     }
   });
 
-  const [messagesContainerRef, ] =
+  const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
@@ -68,16 +67,16 @@ export function Chat({
           )}
           {/* ))} */}
 
-          {/* <div
+          <div
             ref={messagesEndRef}
             className="shrink-0 min-w-[24px] min-h-[24px]"
-          /> */}
+          />
         </div>
 
-        {isLoading && <Loader2 className='animate-spin'/>}
+        {isLoading && !completion && <Loader2 className='animate-spin'/>}
 
         {!completion && (
-          <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[500px] max-w-[calc(100dvw-32px) px-4 md:px-0">
+          <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[600px] max-w-[calc(100dvw-32px) px-4 md:px-0">
             <MultimodalInput
               setCompany={setCompany}
               setFullName={setFullName}

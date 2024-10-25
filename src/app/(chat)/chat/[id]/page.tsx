@@ -7,8 +7,8 @@ import { Chat as PreviewChat } from '@/components/custom/chat';
 // import { Chat } from "@/db/schema";
 // import { convertToUIMessages, generateUUID } from "@/lib/utils";
 
-export default function Page(/*{}: { params: { id: string } }*/) {
-  // const { id } = params;
+export default async function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
   // const chatFromDb = await getChatById({ id });
 
   // if (!chatFromDb) {
