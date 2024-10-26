@@ -87,13 +87,12 @@ export function Chat({ id, completion }: { id?: string; completion?: string }) {
           )} */}
         </div>
 
-        {/* {messages.map((message) => ( */}
-
-        {/* ))} */}
-        {!completion && <div
-          ref={messagesEndRef}
-          className="shrink-0 min-w-[24px] min-h-[24px]"
-        />}
+        {!completion && (
+          <div
+            ref={messagesEndRef}
+            className="shrink-0 min-w-[24px] min-h-[24px]"
+          />
+        )}
       </div>
 
       {userInfos.isLoading && !userInfos.completion && (
