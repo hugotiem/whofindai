@@ -39,7 +39,7 @@ export function Chat({ id, completion }: { id?: string; completion?: string }) {
       });
     }
   });
-  
+
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
 
@@ -131,6 +131,5 @@ export function Chat({ id, completion }: { id?: string; completion?: string }) {
         </form>
       )}
     </div>
-    // </div>
   );
 }
