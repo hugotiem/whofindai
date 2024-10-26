@@ -12,7 +12,7 @@ export default function SignUp() {
             orientation="horizontal"
             className="flex flex-col items-center my-4"
           >
-            <div className="translate-y-[-12px] bg-white w-min px-2">or</div>
+            <div className="translate-y-[-12px] bg-background w-min px-2">or</div>
           </Separator>
         </div>
       </div>

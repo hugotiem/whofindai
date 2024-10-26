@@ -2,8 +2,6 @@
 
 import { useSession } from '@/hooks/use-session';
 import { SidebarMenuButton } from '../ui/sidebar';
-import Image from 'next/image';
-import { useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   DropdownMenu,
@@ -12,15 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu';
-import { LogOut } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger
-} from '../ui/alert-dialog';
+import { Cog, LogOut } from 'lucide-react';
+
 
 export const UserSidebarItem = () => {
-  const { session } = useSession();
+  const { session, signOut } = useSession();
 
   const getFallback = () => {
     const displayName = session?.user.displayName;
@@ -33,47 +27,43 @@ export const UserSidebarItem = () => {
 
   return (
     session && (
-      <AlertDialog>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="h-fit flex">
-              {session.user.photoURL && (
-                <Avatar>
-                  <AvatarImage
-                    src={session.user.photoURL}
-                    alt={`${session?.user.displayName}'s avatar`}
-                  />
-                  <AvatarFallback>{getFallback()}</AvatarFallback>
-                </Avatar>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton className="h-fit flex">
+            {session.user.photoURL && (
+              <Avatar>
+                <AvatarImage
+                  src={session.user.photoURL}
+                  alt={`${session?.user.displayName}'s avatar`}
+                />
+                <AvatarFallback>{getFallback()}</AvatarFallback>
+              </Avatar>
+            )}
+            <div>
+              {session.user.displayName && (
+                <div className="font-semibold">
+                  {' '}
+                  {session.user.displayName}{' '}
+                </div>
               )}
-              <div>
-                {session.user.displayName && (
-                  <div className="font-semibold">
-                    {' '}
-                    {session.user.displayName}{' '}
-                  </div>
-                )}
-                {session.user.email && (
-                  <div className="text-xs font-bold">
-                    {' '}
-                    {session.user.email}{' '}
-                  </div>
-                )}
-              </div>
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[250px]">
-            <DropdownMenuSeparator />
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem>
-                <LogOut />
-                Log out
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <AlertDialogContent></AlertDialogContent>
-      </AlertDialog>
+              {session.user.email && (
+                <div className="text-xs font-bold"> {session.user.email} </div>
+              )}
+            </div>
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[250px]">
+          <DropdownMenuItem>
+            <Cog className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={signOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   );
 };

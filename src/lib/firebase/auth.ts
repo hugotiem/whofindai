@@ -10,10 +10,12 @@ import { encrypt } from '../utils';
 
 export const signUpWithPassword = async (email: string, password: string) => {
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  return user;
 };
 
 export const signInWithPassword = async (email: string, password: string) => {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
+  return user;
 };
 
 export const signInWithGoogle = () => {

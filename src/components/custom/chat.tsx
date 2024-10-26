@@ -1,6 +1,6 @@
 'use client';
 
-import { Attachment, Message } from 'ai';
+import { Attachment } from 'ai';
 import { useCompletion } from 'ai/react';
 import { useState } from 'react';
 
@@ -11,55 +11,61 @@ import { MultimodalInput } from './multimodal-input';
 import { Overview } from './overview';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHistory } from '@/hooks/use-history';
+import { useSession } from '@/hooks/use-session';
 
-export function Chat({
-  id
-  // initialMessages
-}: {
-  id?: string;
-  initialMessages?: Array<Message>;
-}) {
+export function Chat({ id, completion }: { id?: string; completion?: string }) {
   const [fullName, setFullName] = useState<string>('');
   const [company, setCompany] = useState<string>('');
 
+  const { updateHistory } = useHistory();
+  const { session } = useSession();
+
   const userInfos = useCompletion({
-    api: '/api/completion/user-info',
+    // api: '/api/completion/user-info',
+    initialCompletion: completion,
     body: {
       id,
       fullName,
       company
     },
     onFinish: () => {
-      window.history.replaceState({}, '', `/chat/${id}`);
+      window.history.replaceState({}, '', `/profile/${id}`);
+      updateHistory({
+        id,
+        userId: session?.user.uid,
+        fullName,
+        company
+      });
     }
   });
 
-  const companyInfo = useCompletion({
-    api: '/api/completion/company-info',
-    body: {
-      id,
-      fullName,
-      company
-    },
-    onFinish: () => {
-      window.history.replaceState({}, '', `/chat/${id}`);
-    }
-  });
+  // const companyInfo = useCompletion({
+  //   api: '/api/completion/company-info',
+  //   body: {
+  //     id,
+  //     fullName,
+  //     company
+  //   },
+  //   onFinish: () => {
+  //     window.history.replaceState({}, '', `/chat/${id}`);
+  //   }
+  // });
 
-  const meetingInfo = useCompletion({
-    api: '/api/completion/meeting',
-    body: {
-      id,
-      fullName,
-      company
-    },
-    onFinish: () => {
-      window.history.replaceState({}, '', `/chat/${id}`);
-    }
-  });
+  // const meetingInfo = useCompletion({
+  //   api: '/api/completion/meeting',
+  //   body: {
+  //     id,
+  //     fullName,
+  //     company
+  //   },
+  //   onFinish: () => {
+  //     window.history.replaceState({}, '', `/chat/${id}`);
+  //   }
+  // });
 
-  // const [messagesContainerRef, messagesEndRef] =
-  //   useScrollToBottom<HTMLDivElement>();
+  const [messagesContainerRef, messagesEndRef] =
+    useScrollToBottom<HTMLDivElement>();
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
@@ -67,15 +73,15 @@ export function Chat({
     // <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background container mx-auto">
     <div className="flex flex-col items-center justify-center container h-screen mx-auto gap-4">
       <div
-        // ref={messagesContainerRef}
+        ref={messagesContainerRef}
         className={cn(
           'flex flex-col items-center',
-          userInfos.completion && 'h-full mx-48'
+          userInfos.completion && 'h-full'
         )}
       >
         {userInfos.completion.length === 0 && <Overview />}
 
-        <div className="grid grid-cols-2 gap-4 w-full h-1/2">
+        <div className="gap-4 w-full">
           {userInfos.completion && (
             <PreviewMessage
               // key={message.id}
@@ -85,7 +91,7 @@ export function Chat({
               // toolInvocations={message.toolInvocations}
             />
           )}
-          {companyInfo.completion && (
+          {/* {companyInfo.completion && (
             <PreviewMessage
               // key={message.id}
               role={'system'}
@@ -94,28 +100,24 @@ export function Chat({
               // toolInvocations={message.toolInvocations}
             />
           )}
-        </div>
-        <div className="h-1/2 row-span-2">
           {meetingInfo.completion && (
             <PreviewMessage
-              className="md"
               // key={message.id}
               role={'system'}
               textContent={meetingInfo.completion}
               // attachments={message.experimental_attachments}
               // toolInvocations={message.toolInvocations}
             />
-          )}
+          )} */}
         </div>
 
         {/* {messages.map((message) => ( */}
 
         {/* ))} */}
-
-        {/* <div
-            ref={messagesEndRef}
-            className="shrink-0 min-w-[24px] min-h-[24px]"
-          /> */}
+        {!completion && <div
+          ref={messagesEndRef}
+          className="shrink-0 min-w-[24px] min-h-[24px]"
+        />}
       </div>
 
       {userInfos.isLoading && !userInfos.completion && (
@@ -129,19 +131,19 @@ export function Chat({
             setFullName={setFullName}
             handleInputChange={(e) => {
               userInfos.handleInputChange(e);
-              companyInfo.handleInputChange(e);
-              meetingInfo.handleInputChange(e);
+              // companyInfo.handleInputChange(e);
+              // meetingInfo.handleInputChange(e);
             }}
             input={userInfos.input}
             setInput={(e) => {
               userInfos.setInput(e);
-              companyInfo.setInput(e);
-              meetingInfo.setInput(e);
+              // companyInfo.setInput(e);
+              // meetingInfo.setInput(e);
             }}
             handleSubmit={(e) => {
               userInfos.handleSubmit(e);
-              companyInfo.handleSubmit(e);
-              meetingInfo.handleSubmit(e);
+              // companyInfo.handleSubmit(e);
+              // meetingInfo.handleSubmit(e);
             }}
             isLoading={userInfos.isLoading}
             stop={userInfos.stop}

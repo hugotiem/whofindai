@@ -2,23 +2,22 @@
 
 import { signInWithGoogle } from '@/lib/firebase/auth';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { Button } from '../../ui/button';
 // import { useProgressBar } from '@/hooks/use-progress-bar';
 
-interface GoogleButtonRrops {
+interface GoogleButtonProps {
   autoLogin?: boolean;
   onClick?: () => void;
 }
 
-const GoogleButton = ({ autoLogin = true, onClick }: GoogleButtonRrops) => {
-  const router = useRouter();
+const GoogleButton = ({ autoLogin = true, onClick }: GoogleButtonProps) => {
+  // const router = useRouter();
   const [loading, setLoading] = useState(false);
   // const { showProgress } = useProgressBar();
 
-  const handleLogin = (e: any) => {
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);

@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
       try {
         await adminAuth.verifySessionCookie(jwt, true);
       } catch (e) {
+        console.error(e);
         const _cookies = await cookies();
         _cookies.delete('__session');
       }

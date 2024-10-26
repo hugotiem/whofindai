@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import { loadSession } from '@/lib/firebase/session';
 import { redirect } from 'next/navigation';
+import { HistoryProvider } from '@/providers/historyProvider';
 
 export default async function RootLayout({
   children
@@ -15,10 +16,12 @@ export default async function RootLayout({
 
   return (
     <SessionProvider session={session}>
-      <SidebarProvider>
-        <AppSidebar />
-        {children}
-      </SidebarProvider>
+      <HistoryProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          {children}
+        </SidebarProvider>
+      </HistoryProvider>
     </SessionProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { CirclePlus, Inbox } from 'lucide-react';
+import { CirclePlus } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -11,11 +11,15 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar';
 import { UserSidebarItem } from './custom/user-sidebar-item';
+import { HistorySidebarItem } from './custom/history-sidebar-item';
+import { Suspense } from 'react';
+import Link from 'next/link';
+import { HistorySkeleton } from './custom/history-skeleton';
 
 const items = [
   {
     title: 'New profile',
-    url: '#',
+    url: '/',
     icon: CirclePlus
   }
 ];
@@ -32,10 +36,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -44,7 +48,11 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>History</SidebarGroupLabel>
-          <SidebarGroupContent></SidebarGroupContent>
+          <SidebarGroupContent>
+            <Suspense fallback={<HistorySkeleton />}>
+              <HistorySidebarItem />
+            </Suspense>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>

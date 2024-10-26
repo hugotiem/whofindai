@@ -1,12 +1,13 @@
 'use client';
 
+import { logout } from '@/lib/firebase/auth';
 import { auth } from '@/lib/firebase/client';
 import { signInWithCustomToken, User } from 'firebase/auth';
 import { createContext, useEffect, useState } from 'react';
 
 interface SessionProviderContextType {
   session: { user: User } | undefined;
-  logout?: () => Promise<void>;
+  signOut?: () => Promise<void>;
 }
 
 export const SessionProviderContext = createContext<
@@ -24,7 +25,9 @@ export const SessionProvider = ({
     auth.currentUser || undefined
   );
 
-  const logout = async () => {};
+  const signOut = async () => {
+    logout().then(() => window.location.href = '/api/auth/logout');
+  };
 
   useEffect(() => {
     if (session) {
@@ -36,7 +39,7 @@ export const SessionProvider = ({
 
   return (
     <SessionProviderContext.Provider
-      value={{ session: user && { user }, logout }}
+      value={{ session: user && { user }, signOut }}
     >
       {children}
     </SessionProviderContext.Provider>

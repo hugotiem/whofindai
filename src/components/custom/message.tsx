@@ -4,9 +4,7 @@
 import { motion } from 'framer-motion';
 import { HTMLAttributes, ReactNode } from 'react';
 
-import { BotIcon, UserIcon } from './icons';
 import { Markdown } from './markdown';
-import { useScrollToBottom } from './use-scroll-to-bottom';
 import { cn } from '@/lib/utils';
 // import { PreviewAttachment } from "./preview-attachment";
 // import { Weather } from "./weather";
@@ -17,20 +15,20 @@ interface MessageProps extends HTMLAttributes<HTMLElement> {
 }
 
 export const Message = ({
-  role,
+  // role,
   textContent,
   className,
-  ...props
+  // ...props
   // toolInvocations,
   // attachments,
 }: MessageProps) => {
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
+  // const [messagesContainerRef, messagesEndRef] =
+  //   useScrollToBottom<HTMLDivElement>();
   return (
     <motion.div
-      ref={messagesContainerRef}
+      // ref={messagesContainerRef}
       className={cn(
-        `flex flex-row gap-4 px-4 w-full md:px-0 rounded border h-full overflow-scroll`,
+        `flex flex-row gap-4 px-4 max-w-[750px] w-max md:px-0 h-max overflow-scroll`,
         className
       )} //first-of-type:pt-20
       initial={{ y: 5, opacity: 0 }}
@@ -80,7 +78,7 @@ export const Message = ({
             ))}
           </div>
         )} */}
-        <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
+        {/* <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" /> */}
       </div>
     </motion.div>
   );
