@@ -39,31 +39,7 @@ export function Chat({ id, completion }: { id?: string; completion?: string }) {
       });
     }
   });
-
-  // const companyInfo = useCompletion({
-  //   api: '/api/completion/company-info',
-  //   body: {
-  //     id,
-  //     fullName,
-  //     company
-  //   },
-  //   onFinish: () => {
-  //     window.history.replaceState({}, '', `/chat/${id}`);
-  //   }
-  // });
-
-  // const meetingInfo = useCompletion({
-  //   api: '/api/completion/meeting',
-  //   body: {
-  //     id,
-  //     fullName,
-  //     company
-  //   },
-  //   onFinish: () => {
-  //     window.history.replaceState({}, '', `/chat/${id}`);
-  //   }
-  // });
-
+  
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
 
