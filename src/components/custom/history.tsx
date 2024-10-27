@@ -64,8 +64,10 @@ export const History = ({ initialHistory }: HistoryProps) => {
             <DropdownMenuContent>
               {profile.id && (
                 <>
-                  <DropdownMenuItem onClick={copyLink}>
-                  <Share className="h-4 w-4 mr-4" />
+                  <DropdownMenuItem
+                    onClick={() => copyLink({ path: `/profile/${profile.id}` })}
+                  >
+                    <Share className="h-4 w-4 mr-4" />
                     Share
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => deleteHistory(profile.id!)}>
