@@ -1,7 +1,12 @@
 import GoogleButton from '@/components/custom/buttons/GoogleButton';
 
+export default async function SignUp({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
 
-export default function SignUp() {
   return (
     <main className="h-dvh">
       <div className="flex flex-col h-full justify-center items-center mx-auto max-w-[300px] space-y-3">
@@ -15,7 +20,9 @@ export default function SignUp() {
             <div className="translate-y-[-12px] bg-background w-min px-2">or</div>
           </Separator>
         </div> */}
-        <GoogleButton />
+        <GoogleButton
+          redirect_path={params['redirect_path'] as string | undefined}
+        />
       </div>
     </main>
   );

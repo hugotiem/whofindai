@@ -16,15 +16,22 @@ export async function GET(request: NextRequest) {
       }
     }
     const token = request.nextUrl.searchParams.get('idToken');
+    const redirect_path = request.nextUrl.searchParams.get('redirect_path');
+
     if (!token) {
-      return NextResponse.redirect(`${process.env.BASE_URL}/auth/signIn`);
+      return NextResponse.redirect(
+        `${process.env.BASE_URL}/auth/signIn${redirect_path && `?redirect_path=${redirect_path}`}`
+      );
     }
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
     await adminAuth.verifyIdToken(decrypt(token));
     const session = await adminAuth.createSessionCookie(decrypt(token), {
       expiresIn
     });
-    const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
+
+    const response = NextResponse.redirect(
+      `${process.env.BASE_URL}${redirect_path}`
+    );
     response.headers.set(
       'Set-Cookie',
       `__session=${session}; Max-Age=${expiresIn}; Path=/; HttpOnly; Secure; SameSite=Lax`

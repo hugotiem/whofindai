@@ -5,7 +5,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar';
 import Link from 'next/link';
 import { useHistory } from '@/hooks/use-history';
 import { useEffect, useState } from 'react';
-import { Ellipsis, Trash2 } from 'lucide-react';
+import { Ellipsis, Share, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu';
+import { useShare } from '@/hooks/use-share';
 
 interface HistoryProps {
   initialHistory: Profile[];
@@ -21,6 +22,7 @@ interface HistoryProps {
 export const History = ({ initialHistory }: HistoryProps) => {
   const { init, history, deleteHistory } = useHistory();
   const [hoveredItem, setHoveredItem] = useState<string>();
+  const { copyLink } = useShare();
 
   useEffect(() => {
     init(initialHistory);
@@ -61,10 +63,16 @@ export const History = ({ initialHistory }: HistoryProps) => {
             </SidebarMenuItem>
             <DropdownMenuContent>
               {profile.id && (
-                <DropdownMenuItem onClick={() => deleteHistory(profile.id!)}>
-                  <Trash2 className="h-4 w-4 mr-4" />
-                  Delete
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem onClick={copyLink}>
+                  <Share className="h-4 w-4 mr-4" />
+                    Share
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => deleteHistory(profile.id!)}>
+                    <Trash2 className="h-4 w-4 mr-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

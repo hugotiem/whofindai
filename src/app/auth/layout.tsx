@@ -3,7 +3,6 @@ import '../globals.css';
 import { loadSession } from '@/lib/firebase/session';
 import { redirect } from 'next/navigation';
 
-
 export const metadata: Metadata = {
   title: 'Search Who AI - Login',
   description:

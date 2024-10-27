@@ -10,9 +10,14 @@ import { Button } from '../../ui/button';
 interface GoogleButtonProps {
   autoLogin?: boolean;
   onClick?: () => void;
+  redirect_path?: string;
 }
 
-const GoogleButton = ({ autoLogin = true, onClick }: GoogleButtonProps) => {
+const GoogleButton = ({
+  redirect_path,
+  autoLogin = true,
+  onClick
+}: GoogleButtonProps) => {
   // const router = useRouter();
   const [loading, setLoading] = useState(false);
   // const { showProgress } = useProgressBar();
@@ -22,7 +27,7 @@ const GoogleButton = ({ autoLogin = true, onClick }: GoogleButtonProps) => {
     if (loading) return;
     setLoading(true);
 
-    signInWithGoogle();
+    signInWithGoogle({ redirect_path });
     // .then((_) => {
     //   router.replace('/api/auth/session/create');
     // })

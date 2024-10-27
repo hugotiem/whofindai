@@ -2,7 +2,6 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import { loadSession } from '@/lib/firebase/session';
-import { redirect } from 'next/navigation';
 import { HistoryProvider } from '@/providers/historyProvider';
 
 export default async function RootLayout({
@@ -12,7 +11,7 @@ export default async function RootLayout({
 }>) {
   const session = await loadSession();
 
-  if (!session) return redirect('/auth/signIn');
+  // if (!session) return redirect(`/auth/signIn`);
 
   return (
     <SessionProvider session={session}>

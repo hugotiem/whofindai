@@ -3,6 +3,7 @@
 import { logout } from '@/lib/firebase/auth';
 import { auth } from '@/lib/firebase/client';
 import { signInWithCustomToken, User } from 'firebase/auth';
+import { usePathname } from 'next/navigation';
 import { createContext, useEffect, useState } from 'react';
 
 interface SessionProviderContextType {
@@ -25,8 +26,11 @@ export const SessionProvider = ({
     auth.currentUser || undefined
   );
 
+  const pathname = usePathname();
+  console.log(pathname);
+
   const signOut = async () => {
-    logout().then(() => window.location.href = '/api/auth/logout');
+    logout().then(() => (window.location.href = '/api/auth/logout'));
   };
 
   useEffect(() => {
@@ -34,8 +38,10 @@ export const SessionProvider = ({
       signInWithCustomToken(auth, session).then((credentials) => {
         setUser(credentials.user);
       });
+    } else {
+      window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
     }
-  }, [session]);
+  }, [session, pathname]);
 
   return (
     <SessionProviderContext.Provider

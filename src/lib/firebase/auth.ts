@@ -18,16 +18,23 @@ export const signInWithPassword = async (email: string, password: string) => {
   return user;
 };
 
-export const signInWithGoogle = () => {
+export const signInWithGoogle = ({
+  redirect_path
+}: {
+  redirect_path?: string;
+}) => {
   const provider = new GoogleAuthProvider();
-  return signInWithProvider(provider);
+  return signInWithProvider(provider, { redirect_path });
 };
 
-export const signInWithProvider = async (provider: AuthProvider) => {
+export const signInWithProvider = async (
+  provider: AuthProvider,
+  { redirect_path }: { redirect_path?: string }
+) => {
   try {
     const { user } = await signInWithPopup(auth, provider);
     const idToken = await user.getIdToken();
-    window.location.href = `/api/auth/session?idToken=${encrypt(idToken)}`;
+    window.location.href = `/api/auth/session?idToken=${encrypt(idToken)}&redirect_path=${redirect_path}`;
     return;
   } catch (e) {
     console.error(e);
