@@ -7,7 +7,7 @@ export const useShare = () => {
   const copyLink = ({ path }: { path?: string }) => {
     const link = base + path;
     navigator.clipboard.writeText(link);
-    toast.info('link copied to clipboard!');
+    toast.success('link copied to clipboard!');
   };
 
   return { copyLink };

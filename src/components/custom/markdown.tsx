@@ -68,7 +68,11 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   };
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown
+      className="w-full"
+      remarkPlugins={[remarkGfm]}
+      components={components}
+    >
       {children}
     </ReactMarkdown>
   );

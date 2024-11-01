@@ -1,3 +1,5 @@
+'use client';
+
 import { SessionProviderContext } from '@/providers/sessionProvider';
 import { useContext } from 'react';
 

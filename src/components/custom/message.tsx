@@ -1,32 +1,19 @@
 'use client';
 
-// import { Attachment, ToolInvocation } from "ai";
 import { motion } from 'framer-motion';
-import { HTMLAttributes, ReactNode } from 'react';
+import { HTMLAttributes, ReactNode, useEffect, useState } from 'react';
 
 import { Markdown } from './markdown';
 import { cn } from '@/lib/utils';
-// import { PreviewAttachment } from "./preview-attachment";
-// import { Weather } from "./weather";
 
 interface MessageProps extends HTMLAttributes<HTMLElement> {
   role: string;
-  textContent: string | ReactNode;
+  textContent: string;
 }
 
-export const Message = ({
-  // role,
-  textContent,
-  className,
-  // ...props
-  // toolInvocations,
-  // attachments,
-}: MessageProps) => {
-  // const [messagesContainerRef, messagesEndRef] =
-  //   useScrollToBottom<HTMLDivElement>();
+export const Message = ({ textContent, className }: MessageProps) => {
   return (
     <motion.div
-      // ref={messagesContainerRef}
       className={cn(
         `flex flex-row gap-4 px-4 max-w-[750px] w-max md:px-0 h-max overflow-scroll`,
         className
@@ -34,14 +21,11 @@ export const Message = ({
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
-      {/* <div className="size-[24px] flex flex-col justify-center items-center shrink-0 text-zinc-400">
-        {role === "assistant" ? <BotIcon /> : <UserIcon />}
-      </div> */}
-
       <div className="flex flex-col w-full p-10">
         {textContent && (
-          <div className="text-zinc-800 dark:text-zinc-300 flex flex-col gap-4">
-            <Markdown>{textContent as string}</Markdown>
+          <div className="text-zinc-800 dark:text-zinc-300 flex flex-col gap-4 relative w-full">
+            <Markdown>{textContent}</Markdown>
+            {/* <div className="absolute bottom-0 h-20 w-full bg-gradient-to-b from-transparent to-background " /> */}
           </div>
         )}
 
@@ -78,7 +62,6 @@ export const Message = ({
             ))}
           </div>
         )} */}
-        {/* <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" /> */}
       </div>
     </motion.div>
   );

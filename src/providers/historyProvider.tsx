@@ -24,17 +24,20 @@ export const HistoryProvider = ({
   const [history, setHistory] = useState<Profile[]>([]);
 
   const updateHistory = (profile: Profile) => {
-    setHistory((prev) => [profile, ...(prev || [])]);
+    setHistory((prev) => [profile, ...prev]);
   };
 
   const init = (profiles: Profile[]) => {
-    setHistory(profiles);
+    if (history.length === 0) {
+      setHistory(profiles);
+    }
   };
 
   const deleteHistory = (id: string) => {
     const docRef = doc(db, 'profiles/', id);
     deleteDoc(docRef).then(() => {
       setHistory((prev) => prev.filter((e) => e.id !== id));
+      console.log('profile deleted');
     });
   };
 

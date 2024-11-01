@@ -36,5 +36,5 @@ export default async function Page({
   //   return notFound();
   // }
 
-  return <PreviewChat /*id={chat.id} initialMessages={chat.messages}*/completion={profile.content} />;
+  return <PreviewChat /*id={chat.id}*/ initialCompletion={profile.content} />;
 }

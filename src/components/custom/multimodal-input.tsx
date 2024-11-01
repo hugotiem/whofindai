@@ -13,51 +13,33 @@ import React, {
 import { toast } from 'sonner';
 
 import { ArrowUpIcon, StopIcon } from './icons';
-import { PreviewAttachment } from './preview-attachment';
-import useWindowSize from './use-window-size';
+import useWindowSize from '../../hooks/use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
-
-// const suggestedActions = [
-//   {
-//     title: 'What is the weather',
-//     label: 'in San Francisco?',
-//     action: 'What is the weather in San Francisco?'
-//   },
-//   {
-//     title: "Answer like I'm 5,",
-//     label: 'why is the sky blue?',
-//     action: "Answer like I'm 5, why is the sky blue?"
-//   }
-// ];
+import { CompletionInput } from '@/hooks/use-completion-api';
 
 export function MultimodalInput({
   input,
-  // setInput,
+  setInput,
   isLoading,
-  stop,
+  // stop,
   attachments,
   setAttachments,
   completion,
   handleSubmit,
-  setFullName,
-  handleInputChange,
-  setCompany
 }: {
-  input: string;
-  setInput: (value: string) => void;
+  input: CompletionInput | undefined;
+  setInput: Dispatch<SetStateAction<CompletionInput>>;
   isLoading: boolean;
-  stop: () => void;
+  // stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
-  setFullName: (value: string) => void;
-  handleInputChange: (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => void;
-  setCompany: (value: string) => void;
+  // handleInputChange: (
+  //   event:
+  //     | React.ChangeEvent<HTMLInputElement>
+  //     | React.ChangeEvent<HTMLTextAreaElement>
+  // ) => void;
   completion: string;
   handleSubmit: (
     event?: {
@@ -82,19 +64,11 @@ export function MultimodalInput({
     }
   };
 
-  // const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   setInput(event.target.value);
-  //   adjustHeight();
-  // };
-
   const onFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setFullName(event.target.value);
-
-  // const onLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-  //   setLastName(event.target.value);
+    setInput((prev) => ({ ...prev, fullName: event.target.value }));
 
   const onCompanyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setCompany(event.target.value);
+   setInput((prev) => ({ ...prev, company: event.target.value }));
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
@@ -168,55 +142,24 @@ export function MultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {completion.length === 0 &&
+      {completion?.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
           <>
             <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
               <Input
                 placeholder="fullName"
+                value={input?.fullName}
                 onChange={onFullNameChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
               <Input
                 placeholder="Company"
+                value={input?.company}
                 onChange={onCompanyChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
-              {/* {suggestedActions.map((suggestedAction, index) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ delay: 0.05 * index }}
-                  key={index}
-                  className={index > 1 ? 'hidden sm:block' : 'block'}
-                >
-                  <Input />
-                  {/* <button
-                  onClick={async () => {
-                    append({
-                      role: "user",
-                      content: suggestedAction.action,
-                    });
-                  }}
-                  className="w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
-                >
-                  <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {suggestedAction.label}
-                  </span>
-                </button> 
-                </motion.div>
-              ))} */}
             </div>
-            {/* <div className="gap-2 w-full md:px-0 mx-auto md:max-w-[500px]">
-              <Input
-                placeholder="Company"
-                onChange={onCompanyChange}
-                className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-              />
-            </div> */}
           </>
         )}
 
@@ -229,31 +172,13 @@ export function MultimodalInput({
         tabIndex={-1}
       />
 
-      {(attachments.length > 0 || uploadQueue.length > 0) && (
-        <div className="flex flex-row gap-2 overflow-x-scroll">
-          {attachments.map((attachment) => (
-            <PreviewAttachment key={attachment.url} attachment={attachment} />
-          ))}
-
-          {uploadQueue.map((filename) => (
-            <PreviewAttachment
-              key={filename}
-              attachment={{
-                url: '',
-                name: filename,
-                contentType: ''
-              }}
-              isUploading={true}
-            />
-          ))}
-        </div>
-      )}
-
       <Textarea
         ref={textareaRef}
         placeholder="What i want to sell is..."
-        value={input}
-        onChange={handleInputChange}
+        value={input?.prompt}
+        onChange={(value) =>
+          setInput((prev) => ({ ...prev, prompt: value.target.value }))
+        }
         className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
         rows={3}
         onKeyDown={(event) => {
@@ -294,18 +219,6 @@ export function MultimodalInput({
           <ArrowUpIcon size={14} />
         </Button>
       )}
-
-      {/* <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-2 right-10 m-0.5 dark:border-zinc-700"
-        onClick={(event) => {
-          event.preventDefault();
-          fileInputRef.current?.click();
-        }}
-        variant="outline"
-        disabled={isLoading}
-      >
-        <PaperclipIcon size={14} />
-      </Button> */}
     </div>
   );
 }

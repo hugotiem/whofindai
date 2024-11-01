@@ -27,7 +27,6 @@ export const SessionProvider = ({
   );
 
   const pathname = usePathname();
-  console.log(pathname);
 
   const signOut = async () => {
     logout().then(() => (window.location.href = '/api/auth/logout'));
