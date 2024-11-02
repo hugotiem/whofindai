@@ -10,11 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu';
-import { Cog, LogOut } from 'lucide-react';
-
+import { Cog, LogIn, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export const UserSidebarItem = () => {
   const { session, signOut } = useSession();
+  const pathname = usePathname();
 
   const getFallback = () => {
     const displayName = session?.user.displayName;
@@ -25,45 +27,50 @@ export const UserSidebarItem = () => {
     return `${first[0]} ${second[0]}`;
   };
 
-  return (
-    session && (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuButton className="h-fit flex">
-            {session.user.photoURL && (
-              <Avatar>
-                <AvatarImage
-                  src={session.user.photoURL}
-                  alt={`${session?.user.displayName}'s avatar`}
-                />
-                <AvatarFallback>{getFallback()}</AvatarFallback>
-              </Avatar>
+  return session ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton className="h-fit flex">
+          {session.user.photoURL && (
+            <Avatar>
+              <AvatarImage
+                src={session.user.photoURL}
+                alt={`${session?.user.displayName}'s avatar`}
+              />
+              <AvatarFallback>{getFallback()}</AvatarFallback>
+            </Avatar>
+          )}
+          <div>
+            {session.user.displayName && (
+              <div className="font-semibold"> {session.user.displayName} </div>
             )}
-            <div>
-              {session.user.displayName && (
-                <div className="font-semibold">
-                  {' '}
-                  {session.user.displayName}{' '}
-                </div>
-              )}
-              {session.user.email && (
-                <div className="text-xs font-bold"> {session.user.email} </div>
-              )}
-            </div>
-          </SidebarMenuButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[250px]">
-          <DropdownMenuItem>
-            <Cog className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
+            {session.user.email && (
+              <div className="text-xs font-bold"> {session.user.email} </div>
+            )}
+          </div>
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-[250px]">
+        <DropdownMenuItem>
+          <Cog className="mr-2 h-4 w-4" />
+          <span>Settings</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={signOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <SidebarMenuButton className="h-fit">
+      <Link
+        href={`/auth/signIn?redirect_path=${pathname}`}
+        className="flex items-center gap-4 w-full"
+      >
+        <LogIn className="h-5 w-5" />
+        <span>Log in</span>
+      </Link>
+    </SidebarMenuButton>
   );
 };

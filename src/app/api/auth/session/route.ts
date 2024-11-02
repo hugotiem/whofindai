@@ -29,9 +29,13 @@ export async function GET(request: NextRequest) {
       expiresIn
     });
 
+    const redirect_path_url =
+      redirect_path && redirect_path !== null ? `/${redirect_path}` : '/';
+
     const response = NextResponse.redirect(
-      `${process.env.BASE_URL}${redirect_path}`
+      `${process.env.BASE_URL}${redirect_path_url}`
     );
+
     response.headers.set(
       'Set-Cookie',
       `__session=${session}; Max-Age=${expiresIn}; Path=/; HttpOnly; Secure; SameSite=Lax`

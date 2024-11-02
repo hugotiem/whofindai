@@ -41,7 +41,6 @@ export const useCompletionAPI = ({
       });
       if (!response.ok) throw Error('API Error');
       const data = await response.json();
-      console.log(data.completion);
       setCompletion((prev) => data.completion || prev);
       window.history.replaceState({}, '', `/profile/${id}`);
       updateHistory({
@@ -50,7 +49,9 @@ export const useCompletionAPI = ({
         fullName: input.fullName,
         company: input.company
       });
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   };

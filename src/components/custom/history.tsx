@@ -3,7 +3,7 @@
 import { Profile } from '@/lib/definitions';
 import { SidebarMenu } from '../ui/sidebar';
 import { useHistory } from '@/hooks/use-history';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { HistoryItem } from './history-item';
 
 interface HistoryProps {
@@ -15,11 +15,7 @@ export const History = ({ initialHistory }: HistoryProps) => {
 
   useEffect(() => {
     init(initialHistory);
-  }, [initialHistory]);
-
-  useEffect(() => {
-    console.log('history updated: ', history);
-  }, [history]);
+  }, [initialHistory, init]);
 
   return (
     history.length > 0 && (

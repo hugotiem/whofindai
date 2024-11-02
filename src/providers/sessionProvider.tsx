@@ -38,7 +38,7 @@ export const SessionProvider = ({
         setUser(credentials.user);
       });
     } else {
-      window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
+      // window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
     }
   }, [session, pathname]);
 

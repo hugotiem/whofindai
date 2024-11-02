@@ -24,5 +24,6 @@ export const loadUserId = async () => {
     return token.uid;
   } catch (e) {
     console.error(e);
+    return;
   }
 };

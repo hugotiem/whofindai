@@ -4,13 +4,13 @@ import { Attachment } from 'ai';
 import { useState } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
-import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 
 import { MultimodalInput } from './multimodal-input';
 import { Overview } from './overview';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCompletionAPI } from '@/hooks/use-completion-api';
+import { ChatSkeleton } from './chat-skeletion';
 
 export function Chat({
   id,
@@ -25,29 +25,35 @@ export function Chat({
       id
     });
 
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
+  // const [messagesContainerRef, messagesEndRef] =
+  //   useScrollToBottom<HTMLDivElement>();
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
     // <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background container mx-auto">
-    <div className="flex flex-col items-center justify-center container h-screen mx-auto gap-4">
+    <div className="flex flex-col items-center justify-center container h-screen gap-4">
       <div
-        ref={messagesContainerRef}
-        className={cn('flex flex-col items-center', completion && 'h-full')}
+        // ref={messagesContainerRef}
+        className={cn(
+          'flex flex-col items-center w-full',
+          completion && 'h-full'
+        )}
       >
-        {completion.length === 0 && <Overview />}
+        {!isLoading && completion.length === 0 && <Overview />}
 
         <div className="gap-4 w-full">
+          {isLoading && <ChatSkeleton />}
           {completion && !isLoading && (
-            <PreviewMessage
-              // key={message.id}
-              role={'system'}
-              textContent={completion}
-            />
+            <>
+              <PreviewMessage
+                id={id}
+                role={'system'}
+                textContent={completion}
+              />
+            </>
           )}
-          </div>
+        </div>
 
         {/* {completion && !isLoading && (
           <div
@@ -64,7 +70,7 @@ export function Chat({
           <MultimodalInput
             input={input}
             setInput={setInput}
-            handleSubmit={(e) => {
+            handleSubmit={() => {
               fetchCompletion();
               // handleSubmit(e);
               // companyInfo.handleSubmit(e);

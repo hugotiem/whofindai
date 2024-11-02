@@ -28,7 +28,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <div>WhoFindAI.com</div>
+        <div>Winanycall.com</div>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>

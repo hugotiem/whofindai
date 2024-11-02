@@ -3,7 +3,7 @@
 
 // import { auth } from "@/app/(auth)/auth";
 import { Chat as PreviewChat } from '@/components/custom/chat';
-import { getProfileNyId } from '@/lib/firebase/actions';
+import { getProfileById } from '@/lib/firebase/actions';
 // import { getChatById } from "@/db/queries";
 // import { Chat } from "@/db/schema";
 // import { convertToUIMessages, generateUUID } from "@/lib/utils";
@@ -14,7 +14,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const profile = await getProfileNyId(id);
+  const profile = await getProfileById(id);
 
   // if (!chatFromDb) {
   //   notFound();
