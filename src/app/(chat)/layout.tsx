@@ -14,7 +14,7 @@ export default async function RootLayout({
   // if (!session) return redirect(`/auth/signIn`);
 
   return (
-    <SessionProvider session={session}>
+    <SessionProvider initialSession={session}>
       <HistoryProvider>
         <SidebarProvider>
           <AppSidebar />

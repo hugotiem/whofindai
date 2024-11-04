@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+import { Button } from '../ui/button';
+import { MoonIcon, Sun } from 'lucide-react';
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
@@ -16,13 +18,16 @@ export function ThemeToggle() {
   }
 
   return (
-    <div
-      className="cursor-pointer"
+    <Button
+      className="cursor-pointer rounded-full transition-all duration-100"
+      variant="secondary"
+      size="icon"
       onClick={() => {
-        setTheme(theme === "dark" ? "light" : "dark");
+        setTheme(theme === 'dark' ? 'light' : 'dark');
       }}
     >
-      {`Toggle ${theme === "light" ? "dark" : "light"} mode`}
-    </div>
+      {theme === 'dark' ? <MoonIcon className='h-4 w-4'/> : <Sun className='h-4 w-4'/>}
+      {/* {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`} */}
+    </Button>
   );
 }

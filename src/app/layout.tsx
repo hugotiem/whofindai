@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { ProgressBarProvider } from '@/providers/progressBarProvider';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/components/custom/theme-provider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -29,12 +30,19 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ProgressBarProvider>
-          {children}
-          <Toaster />
-        </ProgressBarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ProgressBarProvider>
+            {children}
+            <Toaster />
+          </ProgressBarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

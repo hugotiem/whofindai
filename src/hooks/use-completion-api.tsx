@@ -45,7 +45,7 @@ export const useCompletionAPI = ({
       window.history.replaceState({}, '', `/profile/${id}`);
       updateHistory({
         id,
-        userId: session?.user.uid,
+        userId: session?.user?.uid,
         fullName: input.fullName,
         company: input.company
       });

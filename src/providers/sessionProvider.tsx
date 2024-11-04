@@ -2,13 +2,15 @@
 
 import { logout } from '@/lib/firebase/auth';
 import { auth } from '@/lib/firebase/client';
-import { signInWithCustomToken, User } from 'firebase/auth';
+import { signInWithCustomToken, updateProfile, User } from 'firebase/auth';
 import { usePathname } from 'next/navigation';
 import { createContext, useEffect, useState } from 'react';
 
 interface SessionProviderContextType {
-  session: { user: User } | undefined;
+  session: { user: User | undefined } | undefined;
   signOut?: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  updateDisplayName: (displayName: string) => Promise<void>;
 }
 
 export const SessionProviderContext = createContext<
@@ -17,14 +19,14 @@ export const SessionProviderContext = createContext<
 
 export const SessionProvider = ({
   children,
-  session
+  initialSession
 }: {
   children: React.ReactNode;
-  session?: string;
+  initialSession?: string;
 }) => {
-  const [user, setUser] = useState<User | undefined>(
-    auth.currentUser || undefined
-  );
+  const [session, setSession] = useState<{ user: User | undefined }>({
+    user: auth.currentUser || undefined
+  });
 
   const pathname = usePathname();
 
@@ -32,19 +34,41 @@ export const SessionProvider = ({
     logout().then(() => (window.location.href = '/api/auth/logout'));
   };
 
+  const deleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+    await user.delete();
+    await signOut();
+  };
+
+  const updateDisplayName = async (displayName: string) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    await updateProfile(user, { displayName });
+    await user.reload();
+    console.log('user', user.displayName);
+    setSession({ user });
+  };
+
   useEffect(() => {
-    if (session) {
-      signInWithCustomToken(auth, session).then((credentials) => {
-        setUser(credentials.user);
+    if (initialSession) {
+      signInWithCustomToken(auth, initialSession).then((credentials) => {
+        setSession({ user: credentials.user });
       });
     } else {
       // window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
     }
-  }, [session, pathname]);
+  }, [initialSession, pathname]);
 
   return (
     <SessionProviderContext.Provider
-      value={{ session: user && { user }, signOut }}
+      value={{
+        session,
+        signOut,
+        deleteAccount,
+        updateDisplayName
+      }}
     >
       {children}
     </SessionProviderContext.Provider>

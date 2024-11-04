@@ -13,13 +13,15 @@ import {
 import { Cog, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import { Settings } from './settings';
 
 export const UserSidebarItem = () => {
   const { session, signOut } = useSession();
   const pathname = usePathname();
 
   const getFallback = () => {
-    const displayName = session?.user.displayName;
+    const displayName = session?.user?.displayName;
     if (!displayName || displayName.split(' ').length < 1) return '';
     const split = displayName.split(' ');
     const first = split[0];
@@ -28,40 +30,50 @@ export const UserSidebarItem = () => {
   };
 
   return session ? (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SidebarMenuButton className="h-fit flex">
-          {session.user.photoURL && (
-            <Avatar>
-              <AvatarImage
-                src={session.user.photoURL}
-                alt={`${session?.user.displayName}'s avatar`}
-              />
-              <AvatarFallback>{getFallback()}</AvatarFallback>
-            </Avatar>
-          )}
-          <div>
-            {session.user.displayName && (
-              <div className="font-semibold"> {session.user.displayName} </div>
+    <Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton className="h-fit flex">
+            {session.user?.photoURL && (
+              <Avatar>
+                <AvatarImage
+                  src={session.user.photoURL}
+                  alt={`${session?.user.displayName}'s avatar`}
+                />
+                <AvatarFallback>{getFallback()}</AvatarFallback>
+              </Avatar>
             )}
-            {session.user.email && (
-              <div className="text-xs font-bold"> {session.user.email} </div>
-            )}
-          </div>
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[250px]">
-        <DropdownMenuItem>
-          <Cog className="mr-2 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Log out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <div>
+              {session.user?.displayName && (
+                <div className="font-semibold">
+                  {' '}
+                  {session.user.displayName}{' '}
+                </div>
+              )}
+              {session.user?.email && (
+                <div className="text-xs font-bold"> {session.user.email} </div>
+              )}
+            </div>
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[250px]">
+          <DialogTrigger asChild>
+            <DropdownMenuItem>
+              <Cog className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={signOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DialogContent>
+        <Settings />
+      </DialogContent>
+    </Dialog>
   ) : (
     <SidebarMenuButton className="h-fit">
       <Link
