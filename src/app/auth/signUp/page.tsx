@@ -1,21 +1,17 @@
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+import { SignUpForm } from './sign-up-form';
 
-export default function SignUp() {
+export default async function SignUp({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+
   return (
     <main className="h-dvh">
-      <div className="flex flex-col h-full justify-center items-center mx-auto max-w-[300px] space-y-4">
-        <Input />
-        <Input />
-        <div className='w-full'>
-          <Separator
-            orientation="horizontal"
-            className="flex flex-col items-center my-4"
-          >
-            <div className="translate-y-[-12px] bg-background w-min px-2">or</div>
-          </Separator>
-        </div>
-      </div>
+      <SignUpForm
+        redirect_path={params['redirect_path'] as string | undefined}
+      />
     </main>
   );
 }

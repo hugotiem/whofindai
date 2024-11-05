@@ -1,21 +1,80 @@
 import {
+  AuthErrorCodes,
   AuthProvider,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  sendEmailVerification,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
+  User
 } from 'firebase/auth';
 import { auth } from './client';
 import { encrypt } from '../utils';
+import { toast } from 'sonner';
+import { FirebaseError } from 'firebase/app';
 
-export const signUpWithPassword = async (email: string, password: string) => {
-  const { user } = await createUserWithEmailAndPassword(auth, email, password);
-  return user;
+export const signUpWithPassword = async (
+  email: string,
+  password: string,
+  { redirect_path }: { redirect_path?: string }
+) => {
+  try {
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    await sendEmailAddressVerification(user);
+    const idToken = await user.getIdToken();
+    window.location.href = `/api/auth/session?idToken=${encrypt(idToken)}${redirect_path && `&redirect_path=${redirect_path}`}`;
+  } catch (e) {
+    if (e instanceof FirebaseError) {
+      if (e.code === AuthErrorCodes.EMAIL_EXISTS) {
+        toast.error('Email already in use');
+      } else if (e.code === AuthErrorCodes.WEAK_PASSWORD) {
+        toast.error('Password is too weak');
+      } else if (e.code === AuthErrorCodes.INVALID_EMAIL) {
+        toast.error('Invalid email address');
+      } else {
+        toast.error('Error signing up');
+      }
+    }
+  }
 };
 
-export const signInWithPassword = async (email: string, password: string) => {
-  const { user } = await signInWithEmailAndPassword(auth, email, password);
-  return user;
+export const sendEmailAddressVerification = async (user: User) => {
+  try {
+    await sendEmailVerification(user);
+    toast.success('Email verification sent');
+  } catch (error) {
+    toast.error(`Error sending email verification (Error: ${error})`);
+  }
+};
+
+export const signInWithPassword = async (
+  email: string,
+  password: string,
+  { redirect_path }: { redirect_path?: string }
+) => {
+  try {
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
+    const idToken = await user.getIdToken();
+    window.location.href = `/api/auth/session?idToken=${encrypt(idToken)}${(redirect_path && `&redirect_path=${redirect_path}`) || ''}`;
+    return;
+  } catch (e) {
+    console.error(e);
+    if (e instanceof FirebaseError) {
+      if (e.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS) {
+        toast.error('Invalid email or password');
+      } else if (e.code === AuthErrorCodes.INVALID_PASSWORD) {
+        toast.error('Invalid password');
+      } else {
+        toast.error('Error signing in');
+      }
+    } else {
+      toast.error(`Error during Login: ${e}`);
+    }
+  }
 };
 
 export const signInWithGoogle = ({

@@ -4,7 +4,7 @@ import { loadSession } from '@/lib/firebase/session';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Search Who AI - Login',
+  title: 'Search Who AI - Sign up',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.'
 };

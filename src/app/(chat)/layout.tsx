@@ -16,6 +16,7 @@ export default async function RootLayout({
   return (
     <SessionProvider initialSession={session}>
       <HistoryProvider>
+        
         <SidebarProvider>
           <AppSidebar />
           {children}
