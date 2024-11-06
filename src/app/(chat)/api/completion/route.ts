@@ -1,3 +1,5 @@
+export const maxDuration = 30; // This function can run for a maximum of 30 seconds
+
 import { NextRequest, NextResponse } from 'next/server';
 import { promptContext, PromptProps } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';

@@ -29,7 +29,7 @@ export const UserSidebarItem = () => {
     return `${first[0]} ${second[0]}`;
   };
 
-  return session ? (
+  return session?.user ? (
     <Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
