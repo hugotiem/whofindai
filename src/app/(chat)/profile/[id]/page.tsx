@@ -4,6 +4,7 @@
 // import { auth } from "@/app/(auth)/auth";
 import { Chat as PreviewChat } from '@/components/custom/chat';
 import { getProfileById } from '@/lib/firebase/actions';
+import { redirect } from 'next/navigation';
 // import { getChatById } from "@/db/queries";
 // import { Chat } from "@/db/schema";
 // import { convertToUIMessages, generateUUID } from "@/lib/utils";
@@ -16,9 +17,9 @@ export default async function Page({
   const { id } = await params;
   const profile = await getProfileById(id);
 
-  // if (!chatFromDb) {
-  //   notFound();
-  // }
+  if (!profile) {
+    redirect('/');
+  }
 
   // // type casting
   // const chat: Chat = {
@@ -36,5 +37,10 @@ export default async function Page({
   //   return notFound();
   // }
 
-  return <PreviewChat /*id={chat.id}*/ initialCompletion={profile.content} />;
+  return (
+    <PreviewChat
+      /*id={chat.id}*/ initialCompletion={profile.content}
+      showLoginButton
+    />
+  );
 }

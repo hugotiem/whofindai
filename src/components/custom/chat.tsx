@@ -16,10 +16,12 @@ import { sendEmailAddressVerification } from '@/lib/firebase/auth';
 
 export function Chat({
   id,
-  initialCompletion
+  initialCompletion,
+  showLoginButton
 }: {
   id?: string;
   initialCompletion?: string;
+  showLoginButton: boolean;
 }) {
   const { completion, isLoading, fetchCompletion, input, setInput } =
     useCompletionAPI({
@@ -67,6 +69,7 @@ export function Chat({
             {completion && !isLoading && (
               <>
                 <PreviewMessage
+                  showLoginButton={showLoginButton}
                   id={id}
                   role={'system'}
                   textContent={completion}

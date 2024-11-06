@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       const content = response.choices[0].message.content;
 
       const session = request.cookies.get('__session')?.value;
-      if (!session) return;
+      if (!session) return NextResponse.json({ completion: content });
 
       const { uid } = await adminAuth.verifySessionCookie(session);
 

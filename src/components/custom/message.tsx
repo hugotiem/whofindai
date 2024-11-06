@@ -15,9 +15,15 @@ interface MessageProps extends HTMLAttributes<HTMLElement> {
   role: string;
   textContent: string;
   id: string | undefined;
+  showLoginButton: boolean;
 }
 
-export const Message = ({ textContent, className, id }: MessageProps) => {
+export const Message = ({
+  textContent,
+  className,
+  id,
+  showLoginButton
+}: MessageProps) => {
   const { copyLink } = useShare();
   const { session } = useSession();
 
@@ -34,7 +40,7 @@ export const Message = ({ textContent, className, id }: MessageProps) => {
         {textContent && (
           <div className="text-zinc-800 dark:text-zinc-300 flex flex-col gap-4 relative w-full">
             <Markdown>{textContent}</Markdown>
-            {!session && (
+            {!session?.user && showLoginButton && (
               <div className="absolute bottom-0 h-full w-full bg-gradient-to-b from-transparent to-background flex flex-col justify-center items-center" />
             )}
           </div>
@@ -74,7 +80,7 @@ export const Message = ({ textContent, className, id }: MessageProps) => {
           </div>
         )} */}
       </div>
-      {session && (
+      {!session?.user && (
         <Button
           className="rounded-full p-1.5 h-fit m-0.5 absolute top-10 right-8"
           variant="outline"
@@ -84,19 +90,21 @@ export const Message = ({ textContent, className, id }: MessageProps) => {
           <Share className="h-4 w-4" />
         </Button>
       )}
-      <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
-        <div className="text-center">
-          If you want to unlock this content, you need to
-          <Link href={'/auth/signIn'} className="mx-1 underline">
-            log in
-          </Link>
-          or{' '}
-          <Link href={'/auth/signUp'} className="mx-1 underline">
-            sign up
-          </Link>
-          .
+      {!session?.user && showLoginButton && (
+        <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
+          <div className="text-center">
+            If you want to unlock this content, you need to
+            <Link href={'/auth/signIn'} className="mx-1 underline">
+              log in
+            </Link>
+            or{' '}
+            <Link href={'/auth/signUp'} className="mx-1 underline">
+              sign up
+            </Link>
+            .
+          </div>
         </div>
-      </div>
+      )}
     </motion.div>
   );
 };
