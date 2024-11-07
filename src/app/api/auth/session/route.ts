@@ -30,7 +30,9 @@ export async function GET(request: NextRequest) {
     });
 
     const redirect_path_url =
-      redirect_path && redirect_path !== null ? `/${redirect_path}` : '/';
+      redirect_path && redirect_path !== null && redirect_path !== 'undefined'
+        ? redirect_path
+        : '/';
 
     const response = NextResponse.redirect(
       `${process.env.BASE_URL}${redirect_path_url}`

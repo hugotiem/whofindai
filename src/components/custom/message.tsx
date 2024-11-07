@@ -94,11 +94,17 @@ export const Message = ({
         <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
           <div className="text-center">
             If you want to unlock this content, you need to
-            <Link href={'/auth/signIn'} className="mx-1 underline">
+            <Link
+              href={`/auth/signIn?redirect_path=/profile/${id}`}
+              className="mx-1 underline"
+            >
               log in
             </Link>
             or{' '}
-            <Link href={'/auth/signUp'} className="mx-1 underline">
+            <Link
+              href={`/auth/signUp?redirect_path=/profile/${id}`}
+              className="mx-1 underline"
+            >
               sign up
             </Link>
             .
