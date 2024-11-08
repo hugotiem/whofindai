@@ -13,6 +13,7 @@ import { useCompletionAPI } from '@/hooks/use-completion-api';
 import { ChatSkeleton } from './chat-skeletion';
 import { useSession } from '@/hooks/use-session';
 import { sendEmailAddressVerification } from '@/lib/firebase/auth';
+import { ProgressBar } from './progress-bar';
 
 export function Chat({
   id,
@@ -64,8 +65,16 @@ export function Chat({
         >
           {!isLoading && completion.length === 0 && <Overview />}
 
-          <div className="gap-4 w-full">
+          <div className={cn('gap-4 w-full relative', isLoading && 'h-screen')}>
             {isLoading && <ChatSkeleton />}
+            {isLoading && (
+              <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                <div className=" text-white">
+                  <ProgressBar />
+                </div>
+              </div>
+            )}
+
             {completion && !isLoading && (
               <>
                 <PreviewMessage
@@ -88,7 +97,7 @@ export function Chat({
 
         {isLoading && !completion && <Loader2 className="animate-spin" />}
 
-        {!completion && (
+        {!completion && !isLoading && (
           <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[600px] max-w-[calc(100dvw-32px) px-4 md:px-0">
             <MultimodalInput
               input={input}

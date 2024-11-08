@@ -24,7 +24,7 @@ export const signUpWithPassword = async (
       email,
       password
     );
-    await sendEmailAddressVerification(user);
+    await sendEmailAddressVerification(user, false);
     const idToken = await user.getIdToken();
     window.location.href = `/api/auth/session?idToken=${encrypt(idToken)}${redirect_path && `&redirect_path=${redirect_path}`}`;
   } catch (e) {
@@ -42,10 +42,13 @@ export const signUpWithPassword = async (
   }
 };
 
-export const sendEmailAddressVerification = async (user: User) => {
+export const sendEmailAddressVerification = async (
+  user: User,
+  showToast = true
+) => {
   try {
     await sendEmailVerification(user);
-    toast.success('Email verification sent');
+    if (showToast) toast.success('Email verification sent');
   } catch (error) {
     toast.error(`Error sending email verification (Error: ${error})`);
   }

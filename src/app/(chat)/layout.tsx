@@ -11,8 +11,6 @@ export default async function RootLayout({
 }>) {
   const session = await loadSession();
 
-  // if (!session) return redirect(`/auth/signIn`);
-
   return (
     <SessionProvider initialSession={session}>
       <HistoryProvider>

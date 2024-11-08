@@ -2,7 +2,7 @@ import { Skeleton } from '../ui/skeleton';
 
 export const ChatSkeleton = () => {
   return (
-    <div className="max-w-[700px] mx-auto w-full flex flex-col items-start gap-3 my-12">
+    <div className="max-w-[700px] mx-auto w-full flex flex-col items-start gap-3 my-12 relative">
       <Skeleton className=" animate-expand w-48 h-4 rounded-full" />
 
       {/* Contact Details */}
@@ -65,6 +65,8 @@ export const ChatSkeleton = () => {
       <Skeleton className=" animate-expand w-1/2 h-4 rounded-full mt-6" />
       <Skeleton className=" animate-expand w-full h-4 rounded-full" />
       <Skeleton className=" animate-expand w-3/4 h-4 rounded-full" />
+
+      <div className="fixed top-0 w-full bg-background/10 backdrop-blur-sm h-screen flex flex-col justify-center items-center" />
     </div>
   );
 };
