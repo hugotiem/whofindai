@@ -1,7 +1,7 @@
 'use client';
 
 import { Attachment } from 'ai';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
 
@@ -24,7 +24,6 @@ export function Chat({
   initialCompletion?: string;
   showLoginButton: boolean;
 }) {
-
   const { completion, isLoading, fetchCompletion, input, setInput } =
     useCompletionAPI({
       initialCompletion,
