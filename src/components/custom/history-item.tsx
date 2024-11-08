@@ -16,6 +16,8 @@ import { Ellipsis, Share, Trash2 } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
 import { Profile } from '@/lib/definitions';
 import { useHistory } from '@/hooks/use-history';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 interface HistoryItemProps {
   profile: Profile;
@@ -24,13 +26,17 @@ interface HistoryItemProps {
 export const HistoryItem = ({ profile }: HistoryItemProps) => {
   const { deleteHistory } = useHistory();
   const { copyLink } = useShare();
+  const pathname = usePathname();
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton className="h-fit pl-4" asChild>
         <Link
           href={`/profile/${profile.id}`}
-          className="w-full text-ellipsis flex justify-between items-center"
+          className={cn(
+            'w-full text-ellipsis flex justify-between items-center',
+            pathname === `/profile/${profile.id}` ? 'bg-secondary' : ''
+          )}
         >
           <div>
             <div className="font-bold">{profile.fullName}</div>
