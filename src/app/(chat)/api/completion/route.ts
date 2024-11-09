@@ -91,15 +91,18 @@ export async function POST(request: NextRequest) {
       const session = request.cookies.get('__session')?.value;
       if (!session) return NextResponse.json({ completion: content });
 
-      const { uid } = await adminAuth.verifySessionCookie(session);
-
-      await adminDb.collection('profiles').doc(id).set({
-        fullName,
-        company,
-        content,
-        userId: uid,
-        createdAt: admin.firestore.Timestamp.now()
-      });
+      try {
+        const { uid } = await adminAuth.verifySessionCookie(session);
+        await adminDb.collection('profiles').doc(id).set({
+          fullName,
+          company,
+          content,
+          userId: uid,
+          createdAt: admin.firestore.Timestamp.now()
+        });
+      } catch (e) {
+        console.error(e);
+      }
       return NextResponse.json({ completion: content });
     }
     throw Error('response.choices is empty or undefined');

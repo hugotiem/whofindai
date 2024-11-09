@@ -1,4 +1,4 @@
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import { loadSession } from '@/lib/firebase/session';
@@ -14,10 +14,15 @@ export default async function RootLayout({
   return (
     <SessionProvider initialSession={session}>
       <HistoryProvider>
-        
         <SidebarProvider>
           <AppSidebar />
-          {children}
+
+          <main className="flex h-screen w-full flex-col overflow-y-auto relative">
+            <div className='absolute left-3 top-3'>
+              <SidebarTrigger />
+            </div>
+            {children}
+          </main>
         </SidebarProvider>
       </HistoryProvider>
     </SessionProvider>

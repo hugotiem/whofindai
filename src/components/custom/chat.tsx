@@ -35,7 +35,6 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    // <div className="flex flex-row justify-center pb-4 md:pb-8 h-dvh bg-background container mx-auto">
     <div className="h-screen flex flex-col w-full">
       {session?.user && !session.user.emailVerified && (
         <div className="w-full bg-foreground text-background p-4 text-sm font-semibold">
@@ -55,7 +54,7 @@ export function Chat({
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center justify-center container h-full gap-4">
+      <div className="flex flex-col items-center justify-center container h-full mx-auto gap-4">
         <div
           // ref={messagesContainerRef}
           className={cn(
