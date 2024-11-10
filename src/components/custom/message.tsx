@@ -30,7 +30,7 @@ export const Message = ({
   return (
     <motion.div
       className={cn(
-        `flex flex-col gap-4 px-4 max-w-[750px] mx-auto w-full md:px-0 h-max overflow-scroll relative`,
+        `flex flex-col gap-4 px-4 max-w-[750px] mx-auto w-full md:px-0 h-max relative`,
         className
       )} //first-of-type:pt-20
       initial={{ y: 5, opacity: 0 }}
@@ -80,15 +80,16 @@ export const Message = ({
           </div>
         )} */}
       </div>
-      {!session?.user && (
-        <Button
-          className="rounded-full p-1.5 h-fit m-0.5 absolute top-10 right-8"
-          variant="outline"
-          onClick={() => copyLink({ path: `/profile/${id}` })}
-          disabled={false}
-        >
-          <Share className="h-4 w-4" />
-        </Button>
+      {session?.user && (
+        <div className="absolute top-10 right-8">
+          <Button
+            className="rounded-full p-1.5 h-fit m-0.5 sticky top-3"
+            variant="outline"
+            onClick={() => copyLink({ path: `/profile/${id}` })}
+          >
+            <Share className="h-4 w-4" />
+          </Button>
+        </div>
       )}
       {!session?.user && showLoginButton && (
         <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
