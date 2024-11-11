@@ -37,7 +37,6 @@ export const HistoryProvider = ({
     const docRef = doc(db, 'profiles/', id);
     deleteDoc(docRef).then(() => {
       setHistory((prev) => prev.filter((e) => e.id !== id));
-      console.log('profile deleted');
     });
   };
 

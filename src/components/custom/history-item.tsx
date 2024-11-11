@@ -16,8 +16,9 @@ import { Ellipsis, Share, Trash2 } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
 import { Profile } from '@/lib/definitions';
 import { useHistory } from '@/hooks/use-history';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface HistoryItemProps {
   profile: Profile;
@@ -27,6 +28,9 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
   const { deleteHistory } = useHistory();
   const { copyLink } = useShare();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
 
   return (
     <SidebarMenuItem>
@@ -42,7 +46,7 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
             <div className="font-bold">{profile.fullName}</div>
             <div className="text-xs opacity-80">{profile.company}</div>
           </div>
-          <DropdownMenu>
+          <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
               <SidebarMenuAction showOnHover className="bottom-0">
                 <Ellipsis className="h-4 w-4" />
@@ -52,7 +56,11 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
               {profile.id && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => copyLink({ path: `/profile/${profile.id}` })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpen(false);
+                      copyLink({ path: `/profile/${profile.id}` });
+                    }}
                   >
                     <Share className="h-4 w-4 mr-4" />
                     Share
@@ -61,6 +69,9 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
                     onClick={(e) => {
                       e.preventDefault();
                       deleteHistory(profile.id!);
+                      if (pathname.includes(profile.id!)) {
+                        router.replace('/');
+                      }
                     }}
                   >
                     <Trash2 className="h-4 w-4 mr-4" />

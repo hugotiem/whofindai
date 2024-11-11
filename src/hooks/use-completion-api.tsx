@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHistory } from './use-history';
 import { useSession } from './use-session';
+import { useRouter } from 'next/navigation';
 
 export interface CompletionInput {
   fullName: string;
@@ -27,6 +28,7 @@ export const useCompletionAPI = ({
 
   const { updateHistory } = useHistory();
   const { session } = useSession();
+  const router = useRouter();
 
   const fetchCompletion = async () => {
     if (!input || !input.prompt || !input.company || !input.fullName) return;
@@ -41,15 +43,16 @@ export const useCompletionAPI = ({
       });
       if (!response.ok) throw Error('API Error');
       const data = await response.json();
-      setCompletion((prev) => data.completion || prev);
-      window.history.replaceState({}, '', `/profile/${id}`);
+      // setCompletion((prev) => data.completion || prev);
+      // window.history.pushState({}, '', `/profile/${id}`);
+      router.replace(`/profile/${id}`);
       updateHistory({
         id,
         userId: session?.user?.uid,
         fullName: input.fullName,
         company: input.company
       });
-      setIsLoading(false);
+      // setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.error(error);

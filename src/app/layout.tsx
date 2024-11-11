@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { ProgressBarProvider } from '@/providers/progressBarProvider';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/custom/theme-provider';
+import { AnalyticsProvider } from '@/providers/analyticsProvider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -17,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Search Who AI - Know Your Prospects Like Never Before',
+  title: 'WinAnyCall.com - Know Your Prospects Like Never Before',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.'
 };
@@ -32,18 +33,19 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ProgressBarProvider>
+        <AnalyticsProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             {children}
             <Toaster />
-          </ProgressBarProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AnalyticsProvider>
       </body>
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_SA_MEASUREMENT_ID!} />
     </html>
   );
 }

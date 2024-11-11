@@ -1,4 +1,12 @@
+import { Metadata } from 'next';
 import { SignInForm } from './sign-in-form';
+
+
+export const metadata: Metadata = {
+  title: 'WinAnyCall.com - Log In',
+  description:
+    'Elevate your sales game with AI-powered insights that boost your meetings.'
+};
 
 export default async function Login({
   searchParams

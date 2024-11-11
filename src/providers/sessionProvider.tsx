@@ -47,7 +47,6 @@ export const SessionProvider = ({
 
     await updateProfile(user, { displayName });
     await user.reload();
-    console.log('user', user.displayName);
     setSession({ user });
   };
 

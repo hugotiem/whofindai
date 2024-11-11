@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 export function ProgressBar() {
   const [progress, setProgress] = useState(0);
   const [rand, setRand] = useState(0);
+  const [randInt, setRandInt] = useState(0);
 
   useEffect(() => {
     setRand(Math.random());
+    setRandInt(Math.floor(Math.random() * (40 - 20 + 1)) + 20);
     // Fonction de mise à jour de la progression avec possibilité de pause
     const updateProgress = () => {
       setProgress((value) => {
@@ -27,7 +29,7 @@ export function ProgressBar() {
 
     // Fonction pour définir les délais, avec des pauses prolongées
     const startLoading = () => {
-      const randomDelay = Math.random() > 0.7 ? 1000 : 100; // 30% de chance de pause prolongée de 1 seconde
+      const randomDelay = Math.random() > 0.7 ? 500 : 100; // 30% de chance de pause prolongée de 1 seconde
       const interval = setInterval(updateProgress, randomDelay);
 
       // Nettoyer et réinitialiser l'intervalle après chaque étape pour ajuster la vitesse
@@ -43,9 +45,9 @@ export function ProgressBar() {
     <>
       <Progress value={progress} className="w-40" />
       <div className="text-sm font-semibold opacity-60">
-        {progress < rand * 20
+        {progress < 10
           ? 'Loading'
-          : ` ${(progress - rand * 20).toFixed()} sources browsed`}{' '}
+          : ` ${(randInt * ((progress - 10) / 100)).toFixed()} sources browsed`}{' '}
       </div>
     </>
   );

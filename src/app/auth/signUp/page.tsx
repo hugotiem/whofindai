@@ -1,4 +1,11 @@
+import { Metadata } from 'next';
 import { SignUpForm } from './sign-up-form';
+
+export const metadata: Metadata = {
+  title: 'WinAnyCall.com - Sign up',
+  description:
+    'Elevate your sales game with AI-powered insights that boost your meetings.'
+};
 
 export default async function SignUp({
   searchParams
