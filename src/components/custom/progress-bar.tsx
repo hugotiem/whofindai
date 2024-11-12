@@ -5,11 +5,9 @@ import { useEffect, useState } from 'react';
 
 export function ProgressBar() {
   const [progress, setProgress] = useState(0);
-  const [rand, setRand] = useState(0);
   const [randInt, setRandInt] = useState(0);
 
   useEffect(() => {
-    setRand(Math.random());
     setRandInt(Math.floor(Math.random() * (40 - 20 + 1)) + 20);
     // Fonction de mise à jour de la progression avec possibilité de pause
     const updateProgress = () => {

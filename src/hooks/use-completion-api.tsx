@@ -18,7 +18,7 @@ export const useCompletionAPI = ({
   id,
   initialCompletion
 }: UseCompletionAPIProps = {}) => {
-  const [completion, setCompletion] = useState<string>(initialCompletion || '');
+  const [completion] = useState<string>(initialCompletion || '');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
     fullName: '',
@@ -42,7 +42,7 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error');
-      const data = await response.json();
+      // const data = await response.json();
       // setCompletion((prev) => data.completion || prev);
       // window.history.pushState({}, '', `/profile/${id}`);
       router.replace(`/profile/${id}`);
