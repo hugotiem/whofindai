@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export const Overview = () => {
   return (
@@ -16,27 +17,33 @@ export const Overview = () => {
           <span>+</span>
           <MessageIcon />
         </p> */}
-        <p className="font-bold">
-          Welcome to WinAnyCall.com!
-        </p>
-        <p>
-          To get the best results, simply fill in the fields below:
-        </p>
+        <p className="font-bold">Welcome to WinAnyCall.com!</p>
+        <p>To get the best results, simply fill in the fields below:</p>
         <ul className="list-decimal ml-5 space-y-2">
           <li>
             Enter the <strong>full name</strong> and <strong>company</strong> of
             your prospect.
           </li>
           <li>
-            <strong>One-time Setup</strong>: Fill in the &quot;What I want to sell&quot;
-            field once to tailor all future insights to your specific product or
-            service. You can update this anytime if needed{' '}
+            <strong>One-time Setup</strong>: Fill in the &quot;What I want to
+            sell&quot; field once to tailor all future insights to your specific
+            product or service. You can update this anytime if needed{' '}
           </li>
         </ul>
         <p>
           Pro Tip: The more precise you are with the information, the better the
-          insights you&apos;ll receive. Save time, boost your confidence, and make
-          your cold calls more effective!
+          insights you&apos;ll receive. Save time, boost your confidence, and
+          make your cold calls more effective!
+        </p>
+        <p>
+          More info{' '}
+          <Link
+            href="https://probable-visitor-fcc.notion.site/How-to-Use-Winanycall-Effectively-A-Step-by-Step-Guide-13d97d1a0fc4807e8b9cc5b07cdb66c1?pvs=4"
+            target='_blank'
+            className="text-blue-500 dark:text-blue-400"
+          >
+            here.
+          </Link>
         </p>
         {/* <p>
           This is an open source Chatbot template built with Next.js and the AI

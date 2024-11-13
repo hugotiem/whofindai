@@ -20,7 +20,19 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: 'WinAnyCall.com - Know Your Prospects Like Never Before',
   description:
-    'Elevate your sales game with AI-powered insights that boost your meetings.'
+    'Elevate your sales game with AI-powered insights that boost your meetings.',
+  icons: {
+    apple: '/favicons/iPhone.png',
+    shortcut: '/favicon.ico'
+  },
+  openGraph: {
+    title: 'WinAnyCall.com - Know Your Prospects Like Never Before',
+    description:
+      'Elevate your sales game with AI-powered insights that boost your meetings.',
+    url: process.env.BASE_URL,
+    locale: 'en-US',
+    type: 'website'
+  }
 };
 
 export default async function RootLayout({

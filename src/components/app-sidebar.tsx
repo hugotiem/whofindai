@@ -15,6 +15,7 @@ import { HistorySidebarItem } from './custom/history-sidebar-item';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { HistorySkeleton } from './custom/history-skeleton';
+import AppIcon from './custom/icons/app-icon';
 
 const items = [
   {
@@ -28,7 +29,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <div>Winanycall.com</div>
+        <Link href={'/'} className='w-fit p-4'>
+          <AppIcon />
+        </Link>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
