@@ -66,7 +66,7 @@ export const ChatSkeleton = () => {
       <Skeleton className=" animate-expand w-full h-4 rounded-full" />
       <Skeleton className=" animate-expand w-3/4 h-4 rounded-full" />
 
-      <div className="fixed top-0 w-full bg-background/10 backdrop-blur-sm h-screen flex flex-col justify-center items-center" />
+      <div className="fixed top-0 w-full bg-background/10 backdrop-blur-sm h-dvh flex flex-col justify-center items-center" />
     </div>
   );
 };

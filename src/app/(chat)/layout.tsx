@@ -17,7 +17,7 @@ export default async function RootLayout({
         <SidebarProvider>
           <AppSidebar />
 
-          <main className="flex h-screen w-full flex-col overflow-y-auto relative">
+          <main className="flex h-dvh w-full flex-col overflow-y-auto relative">
             <div className="sticky top-3 ml-3 z-50">
               <SidebarTrigger />
             </div>

@@ -40,7 +40,7 @@ export function Chat({
   }, [setInput]);
 
   return (
-    <div className="h-screen flex flex-col w-full">
+    <div className="h-dvh flex flex-col w-full">
       {session?.user && !session.user.emailVerified && (
         <div className="w-full bg-foreground text-background p-4 text-sm font-semibold">
           <div>
@@ -69,7 +69,7 @@ export function Chat({
         >
           {!isLoading && completion.length === 0 && <Overview />}
 
-          <div className={cn('gap-4 w-full relative', isLoading && 'h-screen')}>
+          <div className={cn('gap-4 w-full relative', isLoading && 'h-dvh')}>
             {isLoading && <ChatSkeleton />}
             {isLoading && (
               <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">

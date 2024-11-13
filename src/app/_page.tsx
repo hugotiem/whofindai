@@ -25,7 +25,7 @@ export default function Home() {
     setSaleService(event.target.value);
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-dvh w-full">
       <AppSidebar />
       <main className="container mx-auto flex flex-col justify-center items-center min-h-fit">
         <div className="flex flex-col items-center">
