@@ -1,4 +1,4 @@
-export const maxDuration = 30; // This function can run for a maximum of 30 seconds
+export const maxDuration = 60; // This function can run for a maximum of 30 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
 import { promptContext, PromptProps } from './prompt';
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await client.chat.completions.create({
-      model: 'llama-3.1-sonar-huge-128k-online',
+      model: 'llama-3.1-sonar-large-128k-online',
       messages: [
         {
           role: 'system',
