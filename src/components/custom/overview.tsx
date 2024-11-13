@@ -1,7 +1,4 @@
-import { motion } from "framer-motion";
-import Link from "next/link";
-
-import {  MessageIcon, VercelIcon } from "./icons";
+import { motion } from 'framer-motion';
 
 export const Overview = () => {
   return (
@@ -14,12 +11,34 @@ export const Overview = () => {
       transition={{ delay: 0.5 }}
     >
       <div className="border rounded-lg p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
-        <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
+        {/* <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
           <VercelIcon />
           <span>+</span>
           <MessageIcon />
+        </p> */}
+        <p className="font-bold">
+          Welcome to WinAnyCall.com!
         </p>
         <p>
+          To get the best results, simply fill in the fields below:
+        </p>
+        <ul className="list-decimal ml-5 space-y-2">
+          <li>
+            Enter the <strong>full name</strong> and <strong>company</strong> of
+            your prospect.
+          </li>
+          <li>
+            <strong>One-time Setup</strong>: Fill in the &quot;What I want to sell&quot;
+            field once to tailor all future insights to your specific product or
+            service. You can update this anytime if needed{' '}
+          </li>
+        </ul>
+        <p>
+          Pro Tip: The more precise you are with the information, the better the
+          insights you&apos;ll receive. Save time, boost your confidence, and make
+          your cold calls more effective!
+        </p>
+        {/* <p>
           This is an open source Chatbot template built with Next.js and the AI
           SDK by Vercel. It uses the{" "}
           <code className="rounded-md bg-muted px-1 py-0.5">streamText</code>{" "}
@@ -38,7 +57,7 @@ export const Overview = () => {
             Docs
           </Link>
           .
-        </p>
+        </p> */}
       </div>
     </motion.div>
   );

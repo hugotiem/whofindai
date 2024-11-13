@@ -42,7 +42,7 @@ export function ProgressBar() {
   return (
     <>
       <Progress value={progress} className="w-40" />
-      <div className="text-sm font-semibold opacity-60">
+      <div className="text-sm font-semibold opacity-60 text-foreground">
         {progress < 10
           ? 'Loading'
           : ` ${(randInt * ((progress - 10) / 100)).toFixed()} sources browsed`}{' '}

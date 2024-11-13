@@ -27,7 +27,7 @@ export function MultimodalInput({
   attachments,
   setAttachments,
   completion,
-  handleSubmit,
+  handleSubmit
 }: {
   input: CompletionInput | undefined;
   setInput: Dispatch<SetStateAction<CompletionInput>>;
@@ -68,7 +68,7 @@ export function MultimodalInput({
     setInput((prev) => ({ ...prev, fullName: event.target.value }));
 
   const onCompanyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-   setInput((prev) => ({ ...prev, company: event.target.value }));
+    setInput((prev) => ({ ...prev, company: event.target.value }));
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
@@ -176,9 +176,10 @@ export function MultimodalInput({
         ref={textareaRef}
         placeholder="What i want to sell is..."
         value={input?.prompt}
-        onChange={(value) =>
-          setInput((prev) => ({ ...prev, prompt: value.target.value }))
-        }
+        onChange={(value) => {
+          setInput((prev) => ({ ...prev, prompt: value.target.value }));
+          localStorage.setItem('app.winanycall.com/prompt', value.target.value);
+        }}
         className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
         rows={3}
         onKeyDown={(event) => {

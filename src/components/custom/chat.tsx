@@ -1,7 +1,7 @@
 'use client';
 
 import { Attachment } from 'ai';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
 
@@ -33,6 +33,11 @@ export function Chat({
   const { session } = useSession();
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+
+  useEffect(() => {
+    const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
+    if (initialPrompt) setInput((prev) => ({ ...prev, prompt: initialPrompt }));
+  }, [setInput]);
 
   return (
     <div className="h-screen flex flex-col w-full">

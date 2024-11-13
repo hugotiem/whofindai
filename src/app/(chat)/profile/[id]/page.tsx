@@ -40,6 +40,7 @@ export default async function Page({
   return (
     <PreviewChat
       /*id={chat.id}*/ initialCompletion={profile.content}
+      id={id}
       showLoginButton
     />
   );
