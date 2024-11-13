@@ -19,19 +19,18 @@ export async function POST(request: NextRequest) {
         {
           role: 'user',
           content: `
-            ### Guidelines:
-
-            - Tone: Maintain a professional and respectful tone throughout.
-            - Sources: Use only reputable, publicly available sources like company websites, LinkedIn profiles, social medias and news articles.
-            - Privacy Compliance: Do not include private life details.
+            - Linkedin to build the profile
             - Accuracy and Assumptions: Present all information honestly, acknowledging gaps where necessary. Avoid overestimating the person’s influence or impact, and clearly mark any inferred personality analysis as such.
             - If you find differing information on the same topic, use only the most recent one. For example, if you encounter two company addresses, select the more recent address as accurate.
             - Output Format:
+                - Return the most structured answer possible
                 - Use clear section headings for each part.
-                    - The contact
+                    - Contact details
+                    - The person
                     - The company
-                    - Executive insights
-                - Use monthly plain text and give as much details as possible
+                    - Insights on how to conduct my interaction
+                - Give as much details as possible
+                - Return only the answer without intro nor conclusion
 
             ### Instructions:
 
@@ -39,20 +38,21 @@ export async function POST(request: NextRequest) {
 
             Person’s Name: ${fullName}
             Company Name: ${company}
-            Product/Service offered by the sales professional (user of this prompt):  ${prompt}
+            Product/Service offered by the sales professional (user of this prompt): ${prompt}
 
             Create a detailed profile that includes the following:
 
             1. The Person
-                1. Contact Details:
+                1. Contact Details (show all of them even if it’s empty):
                 Full name
                 Professional contact details if publicly available, including:
                 Business email address
-                Office phone number
+                Mobile phone number
+                Company phone number 
                 Company address
                 2. Professional Insights and Personality Analysis:
                 Highlight the person’s professional background, expertise, and any industry involvement (e.g., publications, speaking engagements).
-                Based on public information, provide an inferred and detailed MBTI or DISC profile. And explain what the profile is.
+                Based on public information, generate an inferred and detailed MBTI or DISC profile. And explain what the profile is.
                 Note: Clearly state that this analysis is an inference and may not be fully accurate without formal assessment.
                 3. Job Role and Responsibilities:
                 Provide the person's current job title and summarize their key responsibilities.
@@ -67,15 +67,13 @@ export async function POST(request: NextRequest) {
                     1. Identify potential challenges or pain points for the person and their department.
                     2. Extend this analysis to the company's broader business needs.
                     3. Suggest how the product/service offered can address these needs, both at the individual and organizational levels.
-            3. How to prepare my meeting 
+            3. Insight on how to conduct my interaction
                 1. Communication and Engagement Strategy:
-                Offer tailored communication tips, considering their role, responsibilities, and inferred personality profile.
                 Recommend areas to focus on during discussions, aligned with their interests and company goals.
                 Suggest the most effective communication style to engage with this individual based on their professional profile and inferred personality.
                 2. Key Questions for the Meeting:
-                Provide 5-7 key questions to uncover the prospect’s needs, priorities, and pain points regarding the product and service we are selling. 
-                3. Not only, you can also try to find questions around need, pain, budget, timing, competitors and decision maker. 
-                4. For each main question, include 2-3 follow-up questions to dive deeper into the topic and encourage dialogue.
+                Provide 5-7 key open questions to uncover the prospect’s needs, priorities, and pain points regarding the product and service we are selling. If conversation goes well add more questions around budget, timing, competitors and decision maker. 
+                3. For each main question, include 3-4 follow-up open questions to dive deeper into the topic and encourage dialogue.
             `
         }
       ]
