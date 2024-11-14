@@ -24,6 +24,9 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
         </code>
       );
     },
+    hr: ({ ...props }) => {
+      return <hr className="my-4" {...props} />;
+    },
     ol: ({ children, ...props }) => {
       return (
         <ol className="list-decimal list-outside ml-4" {...props}>
