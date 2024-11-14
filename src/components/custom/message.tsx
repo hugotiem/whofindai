@@ -5,9 +5,6 @@ import { HTMLAttributes } from 'react';
 
 import { Markdown } from './markdown';
 import { cn } from '@/lib/utils';
-import { Button } from '../ui/button';
-import { useShare } from '@/hooks/use-share';
-import { Share } from 'lucide-react';
 import { useSession } from '@/hooks/use-session';
 import Link from 'next/link';
 
@@ -24,7 +21,7 @@ export const Message = ({
   id,
   showLoginButton
 }: MessageProps) => {
-  const { copyLink } = useShare();
+  
   const { session } = useSession();
 
   return (
@@ -80,17 +77,7 @@ export const Message = ({
           </div>
         )} */}
       </div>
-      {session?.user && (
-        <div className="absolute top-10 right-8">
-          <Button
-            className="rounded-full p-1.5 h-fit m-0.5 sticky top-3"
-            variant="outline"
-            onClick={() => copyLink({ path: `/profile/${id}` })}
-          >
-            <Share className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+
       {!session?.user && showLoginButton && (
         <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
           <div className="text-center">
