@@ -33,9 +33,9 @@ export const customPrompt = (
 
   Using the inputs provided:
 
-  - **Person’s Name**: [Insert Name]
-  - **Company Name**: [Insert Company Name]
-  - **Product/Service Offered**: [Insert Product/Service]
+  - **Person’s Name**: ${fullName}
+  - **Company Name**: ${company}
+  - **Product/Service Offered**: ${prompt}
 
   Generate a detailed profile including the following:
 
