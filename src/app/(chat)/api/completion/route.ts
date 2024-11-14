@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await client.chat.completions.create({
-      model: 'llama-3.1-sonar-small-128k-online',
+      model: 'llama-3.1-sonar-large-128k-online',
       messages: [
         {
           role: 'system',
