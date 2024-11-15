@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await client.chat.completions.create({
-      model: 'llama-3.1-sonar-small-128k-online',
+      model: 'llama-3.1-sonar-large-128k-online',
       temperature: 0.2,
       messages: [
         {
@@ -19,55 +19,73 @@ export async function POST(request: NextRequest) {
         },
         {
           role: 'user',
-          content: customPrompt('Sacha Azoulay', 'Growth Room', 'AI Tool')
+          content: customPrompt('Jonathan Ferrebeuf', 'Upfeel', 'AI Tool')
         },
         {
           role: 'assistant',
           content: `Output example (for reference only):
-             ## **1. Contact Details**
+            ## **1. Contact Details**
 
-            - **Full Name**: Sacha Azoulay
-            - **Professional Email**: [sacha@growthroom.co](mailto:sacha@growthroom.co), [azoulay.sacha@gmail.com](mailto:azoulay.sacha@gmail.com)
-            - **Company Address**: 336 Rue Saint-Honoré, 75001 Paris, France
-            - **Phone Number**: Not publicly available.
+            - **Full Name**: Jonathan Ferrebeuf
+            - **Professional Contact Details**:
+                - Email: [jferrebeuf@gmail.com](mailto:jferrebeuf@gmail.com), [jonathan@upfeel.io](mailto:jonathan@upfeel.io), [jonathan@upfeel.com](mailto:jonathan@upfeel.com)
+                - Phone Number: +33 6 77 79 61 03
+                - Company Address: Upfeel Services, 9 rue Louis David, 75116 Paris, France
 
-            ---
+            ——
 
-            ## **2. Professional Overview**
+            ## **2. Ice Breakers**
 
-            - **Role and Responsibilities**: Sacha Azoulay is the Founder & CEO of Growth Room, a growth marketing agency based in Paris. His responsibilities include overseeing the company's strategic direction, client acquisition, and growth initiatives. He is also involved in managing key client relationships and ensuring the successful execution of digital marketing strategies.
-            - **Background**: Sacha has extensive experience in growth marketing and business development. Prior to founding Growth Room in 2020, he held leadership roles such as Head of Growth at Dreem and worked with TheFamily as a Growth Marketing Manager. His expertise spans digital prospecting, SEO, media campaigns, and CRM management. He has a strong track record of helping startups and established companies scale through tailored growth strategies.
-            - **Personality Insights (Inferred)**: Based on his public posts and leadership style, Sacha appears to be resilient, adaptable, and driven by results. His ability to navigate challenges (e.g., COVID-19 setbacks) suggests he may have a personality type aligned with the *ENTJ* (Commander) in the MBTI framework or a *D* (Dominant) in DISC, characterized by leadership and problem-solving skills. However, this is an inferred analysis based on public information.
+            1. *"I saw that you've been mentoring startups at ESSEC Business School for a while now. How has that experience influenced your leadership approach at Upfeel?"*
+            2. *"Upfeel's focus on collective intelligence and emotional intelligence is fascinating, especially in today's hybrid work environment. How do you see AI tools enhancing these team-building experiences?"*
 
-            ---
+            ——
 
-            ## **3. Company Overview**
+            ## **3. Professional Overview**
 
-            - **Basic Info**: Growth Room is a growth marketing agency founded in 2020, based in Paris. The company has about 25 employees and has experienced rapid growth (110% annually). It specializes in digital marketing strategies including SEO, paid media campaigns, and CRM optimization.
-            - **Market Position**: Growth Room positions itself as an expert in helping businesses unlock growth through structured digital strategies. The agency has worked with over 230 companies across various sectors, including startups and large corporations like Michelin and Figaro Classifieds. They aim to be one of the top five growth marketing agencies in Europe within the next few years.
-            - **Challenges**: One potential challenge for Growth Room is maintaining its rapid growth while ensuring high-quality service delivery as it scales. Additionally, staying competitive in a crowded market of digital agencies requires constant innovation in tools and strategies. The AI tool offered could help address these challenges by streamlining sales preparation processes, improving conversion rates through better-informed calls.
+            - **Role and Responsibilities**: Jonathan Ferrebeuf is the CEO & Co-Founder of Upfeel, where he leads the company in delivering innovative team-building experiences and collective coaching programs aimed at improving organizational performance through emotional and collective intelligence. His responsibilities include strategic leadership, business development, and overseeing product innovation.
+            - **Background**: Jonathan has a diverse background in entrepreneurship, mentoring startups, and investing in innovative companies. He has been involved in various industries, including marketing, advertising, and technology. In addition to his role at Upfeel, he is a pro bono mentor at the ESSEC Business School's Center for Entrepreneurship & Innovation and an angel investor.
+            - **Personality Insights**:
+                - *Visionary*: Jonathan's leadership at Upfeel and his involvement with startups suggest that he is highly forward-thinking and passionate about innovation.
+                - *Collaborative*: His focus on collective intelligence and team dynamics indicates a strong belief in collaboration and teamwork.
+                - *Empathetic*: Given his emphasis on emotional intelligence within teams, it can be inferred that he values understanding others' perspectives.
 
-            ---
+            *Note: These personality insights are inferred from public information and may not fully capture his personal traits.*
 
-            ## **4. Engagement Strategy**
+            ——
+
+            ## **4. Company Overview**
+
+            - **Basic Info**:
+                - **Upfeel** is based in Paris, France, with a focus on team-building activities, professional seminars, and collective coaching. The company works with over 400 teams across various industries.
+                - **Market Position**: Upfeel is recognized for its innovative approach to improving team cohesion through scientifically validated methods that blend fun with practical learning. Their clients include major companies like Google, Bouygues, Clarins, Bayer, and Suez.
+            - **Challenges**:
+                - With the rise of hybrid work environments, maintaining team cohesion and engagement is a growing challenge for many organizations.
+            - **Top Competitors**:
+                - Teamway
+                - Cohesion Capital
+                - Boost Team
+            - **How the AI Meeting Tool Can Help**:
+                - Upfeel’s focus on collective intelligence could benefit from an AI meeting tool that enhances virtual collaboration by providing real-time insights into team dynamics during online sessions.
+
+            ——
+
+            ## **5. Engagement Strategy**
 
             - **Communication Tips**:
-                - Focus on how your AI tool can save time for sales teams by automating call preparation.
-                - Highlight how the tool can enhance prospecting efforts by providing relevant insights quickly.
-                - Use data-driven examples to show how your product can improve conversion rates for Growth Room’s clients.
-                - Emphasize scalability—how your tool grows with their needs as they expand their client base.
+                - Highlight how AI can complement their existing offerings by enhancing real-time feedback during virtual team-building sessions.
+                - Emphasize the potential for scaling their services through AI-driven insights into team performance.
             - **Key Questions**:
-                1. "What are the biggest challenges your sales team faces when preparing for calls?"
-                    - *Follow-up*: "How do you currently gather information for these calls?"
-              2. "How important is it for your team to have real-time access to prospect data?"
-                  - *Follow-up*: "What tools are you using now to manage this process?"
-              3. "How do you measure the success of your sales calls?"
-                  - *Follow-up*: "What specific metrics do you track to assess call performance?"
-              4. "What role does automation play in your current sales process?"
-                  - *Follow-up*: "Have you explored AI-driven solutions before? If so, what was your experience?"
-              5. "How do you ensure that your sales team stays informed about prospects’ latest activities?"
-                  - *Follow-up*: "Would having an automated tool that consolidates this information be valuable?"
-            - **Follow-Up**: After discussing their needs and challenges, suggest setting up a demo of your AI tool to show how it can address specific pain points mentioned during the conversation.
+                1. *"How do you currently measure the success of your team-building programs?"*
+                    - Follow-up: *"What metrics would you like to track more effectively with the help of technology?"*
+                2. *"What challenges do you face when conducting virtual or hybrid team-building sessions?"*
+                    - Follow-up: *"How do you think AI could help bridge some of these gaps?"*
+                3. *"How do you see the role of technology evolving in enhancing collective intelligence within teams?"*
+                    - Follow-up: *"Are there specific tech tools you're considering to integrate into your programs?"*
+                4. *"What feedback have you received from clients regarding your current virtual offerings?"*
+                    - Follow-up: *"Would real-time analytics during meetings improve client satisfaction?"*
+                5. *"How does Upfeel differentiate itself from other team-building companies in terms of innovation?"*
+                    - Follow-up: *"Could AI tools help further this differentiation by offering unique insights during sessions?"*
           `
         },
         {
