@@ -1,19 +1,24 @@
 import { adminAuth } from '@/lib/firebase/admin';
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const _cookies = await cookies();
+  const createLogoutResponse = () => {
+    const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
+    response.cookies.delete('__session');
+    return response;
+  };
+
   try {
     const session = request.cookies.get('__session')?.value;
     if (!session) throw Error('No current session');
-    const token = await adminAuth.verifySessionCookie(session);
-    await adminAuth.revokeRefreshTokens(token.uid);
-    _cookies.delete('__session');
-    return NextResponse.redirect(`${process.env.BASE_URL}/auth/signIn`);
-  } catch (e) {
-    console.error(e);
-    _cookies.delete('__session');
-   return  NextResponse.redirect(process.env.BASE_URL!);
+    const { uid } = await adminAuth.verifySessionCookie(session);
+    await adminAuth.revokeRefreshTokens(uid);
+    return createLogoutResponse();
+  } catch (error) {
+    console.error(
+      'Logout error:',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    return createLogoutResponse();
   }
 }

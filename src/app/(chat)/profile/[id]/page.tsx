@@ -33,6 +33,7 @@ export default async function Page({
 }
 
 const ChatPage = async ({ id }: { id: string }) => {
+  
   const profile = await getProfileById(id);
 
   if (!profile) redirect('/');

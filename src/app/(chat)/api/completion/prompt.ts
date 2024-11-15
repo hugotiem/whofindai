@@ -97,7 +97,3 @@ export interface PromptProps {
   company: string;
   prompt: string;
 }
-
-// export const openai = createOpenAI({
-//   baseURL: process.env.PERPLEXITY_BASE_URL
-// });

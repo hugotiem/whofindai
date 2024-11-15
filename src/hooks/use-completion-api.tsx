@@ -44,21 +44,21 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error');
-      // setCompletion((prev) => data.completion || prev);
-      // window.history.pushState({}, '', `/profile/${id}`);
-      router.replace(`/profile/${id}`);
-      if (initialCompletion) {
-         const data = await response.json();
+      if (session?.user) {
+        router.replace(`/profile/${id}`);
+        updateHistory({
+          id,
+          userId: session?.user?.uid,
+          fullName: input.fullName,
+          company: input.company,
+          prompt: input.prompt
+        });
+      }
+      if (initialCompletion || !session?.user) {
+        const data = await response.json();
         setIsLoading(false);
         setCompletion(data.completion);
       }
-      updateHistory({
-        id,
-        userId: session?.user?.uid,
-        fullName: input.fullName,
-        company: input.company,
-        prompt: input.prompt
-      });
       // setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

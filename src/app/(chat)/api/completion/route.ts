@@ -32,14 +32,14 @@ export async function POST(request: NextRequest) {
                 - Phone Number: +33 6 77 79 61 03
                 - Company Address: Upfeel Services, 9 rue Louis David, 75116 Paris, France
 
-            ——
+            --- 
 
             ## **2. Ice Breakers**
 
             1. *"I saw that you've been mentoring startups at ESSEC Business School for a while now. How has that experience influenced your leadership approach at Upfeel?"*
             2. *"Upfeel's focus on collective intelligence and emotional intelligence is fascinating, especially in today's hybrid work environment. How do you see AI tools enhancing these team-building experiences?"*
 
-            ——
+            ---
 
             ## **3. Professional Overview**
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
             *Note: These personality insights are inferred from public information and may not fully capture his personal traits.*
 
-            ——
+            ---
 
             ## **4. Company Overview**
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
             - **How the AI Meeting Tool Can Help**:
                 - Upfeel’s focus on collective intelligence could benefit from an AI meeting tool that enhances virtual collaboration by providing real-time insights into team dynamics during online sessions.
 
-            ——
+            ---
 
             ## **5. Engagement Strategy**
 
@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
                     - Follow-up: *"Could AI tools help further this differentiation by offering unique insights during sessions?"*
           `
         },
+
         {
           role: 'user',
           content: customPrompt(fullName, company, prompt)

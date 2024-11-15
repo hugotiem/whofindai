@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { adminAuth } from './admin';
+import { redirect } from 'next/navigation';
 
 export const loadSession = async () => {
   'use server';
@@ -24,6 +25,6 @@ export const loadUserId = async () => {
     return token.uid;
   } catch (e) {
     console.error(e);
-    return;
+    redirect('/api/auth/logout');
   }
 };

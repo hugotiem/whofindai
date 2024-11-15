@@ -56,6 +56,7 @@ export const SessionProvider = ({
         setSession({ user: credentials.user });
       });
     } else {
+      localStorage.removeItem('app.winanycall.com/prompt');
       // window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
     }
   }, [initialSession, pathname]);
