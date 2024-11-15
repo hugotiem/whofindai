@@ -3,8 +3,10 @@
 
 // import { auth } from "@/app/(auth)/auth";
 import { Chat as PreviewChat } from '@/components/custom/chat';
+import { ChatSkeleton } from '@/components/custom/chat-skeletion';
 import { getProfileById } from '@/lib/firebase/actions';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 // import { getChatById } from "@/db/queries";
 // import { Chat } from "@/db/schema";
 // import { convertToUIMessages, generateUUID } from "@/lib/utils";
@@ -15,9 +17,9 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const profile = await getProfileById(id);
+  // const profile = await getProfileById(id);
 
-  if (!profile) redirect('/');
+  // if (!profile) redirect('/');
 
   // // type casting
   // const chat: Chat = {
@@ -34,7 +36,18 @@ export default async function Page({
   // if (session.user.id !== chat.userId) {
   //   return notFound();
   // }
+  // return the chat component or the loading component
+  return (
+    <Suspense fallback={<ChatSkeleton />}>
+      <ChatPage id={id} />
+    </Suspense>
+  );
+}
 
+const ChatPage = async ({ id }: { id: string }) => {
+  const profile = await getProfileById(id);
+
+  if (!profile) redirect('/');
   return (
     <PreviewChat
       profile={{
@@ -48,4 +61,4 @@ export default async function Page({
       showLoginButton
     />
   );
-}
+};

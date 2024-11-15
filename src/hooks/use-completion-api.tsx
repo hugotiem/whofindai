@@ -44,11 +44,11 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error');
-      const data = await response.json();
       // setCompletion((prev) => data.completion || prev);
       // window.history.pushState({}, '', `/profile/${id}`);
       router.replace(`/profile/${id}`);
       if (initialCompletion) {
+         const data = await response.json();
         setIsLoading(false);
         setCompletion(data.completion);
       }

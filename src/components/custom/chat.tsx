@@ -13,7 +13,6 @@ import { ChatSkeleton } from './chat-skeletion';
 import { useSession } from '@/hooks/use-session';
 import { sendEmailAddressVerification } from '@/lib/firebase/auth';
 import { ProgressBar } from './progress-bar';
-import { SidebarTrigger } from '../ui/sidebar';
 import { Button } from '../ui/button';
 import { RefreshCw, Share } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
@@ -66,9 +65,7 @@ export function Chat({
           (!completion || isLoading) && 'h-full'
         )}
       >
-        <div className="sticky top-3 ml-3 z-50">
-          <SidebarTrigger />
-        </div>
+       
         {session?.user && !session.user.emailVerified && (
           <div className="w-full bg-foreground text-background p-4 text-sm font-semibold">
             <div>
@@ -152,7 +149,7 @@ export function Chat({
         </div>
       </div>
       {completion && !isLoading && (
-        <div className="sticky left-[50%] mx-auto bottom-8 z-50 bg-background border border-border rounded-full p-2">
+        <div className="sticky left-[50%] translate-x-[-50%] mx-auto bottom-8 z-50 bg-background border border-border rounded-full w-fit p-2">
           <TooltipProvider>
             {profile?.userId === session?.user?.uid && (
               <Tooltip>

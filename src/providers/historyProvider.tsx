@@ -25,9 +25,10 @@ export const HistoryProvider = ({
 
   const updateHistory = (profile: Profile) => {
     if (history.find((e) => e.id === profile.id)) {
-      setHistory((prev) =>
-        prev.map((e) => (e.id === profile.id ? profile : e))
-      );
+      setHistory((prev) => [
+        profile,
+        ...prev.filter((e) => e.id !== profile.id)
+      ]);
     } else {
       setHistory((prev) => [profile, ...prev]);
     }

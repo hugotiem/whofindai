@@ -2,7 +2,9 @@ import { Profile } from '../definitions';
 import { adminDb } from './admin';
 import { loadUserId } from './session';
 
-export const getProfileById = async (id: string): Promise<Profile | undefined> => {
+export const getProfileById = async (
+  id: string
+): Promise<Profile | undefined> => {
   const userId = await loadUserId();
   const data = await adminDb.collection('profiles').doc(id).get();
   if (data.exists) {
@@ -14,7 +16,6 @@ export const getProfileById = async (id: string): Promise<Profile | undefined> =
       id: data.id
     };
   }
-
 };
 
 export const getUserProfiles = async (userId: string): Promise<Profile[]> => {

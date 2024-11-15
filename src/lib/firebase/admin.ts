@@ -17,7 +17,7 @@ export const adminDb = admin.firestore(adminApp);
 try {
   adminDb.settings({ ignoreUndefinedProperties: true });
 } catch (e) {
-  if (typeof e === null) {
+  if (e === null) {
     console.log('Error: ', e);
   }
 }
