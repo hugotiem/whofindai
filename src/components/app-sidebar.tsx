@@ -29,9 +29,11 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <Link href={'/'} className='w-fit p-4'>
-          <AppIcon />
-        </Link>
+        <div className="sticky top-0 z-50 bg-sidebar">
+          <Link href={'/'} className="w-fit p-4">
+            <AppIcon />
+          </Link>
+        </div>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
