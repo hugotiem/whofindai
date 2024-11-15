@@ -6,7 +6,9 @@ export const customPrompt = (
   company: string,
   prompt: string
 ) => `
-  Generate a Detailed Client Profile with Engagement Strategy
+  ### **Title**:
+
+  Generate a Detailed Client Profile with Engagement Strategy for ${fullName} at ${company}
 
   ### **Guidelines**:
 
@@ -25,7 +27,7 @@ export const customPrompt = (
           - Professional Overview
           - Company Overview
           - Engagement Strategy
-      - Separate sections with "——"
+      - Separate sections with "---"
       - Return only the specified parts without intro or conclusion.
 
   ---
@@ -36,7 +38,7 @@ export const customPrompt = (
 
   - **Person’s Name**: ${fullName}
   - **Company Name**: ${company}
-  - **Product/Service Offered**: ${prompt}
+  - **Product/Service Offered by the sales professional**: ${prompt}
 
   Generate a detailed profile including the following:
 

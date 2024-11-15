@@ -7,9 +7,16 @@ import { ChatSkeleton } from '@/components/custom/chat-skeletion';
 import { getProfileById } from '@/lib/firebase/actions';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-// import { getChatById } from "@/db/queries";
-// import { Chat } from "@/db/schema";
-// import { convertToUIMessages, generateUUID } from "@/lib/utils";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const profile = await getProfileById(id);
+  return { title: `${profile?.fullName} - WinAnyCall` };
+}
 
 export default async function Page({
   params
@@ -17,26 +24,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  // const profile = await getProfileById(id);
 
-  // if (!profile) redirect('/');
-
-  // // type casting
-  // const chat: Chat = {
-  //   ...chatFromDb,
-  //   messages: convertToUIMessages(chatFromDb.messages as Array<CoreMessage>),
-  // };
-
-  // const session = await auth();
-
-  // if (!session || !session.user) {
-  //   return notFound();
-  // }
-
-  // if (session.user.id !== chat.userId) {
-  //   return notFound();
-  // }
-  // return the chat component or the loading component
   return (
     <Suspense fallback={<ChatSkeleton />}>
       <ChatPage id={id} />
