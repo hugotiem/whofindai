@@ -17,9 +17,7 @@ export default async function Page({
   const { id } = await params;
   const profile = await getProfileById(id);
 
-  if (!profile) {
-    redirect('/');
-  }
+  if (!profile) redirect('/');
 
   // // type casting
   // const chat: Chat = {
@@ -39,7 +37,13 @@ export default async function Page({
 
   return (
     <PreviewChat
-      /*id={chat.id}*/ initialCompletion={profile.content}
+      profile={{
+        fullName: profile?.fullName,
+        company: profile?.company,
+        prompt: profile?.prompt,
+        userId: profile?.userId
+      }}
+      initialCompletion={profile.content}
       id={id}
       showLoginButton
     />

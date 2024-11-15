@@ -1,11 +1,4 @@
-// export type User = {
-//   id: string;
-//   email: string;
-//   // plan: 'FREE' | 'GROWTH' | 'SCALE';
-//   betaAccess: boolean;
-//   displayName: string;
-//   createdAt: Date;
-// }
+
 
 export type Profile = {
   id?: string;
@@ -13,5 +6,6 @@ export type Profile = {
   content?: string;
   fullName: string;
   company: string;
+  prompt: string;
   createdAt?: Date;
 }

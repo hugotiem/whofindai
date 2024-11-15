@@ -26,15 +26,23 @@ import {
 
 export function Chat({
   id,
-  initialCompletion,
-  showLoginButton
+  profile,
+  showLoginButton,
+  initialCompletion
 }: {
   id?: string;
-  initialCompletion?: string;
   showLoginButton: boolean;
+  initialCompletion?: string;
+  profile?: {
+    fullName: string;
+    company: string;
+    prompt: string;
+    userId?: string;
+  };
 }) {
   const { completion, isLoading, fetchCompletion, input, setInput } =
     useCompletionAPI({
+      initialCompletionInput: profile,
       initialCompletion,
       id
     });
@@ -46,8 +54,9 @@ export function Chat({
 
   useEffect(() => {
     const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
-    if (initialPrompt) setInput((prev) => ({ ...prev, prompt: initialPrompt }));
-  }, [setInput]);
+    if (initialPrompt && !input.prompt)
+      setInput((prev) => ({ ...prev, prompt: initialPrompt }));
+  }, [setInput, input.prompt]);
 
   return (
     <>
@@ -145,22 +154,25 @@ export function Chat({
       {completion && !isLoading && (
         <div className="sticky left-[50%] mx-auto bottom-8 z-50 bg-background border border-border rounded-full p-2">
           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  variant="ghost"
-                  className="rounded-full p-1.5 h-fit m-0.5"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="text-foreground bg-secondary">
-                Regenerate
-              </TooltipContent>
-            </Tooltip>
+            {profile?.userId === session?.user?.uid && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full p-1.5 h-fit m-0.5"
+                    onClick={() => fetchCompletion()}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="text-foreground bg-secondary">
+                  Regenerate
+                </TooltipContent>
+              </Tooltip>
+            )}
             {session?.user && (
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     className="rounded-full p-1.5 h-fit m-0.5"
                     variant="ghost"

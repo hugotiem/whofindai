@@ -24,7 +24,13 @@ export const HistoryProvider = ({
   const [history, setHistory] = useState<Profile[]>([]);
 
   const updateHistory = (profile: Profile) => {
-    setHistory((prev) => [profile, ...prev]);
+    if (history.find((e) => e.id === profile.id)) {
+      setHistory((prev) =>
+        prev.map((e) => (e.id === profile.id ? profile : e))
+      );
+    } else {
+      setHistory((prev) => [profile, ...prev]);
+    }
   };
 
   const init = (profiles: Profile[]) => {

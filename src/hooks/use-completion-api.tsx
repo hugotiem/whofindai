@@ -11,19 +11,21 @@ export interface CompletionInput {
 
 interface UseCompletionAPIProps {
   initialCompletion?: string;
+  initialCompletionInput?: CompletionInput;
   id?: string;
 }
 
 export const useCompletionAPI = ({
   id,
-  initialCompletion
+  initialCompletion,
+  initialCompletionInput
 }: UseCompletionAPIProps = {}) => {
-  const [completion] = useState<string>(initialCompletion || '');
+  const [completion, setCompletion] = useState<string>(initialCompletion || '');
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
-    fullName: '',
-    company: '',
-    prompt: ''
+    fullName: initialCompletionInput?.fullName || '',
+    company: initialCompletionInput?.company || '',
+    prompt: initialCompletionInput?.prompt || ''
   });
 
   const { updateHistory } = useHistory();
@@ -42,15 +44,20 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error');
-      // const data = await response.json();
+      const data = await response.json();
       // setCompletion((prev) => data.completion || prev);
       // window.history.pushState({}, '', `/profile/${id}`);
       router.replace(`/profile/${id}`);
+      if (initialCompletion) {
+        setIsLoading(false);
+        setCompletion(data.completion);
+      }
       updateHistory({
         id,
         userId: session?.user?.uid,
         fullName: input.fullName,
-        company: input.company
+        company: input.company,
+        prompt: input.prompt
       });
       // setIsLoading(false);
     } catch (error) {

@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         await adminDb.collection('profiles').doc(id).set({
           fullName,
           company,
+          prompt,
           content,
           userId: uid,
           createdAt: admin.firestore.Timestamp.now()
