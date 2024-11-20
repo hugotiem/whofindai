@@ -8,6 +8,8 @@ export const customPrompt = (
 ) => `
   ### **Title**:
 
+  Generate a Detailed Client Profile with Engagement Strategy for ${fullName} at ${company}
+
   ### **Guidelines**:
 
   1. **Approach**: Use a logical sequence to derive insights:
