@@ -8,8 +8,6 @@ export const customPrompt = (
 ) => `
   ### **Title**:
 
-  Generate a Detailed Client Profile with Engagement Strategy for ${fullName} at ${company}
-
   ### **Guidelines**:
 
   1. **Approach**: Use a logical sequence to derive insights:
@@ -108,7 +106,7 @@ export const customPrompt = (
 
   ---
 
-  ### **Execution Notes**:
+  ### **Execution Notes** (Hidden from Final Output):
 
   1. **Enforcing Minimum Sources**: Use Perplexity to search for at least **8 sources** whenever possible. If fewer sources are available, prioritize credibility and timeliness over quantity.
   2. **Final Refinement**: Validate the output internally for completeness, accuracy, and relevance. Do not display this refinement step in the final response.
