@@ -15,7 +15,7 @@ export default async function RootLayout({
     <SessionProvider initialSession={session}>
       <HistoryProvider>
         <SidebarProvider>
-          <AppSidebar />
+          <AppSidebar session={session} />
           <main className="flex h-dvh w-full flex-col relative">
             <div className="sticky top-3 ml-3 z-50">
               <SidebarTrigger />
