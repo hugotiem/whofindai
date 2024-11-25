@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
   const { id, fullName, prompt, company }: PromptProps = await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
-  const session = request.cookies.get('__session')?.value;
+  const session =
+    request.cookies.get('__session')?.value ??
+    request.headers.get('Authorization')?.split(' ')[1];
 
   if (trialSession && !session) {
     return NextResponse.json({ error: 'Trial session expired' });
