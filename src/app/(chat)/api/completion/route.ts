@@ -9,17 +9,18 @@ export async function POST(request: NextRequest) {
   const { id, fullName, prompt, company }: PromptProps = await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
-  const session =
-    request.cookies.get('__session')?.value ??
-    request.headers.get('Authorization')?.split(' ')[1];
+  const session = request.cookies.get('__session')?.value;
+  const authorization = request.headers.get('Authorization')?.split(' ')[1];
 
-  if (trialSession && !session) {
+  if (trialSession && !session && !authorization) {
     return NextResponse.json({ error: 'Trial session expired' });
   }
 
-  if (session) {
+  if (session || authorization) {
     try {
-      const { uid } = await adminAuth.verifySessionCookie(session);
+      const { uid } = session
+        ? ((await adminAuth.verifySessionCookie(session)) as { uid: string })
+        : await adminAuth.verifyIdToken(authorization!);
       const user = await adminDb.collection('users').doc(uid).get();
       const usedCredits = user.data()?.usedCredits || 0;
       const subscription = user.data()?.subscription;
