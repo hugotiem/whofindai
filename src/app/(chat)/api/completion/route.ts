@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       const subscription = user.data()?.subscription;
       const stripe_customer_id = user.data()?.stripe_customer_id as string;
       if (
-        (usedCredits > 5 && (!subscription || subscription === 'free')) ||
+        (usedCredits > 5 && (!subscription || subscription === 'free')) &&
         !stripe_customer_id
       ) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       return response;
     } catch (e) {
       console.error('API error', e);
-      return NextResponse.json({ error: e });
+      return NextResponse.json({ error: e }, { status: 500 });
     }
   } else {
     const content = await generateProfile(fullName, company, prompt);
