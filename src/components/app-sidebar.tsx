@@ -25,7 +25,7 @@ const items = [
   }
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ session }: { session: string | undefined }) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -38,22 +38,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={{
-                        pathname: item.url,
-                        query: { init: true }
-                      }}
-                      as={item.url}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {session ? (
+                items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={{
+                          pathname: item.url,
+                          query: { init: true }
+                        }}
+                        as={item.url}
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              ) : (
+                <UserSidebarItem />
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
