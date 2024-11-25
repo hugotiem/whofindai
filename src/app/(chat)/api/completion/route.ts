@@ -13,7 +13,10 @@ export async function POST(request: NextRequest) {
   const authorization = request.headers.get('Authorization')?.split(' ')[1];
 
   if (trialSession && !session && !authorization) {
-    return NextResponse.json({ error: 'Trial session expired' });
+    return NextResponse.json(
+      { error: 'Trial session expired' },
+      { status: 401 }
+    );
   }
 
   if (session || authorization) {
@@ -29,11 +32,14 @@ export async function POST(request: NextRequest) {
         (usedCredits > 5 && (!subscription || subscription === 'free')) ||
         !stripe_customer_id
       ) {
-        return NextResponse.json({ error: 'Credits expired' });
+        return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
       const content = await generateProfile(fullName, company, prompt);
       if (!content) {
-        return NextResponse.json({ error: 'No content generated' });
+        return NextResponse.json(
+          { error: 'No content generated' },
+          { status: 500 }
+        );
       }
       const batch = adminDb.batch();
       const profileRef = adminDb.collection('profiles').doc(id);
