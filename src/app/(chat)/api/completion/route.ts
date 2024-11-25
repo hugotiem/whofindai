@@ -61,10 +61,12 @@ export async function POST(request: NextRequest) {
 
       await batch.commit();
 
-      await stripe.billing.meterEvents.create({
-        event_name: 'generated_result',
-        payload: { value: '1', stripe_customer_id }
-      });
+      if (stripe_customer_id) {
+        await stripe.billing.meterEvents.create({
+          event_name: 'generated_result',
+          payload: { value: '1', stripe_customer_id }
+        });
+      }
 
       const response = NextResponse.json({ completion: content });
       if (!trialSession && !session) {
