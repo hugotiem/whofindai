@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         company,
         prompt,
         content,
-        uid,
+        userId: uid,
         createdAt: admin.firestore.Timestamp.now()
       });
 
