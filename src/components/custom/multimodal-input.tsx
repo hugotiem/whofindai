@@ -4,11 +4,9 @@ import { Attachment, ChatRequestOptions } from 'ai';
 import React, {
   useRef,
   useEffect,
-  useState,
   useCallback,
   Dispatch,
-  SetStateAction,
-  ChangeEvent
+  SetStateAction
 } from 'react';
 import { toast } from 'sonner';
 
@@ -70,9 +68,6 @@ export function MultimodalInput({
   const onCompanyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setInput((prev) => ({ ...prev, company: event.target.value }));
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
-
   const submitForm = useCallback(() => {
     handleSubmit(undefined, {
       experimental_attachments: attachments
@@ -87,26 +82,24 @@ export function MultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {completion?.length === 0 &&
-        attachments.length === 0 &&
-        uploadQueue.length === 0 && (
-          <>
-            <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
-              <Input
-                placeholder="Prospect's full name"
-                value={input?.fullName}
-                onChange={onFullNameChange}
-                className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-              />
-              <Input
-                placeholder="Prospect's company"
-                value={input?.company}
-                onChange={onCompanyChange}
-                className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-              />
-            </div>
-          </>
-        )}
+      {completion?.length === 0 && attachments.length === 0 && (
+        <>
+          <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
+            <Input
+              placeholder="Prospect's full name"
+              value={input?.fullName}
+              onChange={onFullNameChange}
+              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
+            />
+            <Input
+              placeholder="Prospect's company"
+              value={input?.company}
+              onChange={onCompanyChange}
+              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
+            />
+          </div>
+        </>
+      )}
 
       {/* <input
         type="file"
@@ -158,7 +151,7 @@ export function MultimodalInput({
         ) : (
           <div className="flex justify-between items-center">
             <Select
-              value={input?.lang}
+              value={input?.lang || 'en'}
               onValueChange={(value) => {
                 if (value !== input?.lang && value !== '') {
                   setInput((prev) => ({ ...prev, lang: value }));

@@ -62,13 +62,12 @@ export function Chat({
       }));
     }
     if (initialLang && (!input.lang || input.lang === '')) {
-      console.log('initialLang', initialLang);
       setInput((prev) => ({
         ...prev,
         lang: initialLang
       }));
     }
-  }, [setInput]);
+  }, [setInput, input]);
 
   return (
     <>
