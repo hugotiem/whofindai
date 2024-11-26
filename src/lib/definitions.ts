@@ -7,5 +7,6 @@ export type Profile = {
   fullName: string;
   company: string;
   prompt: string;
+  lang: string;
   createdAt?: Date;
 }

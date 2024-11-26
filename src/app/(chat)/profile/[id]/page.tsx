@@ -43,7 +43,8 @@ const ChatPage = async ({ id }: { id: string }) => {
         fullName: profile?.fullName,
         company: profile?.company,
         prompt: profile?.prompt,
-        userId: profile?.userId
+        userId: profile?.userId,
+        lang: profile?.lang
       }}
       initialCompletion={profile.content}
       id={id}

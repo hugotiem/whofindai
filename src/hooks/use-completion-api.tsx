@@ -7,6 +7,7 @@ export interface CompletionInput {
   fullName: string;
   company: string;
   prompt: string;
+  lang: string;
 }
 
 interface UseCompletionAPIProps {
@@ -25,7 +26,8 @@ export const useCompletionAPI = ({
   const [input, setInput] = useState<CompletionInput>({
     fullName: initialCompletionInput?.fullName || '',
     company: initialCompletionInput?.company || '',
-    prompt: initialCompletionInput?.prompt || ''
+    prompt: initialCompletionInput?.prompt || '',
+    lang: initialCompletionInput?.lang || ''
   });
 
   const { updateHistory } = useHistory();
@@ -51,7 +53,8 @@ export const useCompletionAPI = ({
           userId: session?.user?.uid,
           fullName: input.fullName,
           company: input.company,
-          prompt: input.prompt
+          prompt: input.prompt,
+          lang: input.lang
         });
       }
       if (initialCompletion || !session?.user) {

@@ -6,7 +6,9 @@ import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 
 export async function POST(request: NextRequest) {
-  const { id, fullName, prompt, company }: PromptProps = await request.json();
+  const { id, fullName, prompt, company, lang }: PromptProps = await request.json();
+
+  console.log('lang', lang);
 
   const trialSession = request.cookies.get('__trial_session')?.value;
   const session = request.cookies.get('__session')?.value;
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
       ) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
-      const content = await generateProfile(fullName, company, prompt);
+      const content = await generateProfile(fullName, company, prompt, lang);
       if (!content) {
         return NextResponse.json(
           { error: 'No content generated' },
@@ -49,6 +51,7 @@ export async function POST(request: NextRequest) {
         prompt,
         content,
         userId: uid,
+        lang,
         createdAt: admin.firestore.Timestamp.now()
       });
 
@@ -78,7 +81,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: e }, { status: 500 });
     }
   } else {
-    const content = await generateProfile(fullName, company, prompt);
+    const content = await generateProfile(fullName, company, prompt, lang);
     if (!content) {
       return NextResponse.json({ error: 'No content generated' });
     }
@@ -89,7 +92,8 @@ export async function POST(request: NextRequest) {
 const generateProfile = async (
   fullName: string,
   company: string,
-  prompt: string
+  prompt: string,
+  lang: string
 ): Promise<string | null> => {
   try {
     const body = JSON.stringify({
@@ -110,11 +114,11 @@ const generateProfile = async (
       messages: [
         {
           role: 'system',
-          content: promptContext
+          content: promptContext + `\n\nLanguage code: ${lang}`
         },
         {
           role: 'user',
-          content: customPrompt(fullName, company, prompt)
+          content: customPrompt(fullName, company, prompt, lang)
         }
       ]
     });

@@ -4,11 +4,12 @@ export const promptContext =
 export const customPrompt = (
   fullName: string,
   company: string,
-  prompt: string
+  prompt: string,
+  lang: string
 ) => `
   ### **Title**:
 
-  Generate a Detailed Client Profile with Engagement Strategy for ${fullName} at ${company}
+  Generate a Detailed Client Profile with Engagement Strategy for ${fullName} at ${company} in the language with the code ${lang}
 
   ### **Guidelines**:
 
@@ -34,6 +35,8 @@ export const customPrompt = (
   7. **Efficiency**:
       - Use concise, structured outputs without redundant explanations.
       - **Ensure sections are separated with a markdown line ("---").**
+  8. **Language**:
+      - Ensure the response is in the specified language with the code ${lang}.
 
   ---
 
@@ -43,9 +46,10 @@ export const customPrompt = (
 
   - **Person’s Name**: ${fullName}
   - **Company Name**: ${company}
+  - **Language code**: ${lang}
   - **Product/Service Offered by the sales professional**: ${prompt}
 
-  Generate a detailed profile including the following, and **separate each part with a markdown line ("---")**:
+  Generate a detailed profile in the specified language including the following, and **separate each part with a markdown line ("---")**:
 
   ---
 
@@ -120,4 +124,5 @@ export interface PromptProps {
   fullName: string;
   company: string;
   prompt: string;
+  lang: string;
 }

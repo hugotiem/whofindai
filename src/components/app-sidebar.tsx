@@ -6,6 +6,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
@@ -29,11 +30,13 @@ export function AppSidebar({ session }: { session: string | undefined }) {
   return (
     <Sidebar>
       <SidebarContent>
-        <div className="sticky top-0 z-50 bg-sidebar">
-          <Link href={'/'} className="w-fit p-4">
-            <AppIcon />
-          </Link>
-        </div>
+        <SidebarHeader>
+          <div className="sticky top-0 z-50 bg-sidebar py-4">
+            <Link href={'/'}>
+              <AppIcon />
+            </Link>
+          </div>
+        </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>

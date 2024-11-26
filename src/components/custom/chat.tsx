@@ -37,6 +37,7 @@ export function Chat({
     company: string;
     prompt: string;
     userId?: string;
+    lang: string;
   };
 }) {
   const { completion, isLoading, fetchCompletion, input, setInput } =
@@ -53,9 +54,21 @@ export function Chat({
 
   useEffect(() => {
     const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
-    if (initialPrompt && !input.prompt)
-      setInput((prev) => ({ ...prev, prompt: initialPrompt }));
-  }, [setInput, input.prompt]);
+    const initialLang = localStorage.getItem('app.winanycall.com/lang');
+    if (initialPrompt && (!input.prompt || input.prompt === '')) {
+      setInput((prev) => ({
+        ...prev,
+        prompt: initialPrompt
+      }));
+    }
+    if (initialLang && (!input.lang || input.lang === '')) {
+      console.log('initialLang', initialLang);
+      setInput((prev) => ({
+        ...prev,
+        lang: initialLang
+      }));
+    }
+  }, [setInput]);
 
   return (
     <>
@@ -65,7 +78,6 @@ export function Chat({
           (!completion || isLoading) && 'h-full'
         )}
       >
-       
         {session?.user && !session.user.emailVerified && (
           <div className="w-full bg-foreground text-background p-4 text-sm font-semibold">
             <div>

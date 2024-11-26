@@ -57,6 +57,7 @@ export const SessionProvider = ({
       });
     } else {
       localStorage.removeItem('app.winanycall.com/prompt');
+      localStorage.removeItem('app.winanycall.com/lang');
       // window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
     }
   }, [initialSession, pathname]);

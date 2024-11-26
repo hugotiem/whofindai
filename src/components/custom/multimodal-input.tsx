@@ -18,12 +18,18 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 import { CompletionInput } from '@/hooks/use-completion-api';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select';
 
 export function MultimodalInput({
   input,
   setInput,
   isLoading,
-  // stop,
   attachments,
   setAttachments,
   completion,
@@ -32,14 +38,8 @@ export function MultimodalInput({
   input: CompletionInput | undefined;
   setInput: Dispatch<SetStateAction<CompletionInput>>;
   isLoading: boolean;
-  // stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
-  // handleInputChange: (
-  //   event:
-  //     | React.ChangeEvent<HTMLInputElement>
-  //     | React.ChangeEvent<HTMLTextAreaElement>
-  // ) => void;
   completion: string;
   handleSubmit: (
     event?: {
@@ -55,7 +55,7 @@ export function MultimodalInput({
     if (textareaRef.current) {
       adjustHeight();
     }
-  }, []);
+  }, [input?.prompt]);
 
   const adjustHeight = () => {
     if (textareaRef.current) {
@@ -171,55 +171,84 @@ export function MultimodalInput({
         onChange={handleFileChange}
         tabIndex={-1}
       />
+      <div className="flex flex-col gap-2 rounded-lg border border-input bg-secondary focus-within:ring-0 focus-within:ring-ring focus-within:ring-offset-1">
+        <Textarea
+          ref={textareaRef}
+          placeholder="What i want to sell is..."
+          value={input?.prompt}
+          onChange={(value) => {
+            setInput((prev) => ({ ...prev, prompt: value.target.value }));
+            localStorage.setItem(
+              'app.winanycall.com/prompt',
+              value.target.value
+            );
+          }}
+          className="overflow-hidden resize-none text-base bg-muted focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none overflow-scroll min-h-[48px] max-h-[150px]"
+          rows={1}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
 
-      <Textarea
-        ref={textareaRef}
-        placeholder="What i want to sell is..."
-        value={input?.prompt}
-        onChange={(value) => {
-          setInput((prev) => ({ ...prev, prompt: value.target.value }));
-          localStorage.setItem('app.winanycall.com/prompt', value.target.value);
-        }}
-        className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-        rows={3}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-
-            if (isLoading) {
-              toast.error('Please wait for the model to finish its response!');
-            } else {
-              submitForm();
+              if (isLoading) {
+                toast.error(
+                  'Please wait for the model to finish its response!'
+                );
+              } else {
+                submitForm();
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      {isLoading ? (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5"
-          onClick={(event) => {
-            event.preventDefault();
-            stop();
-          }}
-        >
-          <StopIcon size={14} />
-        </Button>
-      ) : (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5"
-          onClick={(event) => {
-            event.preventDefault();
-            handleSubmit(undefined, {
-              experimental_attachments: attachments
-            });
-            // submitForm();
-          }}
-          disabled={false}
-        >
-          <ArrowUpIcon size={14} />
-        </Button>
-      )}
+        {isLoading ? (
+          <Button
+            className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5"
+            onClick={(event) => {
+              event.preventDefault();
+              stop();
+            }}
+          >
+            <StopIcon size={14} />
+          </Button>
+        ) : (
+          <div className="flex justify-between items-center">
+            <Select
+              value={input?.lang}
+              onValueChange={(value) => {
+                if (value !== input?.lang && value !== '') {
+                  setInput((prev) => ({ ...prev, lang: value }));
+                  localStorage.setItem('app.winanycall.com/lang', value);
+                }
+              }}
+            >
+              <SelectTrigger className="w-fit focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:bg-sidebar hover:text-sidebar-primary-foreground">
+                <SelectValue placeholder="Language" />
+                <div className="w-2" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="it">Italian</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              className="rounded-full p-1.5 h-fit m-2"
+              onClick={(event) => {
+                event.preventDefault();
+                handleSubmit(undefined, {
+                  experimental_attachments: attachments
+                });
+                // submitForm();
+              }}
+              disabled={false}
+            >
+              <ArrowUpIcon size={14} />
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
