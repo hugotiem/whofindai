@@ -85,61 +85,6 @@ export function MultimodalInput({
     }
   }, [attachments, handleSubmit, setAttachments, width]);
 
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await fetch(`/api/files/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const { url, pathname, contentType } = data;
-
-        return {
-          url,
-          name: pathname,
-          contentType: contentType
-        };
-      } else {
-        const { error } = await response.json();
-        toast.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to upload file, please try again!');
-    }
-  };
-
-  const handleFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(event.target.files || []);
-
-      setUploadQueue(files.map((file) => file.name));
-
-      try {
-        const uploadPromises = files.map((file) => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-        const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined
-        );
-
-        setAttachments((currentAttachments) => [
-          ...currentAttachments,
-          ...successfullyUploadedAttachments
-        ]);
-      } catch (error) {
-        console.error('Error uploading files!', error);
-      } finally {
-        setUploadQueue([]);
-      }
-    },
-    [setAttachments]
-  );
-
   return (
     <div className="relative w-full flex flex-col gap-4">
       {completion?.length === 0 &&
@@ -148,13 +93,13 @@ export function MultimodalInput({
           <>
             <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
               <Input
-                placeholder="fullName"
+                placeholder="Prospect's full name"
                 value={input?.fullName}
                 onChange={onFullNameChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
               />
               <Input
-                placeholder="Company"
+                placeholder="Prospect's company"
                 value={input?.company}
                 onChange={onCompanyChange}
                 className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
@@ -163,18 +108,18 @@ export function MultimodalInput({
           </>
         )}
 
-      <input
+      {/* <input
         type="file"
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
         tabIndex={-1}
-      />
+      /> */}
       <div className="flex flex-col gap-2 rounded-lg border border-input bg-secondary focus-within:ring-0 focus-within:ring-ring focus-within:ring-offset-1">
         <Textarea
           ref={textareaRef}
-          placeholder="What i want to sell is..."
+          placeholder="What I want to sell is..."
           value={input?.prompt}
           onChange={(value) => {
             setInput((prev) => ({ ...prev, prompt: value.target.value }));
