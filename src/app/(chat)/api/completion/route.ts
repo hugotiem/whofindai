@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   const session = request.cookies.get('__session')?.value;
   const authorization = request.headers.get('Authorization')?.split(' ')[1];
 
+
   if (trialSession && !session && !authorization) {
     return NextResponse.json(
       { error: 'Trial session expired' },
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
         ? ((await adminAuth.verifySessionCookie(session)) as { uid: string })
         : await adminAuth.verifyIdToken(authorization!);
       const user = await adminDb.collection('users').doc(uid).get();
-      const usedCredits = user.data()?.usedCredits || 0;
+      const usedCredits = user.data()?.used_credits || 0;
       const subscription = user.data()?.subscription;
       const stripe_customer_id = user.data()?.stripe_customer_id as string;
       if (
@@ -58,13 +59,13 @@ export async function POST(request: NextRequest) {
       const userRef = adminDb.collection('users').doc(uid);
       batch.set(
         userRef,
-        { usedCredits: admin.firestore.FieldValue.increment(1) },
+        { used_credits: admin.firestore.FieldValue.increment(1) },
         { merge: true }
       );
 
       await batch.commit();
 
-      if (stripe_customer_id) {
+      if (stripe_customer_id && subscription === 'pay_as_you_go') {
         await stripe.billing.meterEvents.create({
           event_name: 'generated_result',
           payload: { value: '1', stripe_customer_id }
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       }
 
       const response = NextResponse.json({ completion: content });
-      if (!trialSession && !session) {
+      if (!trialSession && !session && !authorization) {
         response.cookies.set('__trial_session', 'true');
       }
       return response;

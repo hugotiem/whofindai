@@ -38,7 +38,7 @@ export const Overview = () => {
         <p>
           More info{' '}
           <Link
-            href="https://probable-visitor-fcc.notion.site/How-to-Use-Winanycall-Effectively-A-Step-by-Step-Guide-13d97d1a0fc4807e8b9cc5b07cdb66c1?pvs=4"
+            href="https://probable-visitor-fcc.notion.site/Click-here-for-A-Step-by-Step-Guide-14997d1a0fc48067838ff1191fa6628c"
             target='_blank'
             className="text-blue-500 dark:text-blue-400"
           >

@@ -15,10 +15,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 import { Settings } from './settings';
-
+import { StripePricingTableDialog } from './dialog/StripePricingTableDialog';
+import { useState } from 'react';
 export const UserSidebarItem = () => {
   const { session, signOut } = useSession();
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   const getFallback = () => {
     const displayName = session?.user?.displayName;
@@ -30,50 +32,60 @@ export const UserSidebarItem = () => {
   };
 
   return session?.user ? (
-    <Dialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuButton className="h-fit flex">
-            {session.user?.photoURL && (
-              <Avatar>
-                <AvatarImage
-                  src={session.user.photoURL}
-                  alt={`${session?.user.displayName}'s avatar`}
-                />
-                <AvatarFallback>{getFallback()}</AvatarFallback>
-              </Avatar>
-            )}
-            <div>
-              {session.user?.displayName && (
-                <div className="font-semibold">
-                  {' '}
-                  {session.user.displayName}{' '}
-                </div>
+    <>
+      <StripePricingTableDialog open={open} setOpen={setOpen} />
+      <Dialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton className="h-fit flex">
+              {session.user?.photoURL && (
+                <Avatar>
+                  <AvatarImage
+                    src={session.user.photoURL}
+                    alt={`${session?.user.displayName}'s avatar`}
+                  />
+                  <AvatarFallback>{getFallback()}</AvatarFallback>
+                </Avatar>
               )}
-              {session.user?.email && (
-                <div className="text-xs font-bold"> {session.user.email} </div>
-              )}
-            </div>
-          </SidebarMenuButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[250px]">
-          <DialogTrigger asChild>
-            <DropdownMenuItem>
+              <div>
+                {session.user?.displayName && (
+                  <div className="font-semibold">
+                    {' '}
+                    {session.user.displayName}{' '}
+                  </div>
+                )}
+                {session.user?.email && (
+                  <div className="text-xs font-bold">
+                    {' '}
+                    {session.user.email}{' '}
+                  </div>
+                )}
+              </div>
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[250px]">
+            <DropdownMenuItem onClick={() => setOpen(true)}>
               <Cog className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>View Plans</span>
             </DropdownMenuItem>
-          </DialogTrigger>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DialogContent>
-        <Settings />
-      </DialogContent>
-    </Dialog>
+            <DialogTrigger asChild>
+              <DropdownMenuItem>
+                <Cog className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+            </DialogTrigger>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DialogContent>
+          <Settings />
+        </DialogContent>
+      </Dialog>
+    </>
   ) : (
     <SidebarMenuButton className="h-fit">
       <Link
