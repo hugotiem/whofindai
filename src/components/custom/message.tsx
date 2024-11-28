@@ -18,8 +18,7 @@ interface MessageProps extends HTMLAttributes<HTMLElement> {
 export const Message = ({
   textContent,
   className,
-  id,
-  showLoginButton
+  id
 }: MessageProps) => {
   
   const { session } = useSession();

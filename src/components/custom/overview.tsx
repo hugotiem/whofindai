@@ -19,7 +19,7 @@ export const Overview = () => {
         </p> */}
         <p className="font-bold">Welcome to WinAnyCall.com!</p>
         <p>
-          We're in Beta, so while our AI is powerful, there may be occasional
+          We&apos;re in Beta, so while our AI is powerful, there may be occasional
           inaccuracies; please verify sensitive details.
         </p>
         <p>

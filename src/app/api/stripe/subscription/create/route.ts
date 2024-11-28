@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
+// import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  try {
+export async function GET() {
+  // try {
     
-  } catch (e) {
-    console.error(e);
-  }
+  // } catch (e) {
+  //   console.error(e);
+  // }
 }

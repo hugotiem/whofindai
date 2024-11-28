@@ -94,7 +94,7 @@ export function Chat({
         lang: initialLang
       }));
     }
-  }, [setInput, input]);
+  }, [setInput, input, from_storage, id, router, setCompletion, updateHistory]);
 
   return (
     <>

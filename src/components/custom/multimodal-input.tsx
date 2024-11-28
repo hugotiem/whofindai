@@ -102,7 +102,7 @@ export function MultimodalInput({
         onChange={handleFileChange}
         tabIndex={-1}
       /> */}
-      <Label className="ml-4">What's your offer?</Label>
+      <Label className="ml-4">What&apos;s your offer?</Label>
       <div className="flex flex-col gap-2 rounded-lg border border-input bg-secondary focus-within:ring-0 focus-within:ring-ring focus-within:ring-offset-1">
         <Textarea
           ref={textareaRef}
