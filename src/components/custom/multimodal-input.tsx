@@ -1,6 +1,6 @@
 'use client';
 
-import { Attachment, ChatRequestOptions } from 'ai';
+import { ChatRequestOptions } from 'ai';
 import React, {
   useRef,
   useEffect,
@@ -28,16 +28,12 @@ export function MultimodalInput({
   input,
   setInput,
   isLoading,
-  attachments,
-  setAttachments,
   completion,
   handleSubmit
 }: {
   input: CompletionInput | undefined;
   setInput: Dispatch<SetStateAction<CompletionInput>>;
   isLoading: boolean;
-  attachments: Array<Attachment>;
-  setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   completion: string;
   handleSubmit: (
     event?: {
@@ -69,20 +65,16 @@ export function MultimodalInput({
     setInput((prev) => ({ ...prev, company: event.target.value }));
 
   const submitForm = useCallback(() => {
-    handleSubmit(undefined, {
-      experimental_attachments: attachments
-    });
-
-    setAttachments([]);
+    handleSubmit(undefined);
 
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [attachments, handleSubmit, setAttachments, width]);
+  }, [handleSubmit, width]);
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {completion?.length === 0 && attachments.length === 0 && (
+      {completion?.length === 0 && (
         <>
           <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
             <Input
@@ -175,10 +167,7 @@ export function MultimodalInput({
               className="rounded-full p-1.5 h-fit m-2"
               onClick={(event) => {
                 event.preventDefault();
-                handleSubmit(undefined, {
-                  experimental_attachments: attachments
-                });
-                // submitForm();
+                handleSubmit(undefined);
               }}
               disabled={false}
             >

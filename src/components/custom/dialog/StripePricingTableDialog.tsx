@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, HTMLAttributes } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 // import { logEvent } from 'firebase/analytics';
 // import { useAnalytics } from '@/hooks/use-analytics';
@@ -8,11 +8,8 @@ import { Loader2 } from 'lucide-react';
 import { getCustomerSessionClientSecret } from '@/lib/stripe/actions';
 import { useTheme } from 'next-themes';
 
-interface StripePricingTableProps extends HTMLAttributes<HTMLElement> {
-  // user?: User;
-}
 
-export const StripePricingTable = ({ ...props }: StripePricingTableProps) => {
+export const StripePricingTable = () => {
   const [clientSecret, setClientSecret] = useState<string>();
   // const { analytics } = useAnalytics();
 
@@ -36,7 +33,6 @@ export const StripePricingTable = ({ ...props }: StripePricingTableProps) => {
 
   return clientSecret ? (
     React.createElement('stripe-pricing-table', {
-      ...props,
       'pricing-table-id':
         theme === 'dark'
           ? process.env.NEXT_PUBLIC_STRIPE_DARK_PRICING_TABLE_ID
@@ -54,7 +50,6 @@ export const StripePricingTableDialog = ({
   setOpen
 }: {
   open?: boolean;
-  // user?: User;
   setOpen?: (open: boolean) => void;
 }) => {
   // updateState(setOpen);

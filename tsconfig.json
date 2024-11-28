@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/(chat)/api/completion/company-info/route.ts"
+    "src/app/api/completion/company-info/route.ts"
   ],
   "exclude": ["node_modules"]
 }

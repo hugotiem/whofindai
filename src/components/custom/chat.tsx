@@ -1,7 +1,6 @@
 'use client';
 
-import { Attachment } from 'ai';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
 
@@ -49,8 +48,6 @@ export function Chat({
 
   const { session } = useSession();
   const { copyLink } = useShare();
-
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   useEffect(() => {
     const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
@@ -150,8 +147,6 @@ export function Chat({
                 }}
                 isLoading={isLoading}
                 // stop={stop}
-                attachments={attachments}
-                setAttachments={setAttachments}
                 completion={completion}
                 // append={append}
               />
