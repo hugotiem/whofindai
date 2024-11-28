@@ -18,8 +18,27 @@ export const Overview = () => {
           <MessageIcon />
         </p> */}
         <p className="font-bold">Welcome to WinAnyCall.com!</p>
-        <p>To get the best results, simply fill in the fields below:</p>
-        <ul className="list-decimal ml-5 space-y-2">
+        <p>
+          We're in Beta, so while our AI is powerful, there may be occasional
+          inaccuracies; please verify sensitive details.
+        </p>
+        <p>
+          {' '}
+          Our new Google Chrome Extension now lets you generate profiles
+          directly from LinkedIn (available to all soon)
+        </p>
+        <p>
+          Save time, boost confidence, and make your cold calls more effective.
+          All our pro tips available{' '}
+          <Link
+            href="https://probable-visitor-fcc.notion.site/Click-here-for-A-Step-by-Step-Guide-14997d1a0fc48067838ff1191fa6628c"
+            target="_blank"
+            className="text-blue-500 dark:text-blue-400"
+          >
+            here.
+          </Link>
+        </p>
+        {/* <ul className="list-decimal ml-5 space-y-2">
           <li>
             Enter the <strong>full name</strong> and <strong>company</strong> of
             your prospect.
@@ -35,16 +54,9 @@ export const Overview = () => {
           insights you&apos;ll receive. Save time, boost your confidence, and
           make your cold calls more effective!
         </p>
-        <p>
-          More info{' '}
-          <Link
-            href="https://probable-visitor-fcc.notion.site/Click-here-for-A-Step-by-Step-Guide-14997d1a0fc48067838ff1191fa6628c"
-            target='_blank'
-            className="text-blue-500 dark:text-blue-400"
-          >
-            here.
-          </Link>
-        </p>
+        <p> */}
+
+        {/* </p> */}
         {/* <p>
           This is an open source Chatbot template built with Next.js and the AI
           SDK by Vercel. It uses the{" "}

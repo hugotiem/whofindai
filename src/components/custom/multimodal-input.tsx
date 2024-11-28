@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../ui/select';
+import { Label } from '../ui/label';
 
 export function MultimodalInput({
   input,
@@ -101,10 +102,11 @@ export function MultimodalInput({
         onChange={handleFileChange}
         tabIndex={-1}
       /> */}
+      <Label className="ml-4">What's your offer?</Label>
       <div className="flex flex-col gap-2 rounded-lg border border-input bg-secondary focus-within:ring-0 focus-within:ring-ring focus-within:ring-offset-1">
         <Textarea
           ref={textareaRef}
-          placeholder="What I want to sell is..."
+          placeholder="Please describe what the company is selling and the benefits it provides"
           value={input?.prompt}
           onChange={(value) => {
             setInput((prev) => ({ ...prev, prompt: value.target.value }));
@@ -113,7 +115,7 @@ export function MultimodalInput({
               value.target.value
             );
           }}
-          className="overflow-hidden resize-none text-base bg-muted focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none overflow-scroll min-h-[48px] max-h-[150px]"
+          className="overflow-hidden resize-none text-base bg-muted focus-visible:ring-0 placeholder:italic focus-visible:ring-offset-0 focus:outline-none overflow-scroll min-h-[48px] max-h-[150px]"
           rows={1}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && !event.shiftKey) {

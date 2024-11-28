@@ -37,7 +37,7 @@ export const Message = ({
         {textContent && (
           <div className="text-zinc-800 dark:text-zinc-300 flex flex-col gap-4 relative w-full">
             <Markdown>{textContent}</Markdown>
-            {!session?.user && showLoginButton && (
+            {!session?.user && (
               <div className="absolute bottom-0 h-full w-full bg-gradient-to-b from-transparent to-background flex flex-col justify-center items-center" />
             )}
           </div>
@@ -78,7 +78,7 @@ export const Message = ({
         )} */}
       </div>
 
-      {!session?.user && showLoginButton && (
+      {!session?.user && (
         <div className="flex flex-col items-center font-semibold max-w-xs mx-auto">
           <div className="text-center">
             If you want to unlock this content, you need to

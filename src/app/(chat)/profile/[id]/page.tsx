@@ -19,35 +19,48 @@ export async function generateMetadata({
 }
 
 export default async function Page({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] }>;
 }) {
   const { id } = await params;
 
+  const from_storage = (await searchParams)['from_storage'] === 'true';
+
   return (
     <Suspense fallback={<ChatSkeleton />}>
-      <ChatPage id={id} />
+      <ChatPage id={id} from_storage={from_storage} />
     </Suspense>
   );
 }
 
-const ChatPage = async ({ id }: { id: string }) => {
-  
+const ChatPage = async ({
+  id,
+  from_storage
+}: {
+  id: string;
+  from_storage: boolean;
+}) => {
   const profile = await getProfileById(id);
 
-  if (!profile) redirect('/');
+  if (!profile && !from_storage) redirect('/');
+
   return (
     <PreviewChat
-      profile={{
-        fullName: profile?.fullName,
-        company: profile?.company,
-        prompt: profile?.prompt,
-        userId: profile?.userId,
-        lang: profile?.lang
-      }}
-      initialCompletion={profile.content}
+      profile={
+        profile && {
+          fullName: profile?.fullName,
+          company: profile?.company,
+          prompt: profile?.prompt,
+          userId: profile?.userId,
+          lang: profile?.lang
+        }
+      }
+      initialCompletion={profile && profile.content}
       id={id}
+      from_storage={from_storage}
       showLoginButton
     />
   );

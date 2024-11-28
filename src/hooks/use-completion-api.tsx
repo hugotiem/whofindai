@@ -57,11 +57,28 @@ export const useCompletionAPI = ({
           lang: input.lang
         });
       }
-      if (initialCompletion || !session?.user) {
-        const data = await response.json();
-        setIsLoading(false);
-        setCompletion(data.completion);
+      const data = await response.json();
+      setIsLoading(false);
+      const completion = !session?.user
+        ? data.completion.substring(0, 500)
+        : data.completion;
+      setCompletion(completion);
+      if (!session?.user) {
+        window.history.replaceState({}, '', `/profile/${id}`);
+        localStorage.setItem(
+          `/profile/${id}`,
+          JSON.stringify({
+            id,
+            userId: session?.user?.uid,
+            fullName: input.fullName,
+            company: input.company,
+            prompt: input.prompt,
+            content: data.completion,
+            lang: input.lang
+          })
+        );
       }
+
       // setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -69,5 +86,13 @@ export const useCompletionAPI = ({
     }
   };
 
-  return { completion, isLoading, input, fetchCompletion, setInput };
+  return {
+    completion,
+    isLoading,
+    input,
+    fetchCompletion,
+    setInput,
+    setCompletion,
+    updateHistory
+  };
 };

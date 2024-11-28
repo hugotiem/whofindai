@@ -21,16 +21,19 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '../ui/tooltip';
+import { useRouter } from 'next/navigation';
 
 export function Chat({
   id,
   profile,
   showLoginButton,
-  initialCompletion
+  initialCompletion,
+  from_storage
 }: {
   id?: string;
   showLoginButton: boolean;
   initialCompletion?: string;
+  from_storage?: boolean;
   profile?: {
     fullName: string;
     company: string;
@@ -39,17 +42,44 @@ export function Chat({
     lang: string;
   };
 }) {
-  const { completion, isLoading, fetchCompletion, input, setInput } =
-    useCompletionAPI({
-      initialCompletionInput: profile,
-      initialCompletion,
-      id
-    });
+  const {
+    completion,
+    isLoading,
+    fetchCompletion,
+    input,
+    setInput,
+    setCompletion,
+    updateHistory
+  } = useCompletionAPI({
+    initialCompletionInput: profile,
+    initialCompletion,
+    id
+  });
 
   const { session } = useSession();
   const { copyLink } = useShare();
+  const router = useRouter();
 
   useEffect(() => {
+    if (from_storage) {
+      const profile = localStorage.getItem(`/profile/${id}`);
+      if (profile) {
+        const obj = JSON.parse(profile);
+        setCompletion(obj.content as string);
+        fetch('/api/completion/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ profile: obj })
+        }).then(({ ok }) => {
+          if (!ok) router.replace('/');
+          window.history.replaceState({}, '', `/profile/${id}`);
+          localStorage.removeItem(`/profile/${id}`);
+          updateHistory(obj);
+        });
+      }
+    }
     const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
     const initialLang = localStorage.getItem('app.winanycall.com/lang');
     if (initialPrompt && (!input.prompt || input.prompt === '')) {

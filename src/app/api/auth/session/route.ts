@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const redirect_path_url =
       redirect_path && redirect_path !== null && redirect_path !== 'undefined'
-        ? redirect_path
+        ? `${redirect_path}?from_storage=true`
         : '/';
 
     const response = NextResponse.redirect(
