@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       const subscription = user.data()?.subscription;
       const stripe_customer_id = user.data()?.stripe_customer_id as string;
       if (
-        usedCredits > 5 &&
+        usedCredits >= 5 &&
         (!subscription || subscription === 'free' || !stripe_customer_id)
       ) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });

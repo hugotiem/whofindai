@@ -23,6 +23,7 @@ export const useCompletionAPI = ({
 }: UseCompletionAPIProps = {}) => {
   const [completion, setCompletion] = useState<string>(initialCompletion || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
     fullName: initialCompletionInput?.fullName || '',
     company: initialCompletionInput?.company || '',
@@ -46,7 +47,7 @@ export const useCompletionAPI = ({
         },
         body: JSON.stringify({ ...input, id })
       });
-      if (!response.ok) throw Error('API Error');
+      if (!response.ok) throw Error('API Error', { cause: response.status });
 
       const reader = response?.body?.getReader();
       const decoder = new TextDecoder();
@@ -90,7 +91,13 @@ export const useCompletionAPI = ({
       }
       setIsLoading(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        if (error.cause === 402) {
+          setShowUpgradeDialog(true);
+        }
+      } else {
+        console.error(error);
+      }
       setIsLoading(false);
     }
   };
@@ -102,6 +109,8 @@ export const useCompletionAPI = ({
     fetchCompletion,
     setInput,
     setCompletion,
-    updateHistory
+    updateHistory,
+    showUpgradeDialog,
+    setShowUpgradeDialog
   };
 };

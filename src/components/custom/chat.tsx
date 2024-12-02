@@ -22,6 +22,7 @@ import {
 } from '../ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
+import { UpgradeDialog } from './dialog/UpgradeDialog';
 
 export function Chat({
   id,
@@ -49,7 +50,9 @@ export function Chat({
     input,
     setInput,
     setCompletion,
-    updateHistory
+    updateHistory,
+    showUpgradeDialog,
+    setShowUpgradeDialog
   } = useCompletionAPI({
     initialCompletionInput: profile,
     initialCompletion,
@@ -114,6 +117,12 @@ export function Chat({
 
   return (
     <>
+      {showUpgradeDialog && (
+        <UpgradeDialog
+          open={showUpgradeDialog}
+          setOpen={setShowUpgradeDialog}
+        />
+      )}
       <div
         className={cn(
           'w-full flex flex-col relative',

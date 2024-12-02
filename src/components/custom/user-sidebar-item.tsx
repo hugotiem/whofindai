@@ -64,10 +64,17 @@ export const UserSidebarItem = () => {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[250px]">
-            <DropdownMenuItem onClick={() => setOpen(true)}>
-              <Cog className="mr-2 h-4 w-4" />
-              <span>View Plans</span>
-            </DropdownMenuItem>
+            {!session.plan && (
+              <DropdownMenuItem onClick={() => setOpen(true)}>
+                <Cog className="mr-2 h-4 w-4" />
+                <span>View Plans</span>
+              </DropdownMenuItem>
+            )}
+            {session.plan && (
+              <DropdownMenuItem>
+                <span>Current Plan: {session.plan}</span>
+              </DropdownMenuItem>
+            )}
             <DialogTrigger asChild>
               <DropdownMenuItem>
                 <Cog className="mr-2 h-4 w-4" />
