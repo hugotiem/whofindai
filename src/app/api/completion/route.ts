@@ -114,7 +114,7 @@ const generateProfile = async ({
   lang,
   onFinish
 }: PromptProps & {
-  onFinish?: (completion: string) => void;
+  onFinish?: (completion: string) => Promise<void>;
 }) => {
   try {
     const responseStream = await client.chat.completions.create({
@@ -147,7 +147,7 @@ const generateProfile = async ({
           }
           controller.close();
           if (onFinish) {
-            onFinish(completion);
+            await onFinish(completion);
           }
         } catch (error) {
           console.error('Streaming error:', error);
