@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
 
@@ -22,6 +22,7 @@ import {
   TooltipTrigger
 } from '../ui/tooltip';
 import { useRouter } from 'next/navigation';
+import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 
 export function Chat({
   id,
@@ -60,6 +61,9 @@ export function Chat({
   const { copyLink } = useShare();
   const router = useRouter();
 
+  const [messagesContainerRef, messagesEndRef] =
+    useScrollToBottom<HTMLDivElement>();
+
   useEffect(() => {
     if (from_storage) {
       const profile = localStorage.getItem(`/profile/${id}`);
@@ -94,7 +98,20 @@ export function Chat({
         lang: initialLang
       }));
     }
-  }, [setInput, input, from_storage, id, router, setCompletion, updateHistory]);
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [
+    setInput,
+    input,
+    from_storage,
+    id,
+    router,
+    setCompletion,
+    updateHistory,
+    messagesContainerRef
+  ]);
 
   return (
     <>
@@ -132,9 +149,15 @@ export function Chat({
           >
             {!isLoading && completion.length === 0 && <Overview />}
 
-            <div className={cn('gap-4 w-full relative', isLoading && 'h-dvh')}>
-              {isLoading && <ChatSkeleton />}
-              {isLoading && (
+            <div
+              className={cn(
+                'gap-4 w-full relative',
+                isLoading && !completion && 'h-dvh'
+              )}
+              ref={messagesContainerRef}
+            >
+              {/* {isLoading && completion.length === 0 && <ChatSkeleton />} */}
+              {isLoading && completion.length === 0 && (
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                   <div className=" text-white">
                     <ProgressBar />
@@ -142,7 +165,7 @@ export function Chat({
                 </div>
               )}
 
-              {completion && !isLoading && (
+              {completion.length > 0 && (
                 <>
                   <PreviewMessage
                     showLoginButton={showLoginButton}
@@ -152,6 +175,10 @@ export function Chat({
                   />
                 </>
               )}
+              <div
+                ref={messagesEndRef}
+                className="shrink-0 min-w-[24px] min-h-[24px]"
+              />
             </div>
 
             {/* {completion && !isLoading && (

@@ -1,3 +1,5 @@
+export const maxDuration = 30;
+
 import { adminAuth } from '@/lib/firebase/admin';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -11,8 +13,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { context, prompt } = await request.json();
-
-  console.log(context, prompt);
 
   try {
     const body = JSON.stringify({

@@ -59,7 +59,7 @@ export default function Prompt() {
 
   return (
     <SessionProvider>
-      <div className="flex gap-4 mx-auto justify-center">
+      <div className="flex gap-4 mx-auto justify-center h-screen">
         <Link href="/">Back</Link>
         <div className="flex flex-col gap-4 justify-center items-center w-full container">
           <Textarea
@@ -78,7 +78,12 @@ export default function Prompt() {
             rows={40}
           />
         </div>
-        <div className="w-full container h-screen overflow-y-scroll flex flex-col justify-center items-center">
+        <div
+          className={cn(
+            'w-full container overflow-y-scroll flex flex-col items-center',
+            completion.length === 0 && 'justify-center'
+          )}
+        >
           <div className={cn('gap-4 w-full relative', isLoading && 'h-dvh')}>
             {isLoading && <ChatSkeleton />}
             {isLoading && (

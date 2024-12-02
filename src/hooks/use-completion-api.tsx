@@ -37,6 +37,7 @@ export const useCompletionAPI = ({
   const fetchCompletion = async () => {
     if (!input || !input.prompt || !input.company || !input.fullName) return;
     setIsLoading(true);
+    setCompletion('');
     try {
       const response = await fetch('/api/completion', {
         method: 'POST',
@@ -46,6 +47,20 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error');
+
+      const reader = response?.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) return;
+      let data = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        data += decoder.decode(value, { stream: true });
+
+        const completion = !session?.user ? data.substring(0, 500) : data;
+        setCompletion(completion);
+      }
       if (session?.user) {
         router.replace(`/profile/${id}`);
         updateHistory({
@@ -57,12 +72,7 @@ export const useCompletionAPI = ({
           lang: input.lang
         });
       }
-      const data = await response.json();
-      setIsLoading(false);
-      const completion = !session?.user
-        ? data.completion.substring(0, 500)
-        : data.completion;
-      setCompletion(completion);
+
       if (!session?.user) {
         window.history.replaceState({}, '', `/profile/${id}`);
         localStorage.setItem(
@@ -73,16 +83,15 @@ export const useCompletionAPI = ({
             fullName: input.fullName,
             company: input.company,
             prompt: input.prompt,
-            content: data.completion,
+            content: data,
             lang: input.lang
           })
         );
       }
-
-      // setIsLoading(false);
-    } catch (error) {
       setIsLoading(false);
+    } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 

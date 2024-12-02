@@ -30,8 +30,8 @@ export function AppSidebar({ session }: { session: string | undefined }) {
   return (
     <Sidebar>
       <SidebarContent>
-        <SidebarHeader>
-          <div className="sticky top-0 z-50 bg-sidebar py-4">
+        <SidebarHeader className="sticky top-0 z-50 bg-sidebar">
+          <div className=" z-50 bg-sidebar py-4">
             <Link href={'/'}>
               <AppIcon />
             </Link>
