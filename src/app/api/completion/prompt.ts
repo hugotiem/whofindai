@@ -120,7 +120,7 @@ export const customPrompt = (
 `;
 
 export interface PromptProps {
-  id: string;
+  id?: string;
   fullName: string;
   company: string;
   prompt: string;

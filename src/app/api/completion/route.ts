@@ -21,6 +21,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (!id) {
+    return NextResponse.json({ error: 'No id provided' }, { status: 400 });
+  }
+
   if (session || authorization) {
     try {
       const { uid } = session
@@ -38,12 +42,12 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        return await generateProfile(
+        return await generateProfile({
           fullName,
           company,
           prompt,
           lang,
-          async (completion) => {
+          onFinish: async (completion) => {
             const batch = adminDb.batch();
             const profileRef = adminDb.collection('profiles').doc(id);
             batch.set(profileRef, {
@@ -72,14 +76,15 @@ export async function POST(request: NextRequest) {
               });
             }
 
-            const response = NextResponse.json({ completion });
-            if (!trialSession && !session && !authorization) {
-              response.cookies.set('__trial_session', 'true');
-            }
-            return response;
+            // const response = NextResponse.json({ completion });
+            // if (!trialSession && !session && !authorization) {
+            //   response.cookies.set('__trial_session', 'true');
+            // }
+            // return response;
           }
-        );
+        });
       } catch (e) {
+        console.error('API error', e);
         return NextResponse.json(
           { error: 'No content generated' },
           { status: 500 }
@@ -91,8 +96,9 @@ export async function POST(request: NextRequest) {
     }
   } else {
     try {
-      return await generateProfile(fullName, company, prompt, lang);
+      return await generateProfile({ fullName, company, prompt, lang });
     } catch (e) {
+      console.error('API error', e);
       return NextResponse.json(
         { error: 'No content generated' },
         { status: 500 }
@@ -101,15 +107,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-const generateProfile = async (
-  fullName: string,
-  company: string,
-  prompt: string,
-  lang: string,
-  onFinish?: (completion: string) => void
-) => {
+const generateProfile = async ({
+  fullName,
+  company,
+  prompt,
+  lang,
+  onFinish
+}: PromptProps & {
+  onFinish?: (completion: string) => void;
+}) => {
   try {
-
     const responseStream = await client.chat.completions.create({
       model: 'llama-3.1-sonar-small-128k-online',
       stream: true,
@@ -122,6 +129,8 @@ const generateProfile = async (
       ]
     });
 
+    let completion = '';
+
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
@@ -133,9 +142,13 @@ const generateProfile = async (
             ) {
               const chunk = response.choices[0].delta.content;
               controller.enqueue(new TextEncoder().encode(chunk || ''));
+              completion += chunk || '';
             }
           }
           controller.close();
+          if (onFinish) {
+            onFinish(completion);
+          }
         } catch (error) {
           console.error('Streaming error:', error);
           controller.error(error);
@@ -151,6 +164,6 @@ const generateProfile = async (
     });
   } catch (e) {
     console.error('API error', e);
-    return null;
+    return NextResponse.json({ error: e }, { status: 500 });
   }
 };

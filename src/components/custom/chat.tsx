@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { Message as PreviewMessage } from '@/components/custom/message';
 
@@ -8,7 +8,6 @@ import { MultimodalInput } from './multimodal-input';
 import { Overview } from './overview';
 import { cn } from '@/lib/utils';
 import { useCompletionAPI } from '@/hooks/use-completion-api';
-import { ChatSkeleton } from './chat-skeletion';
 import { useSession } from '@/hooks/use-session';
 import { sendEmailAddressVerification } from '@/lib/firebase/auth';
 import { ProgressBar } from './progress-bar';
