@@ -32,11 +32,13 @@ export async function POST(request: NextRequest) {
         : await adminAuth.verifyIdToken(authorization!);
       const user = await adminDb.collection('users').doc(uid).get();
       const usedCredits = user.data()?.used_credits || 0;
-      const subscription = user.data()?.subscription;
+      const subscription_name = user.data()?.stripe_subscription_name;
       const stripe_customer_id = user.data()?.stripe_customer_id as string;
       if (
         usedCredits >= 5 &&
-        (!subscription || subscription === 'free' || !stripe_customer_id)
+        (!subscription_name ||
+          subscription_name === 'free' ||
+          !stripe_customer_id)
       ) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
@@ -69,7 +71,7 @@ export async function POST(request: NextRequest) {
 
             await batch.commit();
 
-            if (stripe_customer_id && subscription === 'pay_as_you_go') {
+            if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
               await stripe.billing.meterEvents.create({
                 event_name: 'generated_result',
                 payload: { value: '1', stripe_customer_id }
