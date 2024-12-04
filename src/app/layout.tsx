@@ -18,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'WinAnyCall.com - Know Your Prospects Like Never Before',
+  title: 'Winanycall.com - Know Your Prospects Like Never Before',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.',
   icons: {
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico'
   },
   openGraph: {
-    title: 'WinAnyCall.com - Know Your Prospects Like Never Before',
+    title: 'Winanycall.com - Know Your Prospects Like Never Before',
     description:
       'Elevate your sales game with AI-powered insights that boost your meetings.',
     url: process.env.BASE_URL,

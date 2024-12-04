@@ -1,7 +1,3 @@
-// import { CoreMessage } from "ai";
-// import { notFound } from "next/navigation";
-
-// import { auth } from "@/app/(auth)/auth";
 import { Chat as PreviewChat } from '@/components/custom/chat';
 import { ChatSkeleton } from '@/components/custom/chat-skeletion';
 import { getProfileById } from '@/lib/firebase/actions';
@@ -15,7 +11,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const profile = await getProfileById(id);
-  return { title: `${profile?.fullName} - WinAnyCall` };
+  return { title: `${profile?.fullName} - Winanycall` };
 }
 
 export default async function Page({

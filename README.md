@@ -1,6 +1,6 @@
-# WinAnyCall - AI-Powered Sales Call Assistant
+# Winanycall - AI-Powered Sales Call Assistant
 
-WinAnyCall is a sophisticated web application that helps sales professionals prepare for calls and meetings by generating detailed prospect profiles and engagement strategies using AI.
+Winanycall is a sophisticated web application that helps sales professionals prepare for calls and meetings by generating detailed prospect profiles and engagement strategies using AI.
 
 ## Features
 

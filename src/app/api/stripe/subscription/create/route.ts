@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
-import { adminDb } from '@/lib/firebase/admin';
-import { adminAuth } from '@/lib/firebase/admin';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
+
 export async function GET(request: NextRequest) {
   try {
-    const jwt = request.cookies.get('__session')?.value;
-    if (!jwt) {
-      return NextResponse.json(
-        { error: 'Unauthorized Error' },
-        { status: 401 }
-      );
-    }
-
-    const { uid } = await adminAuth.verifySessionCookie(jwt, true);
-
     const searchParams = request.nextUrl.searchParams;
     const sessionId = searchParams.get('session_id');
 
@@ -30,6 +20,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const customer = await stripe.customers.retrieve(
+      session.customer as string
+    );
+
+    const userData = await adminDb
+      .collection('users')
+      .where('stripe_customer_id', '==', customer.id)
+      .get();
+
+    if (userData.empty) {
+      return NextResponse.redirect(
+        new URL(`/?subscribed=false&error=User not found`, request.url)
+      );
+    }
+
+    const uid = userData.docs[0].id;
+
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
@@ -37,13 +44,6 @@ export async function GET(request: NextRequest) {
     if (subscription.status !== 'active') {
       return NextResponse.redirect(
         new URL(`/?subscribed=false&error=Subscription not active`, request.url)
-      );
-    }
-
-    const userData = await adminDb.collection('users').doc(uid).get();
-    if (!userData.exists) {
-      return NextResponse.redirect(
-        new URL(`/?subscribed=false&error=Unauthorized Error`, request.url)
       );
     }
 
