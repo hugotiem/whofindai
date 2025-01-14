@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useHistory } from './use-history';
 import { useSession } from './use-session';
 import { useRouter } from 'next/navigation';
+import { APIProfile } from '@/app/api/completion/route';
 
 export interface CompletionInput {
   fullName: string;
@@ -11,8 +12,8 @@ export interface CompletionInput {
 }
 
 interface UseCompletionAPIProps {
-  initialCompletion?: string;
-  initialCompletionInput?: CompletionInput;
+  initialCompletion?: APIProfile;
+  initialCompletionInput?: APIProfile;
   id?: string;
 }
 
@@ -21,14 +22,14 @@ export const useCompletionAPI = ({
   initialCompletion,
   initialCompletionInput
 }: UseCompletionAPIProps = {}) => {
-  const [completion, setCompletion] = useState<string>(initialCompletion || '');
+  const [completion, setCompletion] = useState<APIProfile | null>(initialCompletion || null);
   const [isLoading, setIsLoading] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
     fullName: initialCompletionInput?.fullName || '',
     company: initialCompletionInput?.company || '',
-    prompt: initialCompletionInput?.prompt || '',
-    lang: initialCompletionInput?.lang || ''
+    prompt: '',
+    lang: 'en'
   });
 
   const { updateHistory } = useHistory();
@@ -38,7 +39,7 @@ export const useCompletionAPI = ({
   const fetchCompletion = async () => {
     if (!input || !input.prompt || !input.company || !input.fullName) return;
     setIsLoading(true);
-    setCompletion('');
+    setCompletion(null);
     try {
       const response = await fetch('/api/completion', {
         method: 'POST',
@@ -48,20 +49,9 @@ export const useCompletionAPI = ({
         body: JSON.stringify({ ...input, id })
       });
       if (!response.ok) throw Error('API Error', { cause: response.status });
-
-      const reader = response?.body?.getReader();
-      const decoder = new TextDecoder();
-      if (!reader) return;
-      let data = '';
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        data += decoder.decode(value, { stream: true });
-
-        const completion = !session?.user ? data.substring(0, 500) : data;
-        setCompletion(completion);
-      }
+      const data = await response.json();
+      const profile = data.profile as APIProfile; //!session?.user ? data.substring(0, 500) : data;
+      setCompletion(profile);
       if (session?.user) {
         router.replace(`/profile/${id}`);
         updateHistory({

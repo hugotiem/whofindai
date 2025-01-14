@@ -2,6 +2,7 @@ export const maxDuration = 30;
 
 import { adminAuth } from '@/lib/firebase/admin';
 import { NextRequest, NextResponse } from 'next/server';
+import { APIProfile } from '../../completion/route';
 
 export async function POST(request: NextRequest) {
   const session = request.cookies.get('__session')?.value;
@@ -12,53 +13,89 @@ export async function POST(request: NextRequest) {
   if (!email || !['edouard@tiemh.com', 'hugotiem@gmail.com'].includes(email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { context, prompt } = await request.json();
+  const { sysPrompt, userPrompt } = await request.json();
 
   try {
-    const body = JSON.stringify({
-      model: 'llama-3.1-sonar-small-128k-online',
-      return_citations: true,
-      stream: false,
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          schema: {
-            type: 'object',
-            properties: {
-              completion: { type: 'string' }
-            }
-          }
-        }
-      },
-      messages: [
-        {
-          role: 'system',
-          content: context
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    });
-
     const response = await fetch(
-      `${process.env.PERPLEXITY_BASE_URL}/chat/completions`,
+      `${process.env.PERPLEXITY_BASE_URL!}/chat/completions`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
         },
-        body
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: sysPrompt
+            },
+            {
+              role: 'user',
+              content: userPrompt
+            }
+          ],
+          max_tokens: 2048,
+          temperature: 0.7
+        })
       }
     );
 
-    const data = await response.json();
-    if (data.choices.length > 0 && data.choices[0].message.content) {
-      return NextResponse.json({ completion: data.choices[0].message.content });
+    if (!response.ok) {
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`
+      );
     }
-    return NextResponse.json({ error: 'No completion found' }, { status: 500 });
+
+    const data = await response.json();
+
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid API response format: No content in response');
+    }
+
+    const content = data.choices[0].message.content.trim();
+
+    // Remove any potential markdown formatting or extra text
+    const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+
+    let profileData: APIProfile;
+    try {
+      profileData = JSON.parse(jsonString);
+    } catch (e) {
+      console.error('Failed to parse profile data:', jsonString);
+      throw new Error('Invalid JSON format in API response');
+    }
+
+    // Validate required fields
+    const requiredFields = [
+      'fullName',
+      'company',
+      'role',
+      'missions',
+      'background',
+      'education',
+      'company_description',
+      'personality_traits',
+      'communication_insights',
+      'country',
+      'city',
+      'industry',
+      'seo_title',
+      'seo_description',
+      'seo_keywords'
+    ];
+    for (const field of requiredFields) {
+      if (!(field in profileData)) {
+        throw new Error(`Missing required field in API response: ${field}`);
+      }
+    }
+
+    if (!Array.isArray(profileData.seo_keywords)) {
+      throw new Error('seo_keywords must be an array');
+    }
+
+    return NextResponse.json({ profile: profileData });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

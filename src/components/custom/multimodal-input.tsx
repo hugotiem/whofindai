@@ -29,13 +29,11 @@ export function MultimodalInput({
   input,
   setInput,
   isLoading,
-  completion,
   handleSubmit
 }: {
   input: CompletionInput | undefined;
   setInput: Dispatch<SetStateAction<CompletionInput>>;
   isLoading: boolean;
-  completion: string;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;
@@ -75,10 +73,8 @@ export function MultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {completion?.length === 0 && (
-        <>
-          <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
-            <Input
+      <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
+        <Input
               placeholder="Prospect's full name"
               value={input?.fullName}
               onChange={onFullNameChange}
@@ -88,11 +84,9 @@ export function MultimodalInput({
               placeholder="Prospect's company"
               value={input?.company}
               onChange={onCompanyChange}
-              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-            />
-          </div>
-        </>
-      )}
+          className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
+        />
+      </div>
 
       {/* <input
         type="file"

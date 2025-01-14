@@ -1,10 +1,31 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { customPrompt, promptContext, PromptProps } from './prompt';
+import { PromptProps, systemPrompt, userPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
-import { client } from '@/lib/openai/client';
+
+export interface APIProfile {
+  id: string;
+  userId: string;
+  created_at: string;
+  updated_at: string;
+  fullName: string;
+  company: string;
+  role: string;
+  missions: string;
+  background: string;
+  education: string;
+  company_description: string;
+  personality_traits: string;
+  communication_insights: string;
+  country: string;
+  city: string;
+  industry: string;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string[];
+}
 
 export async function POST(request: NextRequest) {
   const { id, fullName, prompt, company, lang }: PromptProps =
@@ -44,47 +65,46 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        return await generateProfile({
+        const profile = await generateProfile({
           fullName,
           company,
           prompt,
-          lang,
-          onFinish: async (completion) => {
-            const batch = adminDb.batch();
-            const profileRef = adminDb.collection('profiles').doc(id);
-            batch.set(profileRef, {
-              fullName,
-              company,
-              prompt,
-              content: completion,
-              userId: uid,
-              lang,
-              createdAt: admin.firestore.Timestamp.now()
-            });
+          lang
+          // onFinish: async (completion) => {
 
-            const userRef = adminDb.collection('users').doc(uid);
-            batch.set(
-              userRef,
-              { used_credits: admin.firestore.FieldValue.increment(1) },
-              { merge: true }
-            );
-
-            await batch.commit();
-
-            if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
-              await stripe.billing.meterEvents.create({
-                event_name: 'generated_result',
-                payload: { value: '1', stripe_customer_id }
-              });
-            }
-
-            // const response = NextResponse.json({ completion });
-            // if (!trialSession && !session && !authorization) {
-            //   response.cookies.set('__trial_session', 'true');
-            // }
-            // return response;
-          }
+          // const response = NextResponse.json({ completion });
+          // if (!trialSession && !session && !authorization) {
+          //   response.cookies.set('__trial_session', 'true');
+          // }
+          // return response;
+          // }
         });
+        const batch = adminDb.batch();
+        const profileRef = adminDb.collection('profiles').doc(id);
+        batch.set(profileRef, {
+          ...profile,
+          userId: uid,
+          lang,
+          createdAt: admin.firestore.Timestamp.now()
+        });
+
+        const userRef = adminDb.collection('users').doc(uid);
+        batch.set(
+          userRef,
+          { used_credits: admin.firestore.FieldValue.increment(1) },
+          { merge: true }
+        );
+
+        await batch.commit();
+
+        if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
+          await stripe.billing.meterEvents.create({
+            event_name: 'generated_result',
+            payload: { value: '1', stripe_customer_id }
+          });
+        }
+
+        return NextResponse.json({ profile });
       } catch (e) {
         console.error('API error', e);
         return NextResponse.json(
@@ -113,59 +133,101 @@ const generateProfile = async ({
   fullName,
   company,
   prompt,
-  lang,
-  onFinish
+  lang
+  // onFinish
 }: PromptProps & {
-  onFinish?: (completion: string) => Promise<void>;
+  // onFinish?: (completion: string) => Promise<APIProfile>;
 }) => {
   try {
-    const responseStream = await client.chat.completions.create({
-      model: 'llama-3.1-sonar-small-128k-online',
-      stream: true,
-      messages: [
-        {
-          role: 'system',
-          content: promptContext + `\n\nLanguage code: ${lang}`
+    if (!fullName || !company) {
+      throw new Error('Full name and company are required');
+    }
+
+    const response = await fetch(
+      `${process.env.PERPLEXITY_BASE_URL!}/chat/completions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
         },
-        { role: 'user', content: customPrompt(fullName, company, prompt, lang) }
-      ]
-    });
-
-    let completion = '';
-
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const response of responseStream) {
-            if (
-              response &&
-              response.choices &&
-              response.choices[0]?.delta.content
-            ) {
-              const chunk = response.choices[0].delta.content;
-              controller.enqueue(new TextEncoder().encode(chunk || ''));
-              completion += chunk || '';
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt(fullName, company, prompt, lang)
+            },
+            {
+              role: 'user',
+              content: userPrompt(fullName, company)
             }
-          }
-          controller.close();
-          if (onFinish) {
-            await onFinish(completion);
-          }
-        } catch (error) {
-          console.error('Streaming error:', error);
-          controller.error(error);
-        }
+          ],
+          max_tokens: 2048,
+          temperature: 0.7
+        })
       }
-    });
-    return new NextResponse(readableStream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive'
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid API response format: No content in response');
+    }
+
+    const content = data.choices[0].message.content.trim();
+
+    // Remove any potential markdown formatting or extra text
+    const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+
+    let profileData: APIProfile;
+    try {
+      profileData = JSON.parse(jsonString);
+    } catch (e) {
+      console.error('Failed to parse profile data:', jsonString);
+      throw new Error('Invalid JSON format in API response');
+    }
+
+    // Validate required fields
+    const requiredFields = [
+      'fullName',
+      'company',
+      'role',
+      'missions',
+      'background',
+      'education',
+      'company_description',
+      'personality_traits',
+      'communication_insights',
+      'country',
+      'city',
+      'industry',
+      'seo_title',
+      'seo_description',
+      'seo_keywords'
+    ];
+    for (const field of requiredFields) {
+      if (!(field in profileData)) {
+        throw new Error(`Missing required field in API response: ${field}`);
       }
-    });
-  } catch (e) {
-    console.error('API error', e);
-    return NextResponse.json({ error: e }, { status: 500 });
+    }
+
+    if (!Array.isArray(profileData.seo_keywords)) {
+      throw new Error('seo_keywords must be an array');
+    }
+
+    return profileData;
+  } catch (error) {
+    console.error(
+      'Error generating profile:',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    throw error;
   }
 };

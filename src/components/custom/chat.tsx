@@ -23,25 +23,21 @@ import {
 import { useRouter } from 'next/navigation';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { UpgradeDialog } from './dialog/UpgradeDialog';
+import { ProfileDetails } from './profile-details';
+import { APIProfile } from '@/app/api/completion/route';
 
 export function Chat({
   id,
   profile,
-  showLoginButton,
-  initialCompletion,
+  // showLoginButton,
+  // initialCompletion,
   from_storage
 }: {
   id?: string;
   showLoginButton: boolean;
-  initialCompletion?: string;
+  initialCompletion?: APIProfile;
   from_storage?: boolean;
-  profile?: {
-    fullName: string;
-    company: string;
-    prompt: string;
-    userId?: string;
-    lang: string;
-  };
+  profile?: APIProfile;
 }) {
   const {
     completion,
@@ -55,7 +51,7 @@ export function Chat({
     setShowUpgradeDialog
   } = useCompletionAPI({
     initialCompletionInput: profile,
-    initialCompletion,
+    initialCompletion: profile,
     id
   });
 
@@ -71,7 +67,7 @@ export function Chat({
       const profile = localStorage.getItem(`/profile/${id}`);
       if (profile) {
         const obj = JSON.parse(profile);
-        setCompletion(obj.content as string);
+        setCompletion(obj as APIProfile);
         fetch('/api/completion/save', {
           method: 'POST',
           headers: {
@@ -155,7 +151,7 @@ export function Chat({
               completion && ''
             )}
           >
-            {!isLoading && completion.length === 0 && <Overview />}
+            {!isLoading && !completion && <Overview />}
 
             <div
               className={cn(
@@ -165,7 +161,7 @@ export function Chat({
               ref={messagesContainerRef}
             >
               {/* {isLoading && completion.length === 0 && <ChatSkeleton />} */}
-              {isLoading && completion.length === 0 && (
+              {isLoading && !completion && (
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                   <div className=" text-white">
                     <ProgressBar />
@@ -173,14 +169,15 @@ export function Chat({
                 </div>
               )}
 
-              {completion.length > 0 && (
+              {completion && (
                 <>
-                  <PreviewMessage
+                  {/* <PreviewMessage
                     showLoginButton={showLoginButton}
                     id={id}
                     role={'system'}
                     textContent={completion}
-                  />
+                  /> */}
+                  <ProfileDetails initialProfile={profile} />
                 </>
               )}
               <div
@@ -212,7 +209,6 @@ export function Chat({
                 }}
                 isLoading={isLoading}
                 // stop={stop}
-                completion={completion}
                 // append={append}
               />
             </form>

@@ -41,20 +41,35 @@ const ChatPage = async ({
 }) => {
   const profile = await getProfileById(id);
 
+  console.log('profile', profile);
+
   if (!profile && !from_storage) redirect('/');
 
   return (
     <PreviewChat
-      profile={
-        profile && {
-          fullName: profile?.fullName,
-          company: profile?.company,
-          prompt: profile?.prompt,
-          userId: profile?.userId,
-          lang: profile?.lang
-        }
-      }
-      initialCompletion={profile && profile.content}
+      profile={{
+        id: profile!.id,
+        userId: profile!.userId,
+        created_at: profile!.created_at,
+        updated_at: profile!.updated_at,
+        fullName: profile!.fullName,
+        company: profile!.company,
+        role: profile!.role,
+        missions: profile!.missions,
+        background: profile!.background,
+        education: profile!.education,
+        company_description: profile!.company_description,
+        personality_traits: profile!.personality_traits,
+        communication_insights: profile!.communication_insights,
+        country: profile!.country,
+        city: profile!.city,
+        industry: profile!.industry,
+        seo_title: profile!.seo_title,
+        seo_description: profile!.seo_description,
+        seo_keywords: profile!.seo_keywords
+      }}
+      // lang: profile?.lang
+      // initialCompletion={profile && profile.content}
       id={id}
       from_storage={from_storage}
       showLoginButton

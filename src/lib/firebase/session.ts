@@ -8,6 +8,7 @@ export const loadSession = async () => {
   const jwt = _cookies.get('__session')?.value;
   try {
     if (!jwt) return;
+    
     const token = await adminAuth.verifySessionCookie(jwt, true);
     return await adminAuth.createCustomToken(token.uid);
   } catch (e) {

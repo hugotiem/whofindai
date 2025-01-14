@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { customPrompt, promptContext } from '../api/completion/prompt';
+import {
+  systemPrompt,
+  userPrompt,
+  promptContext
+} from '../api/completion/prompt';
 import { Textarea } from '@/components/ui/textarea';
 import { MultimodalInput } from '@/components/custom/multimodal-input';
 import { CompletionInput } from '@/hooks/use-completion-api';
@@ -12,12 +16,14 @@ import { Message } from '@/components/custom/message';
 import { ProgressBar } from '@/components/custom/progress-bar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import Link from 'next/link';
+import { ProfileDetails } from '@/components/custom/profile-details';
+import { APIProfile } from '../api/completion/route';
 
 export default function Prompt() {
   // const context = promptContext;
 
-  const [context, setContext] = useState('');
-  const [prompt, setPrompt] = useState('');
+  const [usrPrompt, setUserPrompt] = useState('');
+  const [sysPrompt, setSystemPrompt] = useState('');
   const [input, setInput] = useState<CompletionInput>({
     fullName: 'John Doe',
     company: 'Acme Inc.',
@@ -27,16 +33,16 @@ export default function Prompt() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [completion, setCompletion] = useState('');
+  const [completion, setCompletion] = useState<APIProfile | null>(null);
 
   useEffect(() => {
-    const context = localStorage.getItem('context');
-    setContext(context || promptContext);
-    const prompt = localStorage.getItem('prompt');
-    setPrompt(
-      prompt ||
-        customPrompt('${fullName}', '${company}', '${prompt}', '${lang}')
+    const initialSysPrompt = localStorage.getItem('sysPrompt');
+    setSystemPrompt(
+      initialSysPrompt ||
+        systemPrompt('${fullName}', '${company}', '${prompt}', '${lang}')
     );
+    const initialUserPrompt = localStorage.getItem('userPrompt');
+    setUserPrompt(initialUserPrompt || userPrompt('${fullName}', '${company}'));
   }, []);
 
   const handleSubmit = async () => {
@@ -44,8 +50,8 @@ export default function Prompt() {
     const completion = await fetch('/api/test/completion', {
       method: 'POST',
       body: JSON.stringify({
-        context,
-        prompt: prompt
+        sysPrompt,
+        userPrompt: usrPrompt
           .replaceAll('${fullName}', input.fullName)
           .replaceAll('${company}', input.company)
           .replaceAll('${prompt}', input.prompt)
@@ -53,7 +59,7 @@ export default function Prompt() {
       })
     });
     const data = await completion.json();
-    setCompletion(data.completion);
+    setCompletion(data.profile as APIProfile);
     setIsLoading(false);
   };
 
@@ -63,25 +69,26 @@ export default function Prompt() {
         <Link href="/">Back</Link>
         <div className="flex flex-col gap-4 justify-center items-center w-full container">
           <Textarea
-            value={context}
+            value={sysPrompt}
             onChange={(e) => {
-              setContext(e.target.value);
+              setSystemPrompt(e.target.value);
               localStorage.setItem('context', e.target.value);
             }}
+            rows={20}
           />
           <Textarea
-            value={prompt}
+            value={usrPrompt}
             onChange={(e) => {
-              setPrompt(e.target.value);
+              setUserPrompt(e.target.value);
               localStorage.setItem('prompt', e.target.value);
             }}
-            rows={40}
+            rows={20}
           />
         </div>
         <div
           className={cn(
             'w-full container overflow-y-scroll flex flex-col items-center',
-            completion.length === 0 && 'justify-center'
+            completion === null && 'justify-center'
           )}
         >
           <div className={cn('gap-4 w-full relative', isLoading && 'h-dvh')}>
@@ -95,12 +102,7 @@ export default function Prompt() {
             )}
 
             {completion && !isLoading && (
-              <Message
-                showLoginButton={false}
-                id={undefined}
-                role={'system'}
-                textContent={completion}
-              />
+              <ProfileDetails initialProfile={completion} />
             )}
           </div>
           <div className="max-w-[750px] mx-auto">
@@ -108,7 +110,6 @@ export default function Prompt() {
               input={input}
               setInput={setInput}
               isLoading={false}
-              completion={''}
               handleSubmit={handleSubmit}
             />
           </div>
