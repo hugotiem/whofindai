@@ -54,14 +54,7 @@ export const useCompletionAPI = ({
       setCompletion(profile);
       if (session?.user) {
         router.replace(`/profile/${id}`);
-        updateHistory({
-          id,
-          userId: session?.user?.uid,
-          fullName: input.fullName,
-          company: input.company,
-          prompt: input.prompt,
-          lang: input.lang
-        });
+        updateHistory(profile);
       }
 
       if (!session?.user) {

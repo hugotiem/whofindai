@@ -1,15 +1,15 @@
 'use client';
 
-import { Profile } from '@/lib/definitions';
+import { APIProfile } from '@/app/api/completion/route';
 import { db } from '@/lib/firebase/client';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { createContext, useState } from 'react';
 
 interface HistoryProviderContextType {
-  updateHistory: (profile: Profile) => void;
+  updateHistory: (profile: APIProfile) => void;
   deleteHistory: (id: string) => void;
-  init: (profiles: Profile[]) => void;
-  history: Profile[];
+  init: (profiles: APIProfile[]) => void;
+  history: APIProfile[];
 }
 
 export const HistoryProviderContext = createContext<
@@ -21,9 +21,9 @@ export const HistoryProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [history, setHistory] = useState<Profile[]>([]);
+  const [history, setHistory] = useState<APIProfile[]>([]);
 
-  const updateHistory = (profile: Profile) => {
+  const updateHistory = (profile: APIProfile) => {
     if (history.find((e) => e.id === profile.id)) {
       setHistory((prev) => [
         profile,
@@ -34,7 +34,7 @@ export const HistoryProvider = ({
     }
   };
 
-  const init = (profiles: Profile[]) => {
+  const init = (profiles: APIProfile[]) => {
     if (history.length === 0) {
       setHistory(profiles);
     }

@@ -4,8 +4,8 @@ export const promptContext =
 export const systemPrompt = (
   fullName: string,
   company: string,
-  prompt: string,
-  lang: string
+//   prompt: string,
+//   lang: string
 ) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company.
     Format the response as a valid JSON object with the following structure, ensuring all fields are filled and properly escaped:
     {

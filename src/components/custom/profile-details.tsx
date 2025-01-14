@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, GraduationCap, Briefcase, User, MapPin, ArrowLeft, RefreshCw, Heart, MessageCircle, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { Building2, GraduationCap, Briefcase, User, MapPin, ArrowLeft, RefreshCw, Heart, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { APIProfile } from '@/app/api/completion/route';
@@ -19,10 +19,10 @@ const formatDate = (dateString: string) => {
 };
 
 export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile }) {
-  const [profile, setProfile] = useState(initialProfile);
+  const [profile] = useState(initialProfile);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [updating] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     background: true,
     company: true,

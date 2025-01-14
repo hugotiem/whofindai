@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { Message as PreviewMessage } from '@/components/custom/message';
+// import { Message as PreviewMessage } from '@/components/custom/message';
 
 import { MultimodalInput } from './multimodal-input';
 import { Overview } from './overview';

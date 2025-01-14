@@ -118,7 +118,13 @@ export async function POST(request: NextRequest) {
     }
   } else {
     try {
-      return await generateProfile({ fullName, company, prompt, lang });
+      const profile = await generateProfile({
+        fullName,
+        company,
+        prompt,
+        lang
+      });
+      return NextResponse.json({ profile });
     } catch (e) {
       console.error('API error', e);
       return NextResponse.json(
@@ -131,13 +137,13 @@ export async function POST(request: NextRequest) {
 
 const generateProfile = async ({
   fullName,
-  company,
-  prompt,
-  lang
+  company
+  // prompt,
+  // lang
   // onFinish
 }: PromptProps & {
   // onFinish?: (completion: string) => Promise<APIProfile>;
-}) => {
+}): Promise<APIProfile> => {
   try {
     if (!fullName || !company) {
       throw new Error('Full name and company are required');
@@ -156,7 +162,7 @@ const generateProfile = async ({
           messages: [
             {
               role: 'system',
-              content: systemPrompt(fullName, company, prompt, lang)
+              content: systemPrompt(fullName, company)
             },
             {
               role: 'user',
@@ -191,7 +197,7 @@ const generateProfile = async ({
       profileData = JSON.parse(jsonString);
     } catch (e) {
       console.error('Failed to parse profile data:', jsonString);
-      throw new Error('Invalid JSON format in API response');
+      throw new Error('Invalid JSON format in API response' + e);
     }
 
     // Validate required fields

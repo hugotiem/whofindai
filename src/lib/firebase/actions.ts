@@ -1,5 +1,5 @@
 import { APIProfile } from '@/app/api/completion/route';
-import { Profile } from '../definitions';
+// import { Profile } from '../definitions';
 import { adminDb } from './admin';
 import { loadUserId } from './session';
 
@@ -7,6 +7,7 @@ export const getProfileById = async (
   id: string
 ): Promise<APIProfile | undefined> => {
   const userId = await loadUserId();
+  if (!userId) return;
   const data = await adminDb.collection('profiles').doc(id).get();
   if (data.exists) {
     return {

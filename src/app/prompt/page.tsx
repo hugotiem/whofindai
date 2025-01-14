@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
   systemPrompt,
-  userPrompt,
-  promptContext
+  userPrompt
 } from '../api/completion/prompt';
 import { Textarea } from '@/components/ui/textarea';
 import { MultimodalInput } from '@/components/custom/multimodal-input';
@@ -12,7 +11,6 @@ import { CompletionInput } from '@/hooks/use-completion-api';
 
 import { ChatSkeleton } from '@/components/custom/chat-skeletion';
 import { cn } from '@/lib/utils';
-import { Message } from '@/components/custom/message';
 import { ProgressBar } from '@/components/custom/progress-bar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import Link from 'next/link';
@@ -39,7 +37,7 @@ export default function Prompt() {
     const initialSysPrompt = localStorage.getItem('sysPrompt');
     setSystemPrompt(
       initialSysPrompt ||
-        systemPrompt('${fullName}', '${company}', '${prompt}', '${lang}')
+        systemPrompt('${fullName}', '${company}')
     );
     const initialUserPrompt = localStorage.getItem('userPrompt');
     setUserPrompt(initialUserPrompt || userPrompt('${fullName}', '${company}'));

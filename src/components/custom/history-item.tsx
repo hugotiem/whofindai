@@ -14,14 +14,14 @@ import {
 } from '../ui/sidebar';
 import { Ellipsis, Share, Trash2 } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
-import { Profile } from '@/lib/definitions';
 import { useHistory } from '@/hooks/use-history';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { APIProfile } from '@/app/api/completion/route';
 
 interface HistoryItemProps {
-  profile: Profile;
+  profile: APIProfile;
 }
 
 export const HistoryItem = ({ profile }: HistoryItemProps) => {

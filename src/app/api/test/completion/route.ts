@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       profileData = JSON.parse(jsonString);
     } catch (e) {
       console.error('Failed to parse profile data:', jsonString);
-      throw new Error('Invalid JSON format in API response');
+      throw new Error('Invalid JSON format in API response' + e);
     }
 
     // Validate required fields

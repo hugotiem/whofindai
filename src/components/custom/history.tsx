@@ -1,13 +1,13 @@
 'use client';
 
-import { Profile } from '@/lib/definitions';
+import { APIProfile } from '@/app/api/completion/route';
 import { SidebarMenu } from '../ui/sidebar';
 import { useHistory } from '@/hooks/use-history';
 import { useEffect } from 'react';
 import { HistoryItem } from './history-item';
 
 interface HistoryProps {
-  initialHistory: Profile[];
+  initialHistory: APIProfile[];
 }
 
 export const History = ({ initialHistory }: HistoryProps) => {
