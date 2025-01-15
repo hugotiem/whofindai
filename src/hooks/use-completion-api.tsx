@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useHistory } from './use-history';
 import { useSession } from './use-session';
 import { useRouter } from 'next/navigation';
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 
 export interface CompletionInput {
   fullName: string;

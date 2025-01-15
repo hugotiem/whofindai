@@ -18,7 +18,7 @@ import { useHistory } from '@/hooks/use-history';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 
 interface HistoryItemProps {
   profile: APIProfile;

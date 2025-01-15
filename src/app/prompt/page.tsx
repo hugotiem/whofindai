@@ -15,7 +15,7 @@ import { ProgressBar } from '@/components/custom/progress-bar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import Link from 'next/link';
 import { ProfileDetails } from '@/components/custom/profile-details';
-import { APIProfile } from '../api/completion/route';
+import { APIProfile } from '../api/completion/prompt';
 
 export default function Prompt() {
   // const context = promptContext;

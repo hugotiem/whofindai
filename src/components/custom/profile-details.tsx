@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, GraduationCap, Briefcase, User, MapPin, ArrowLeft, RefreshCw, Heart, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Building2,
+  GraduationCap,
+  Briefcase,
+  User,
+  MapPin,
+  Heart,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp,
+  Mail,
+  Phone,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
+import { LinkedInLogoIcon } from '@radix-ui/react-icons';
 
 // type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -18,16 +30,22 @@ const formatDate = (dateString: string) => {
   }).format(new Date(dateString));
 };
 
-export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile }) {
+export function ProfileDetails({
+  initialProfile
+}: {
+  initialProfile?: APIProfile;
+}) {
   const [profile] = useState(initialProfile);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [updating] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    background: true,
-    company: true,
-    communication: true,
-    personality: true,
+  // const [updating] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
+    professional_overview: false,
+    company_overview: false,
+    engagement_insights: false,
+    ice_breaker: false
   });
 
   useEffect(() => {
@@ -35,31 +53,9 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
       if (!id) {
         setLoading(false);
         return;
-      };
+      }
 
       try {
-        // const profile = await getProfileById(id);
-        // setProfile(profile);
-
-        // let query = supabase
-        //   .from('profiles')
-        //   .select('*')
-        //   .eq('name', decodedName)
-        //   .eq('company', decodedCompany);
-
-        // Add additional filters if available
-        // if (decodedRole) query = query.eq('role', decodedRole);
-        // if (decodedIndustry) query = query.eq('industry', decodedIndustry);
-        // if (decodedCity) query = query.eq('city', decodedCity);
-        // if (decodedCountry) query = query.eq('country', decodedCountry);
-
-        // let { data, error } = await query.maybeSingle();
-
-        // if (error) {
-        //   console.error('Error loading profile:', error);
-        //   return;
-        // }
-        // setProfile(data);
       } catch (error) {
         console.error('Error loading profile:', error);
       } finally {
@@ -70,24 +66,8 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
     loadProfile();
   }, [id]);
 
-  // const handleUpdate = async () => {
-  //   if (!profile) return;
-    
-  //   setUpdating(true);
-  //   try {
-  //     const updatedProfile = await updateProfile(profile);
-  //     if (updatedProfile) {
-  //       setProfile(updatedProfile);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error updating profile:', error);
-  //   } finally {
-  //     setUpdating(false);
-  //   }
-  // };
-
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section]
     }));
@@ -95,77 +75,69 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
 
   return (
     <>
-      {/* {profile && (
-        <SEO 
-          title={`${profile.name} - ${profile.role} at ${profile.company}`}
-          description={`Professional profile of ${profile.name}, ${profile.role} at ${profile.company}. Learn about their background, experience, and insights.`}
-          keywords={[
-            profile.name,
-            profile.company,
-            profile.role,
-            profile.industry,
-            'professional profile',
-            'business insights'
-          ]}
-          type="profile"
-          name={profile.name}
-        />
-      )} */}
-
       <div>
-        <div className="flex justify-between items-center mb-6">
-          <Link href="/browse" className="inline-flex items-center text-[#7FFFD4] hover:text-[#6CE9C1]">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Browse
-          </Link>
-          {profile && (
-            <button
-              // onClick={handleUpdate}
-              disabled={updating}
-              className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                updating
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'
-              }`}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${updating ? 'animate-spin' : ''}`} />
-              {updating ? 'Updating...' : 'Update Profile'}
-            </button>
-          )}
-        </div>
-
         <div className="max-w-4xl mx-auto">
           {loading ? (
-            <div className="text-center text-gray-400 py-8">Loading profile...</div>
+            <div className="text-center text-gray-400 py-8">
+              Loading profile...
+            </div>
           ) : profile ? (
             <div className="space-y-6">
               {/* Key Information Card */}
-              <div className="bg-[#1C2128] rounded-lg p-6 border border-gray-700">
-                <div className="flex items-start space-x-4">
-                  <User className="w-12 h-12 text-[#7FFFD4] mt-1" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-white mb-2">{profile.fullName}</h2>
-                    <div className="space-y-2 text-gray-400">
-                      <div className="flex items-center space-x-2">
-                        <Briefcase className="w-4 h-4 text-[#7FFFD4]" />
-                        <span>{profile.role} at {profile.company}</span>
+              {/* TODO: create row with 2 columns. one is twice as wide as the other */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="bg-[#1C2128] rounded-lg p-6 border border-gray-700 w-full md:w-2/3">
+                  <div className="flex items-start space-x-4">
+                    <User className="w-12 h-12 text-[#7FFFD4] mt-1" />
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-bold text-white mb-2">
+                        {profile.fullName}
+                      </h2>
+                      <div className="space-y-2 text-gray-400">
+                        <div className="flex items-center space-x-2">
+                          <Briefcase className="w-4 h-4 text-[#7FFFD4]" />
+                          <span>
+                            {profile.role} at {profile.company}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="w-4 h-4 text-[#7FFFD4]" />
+                          <span>
+                            {profile.city}, {profile.country}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Building2 className="w-4 h-4 text-[#7FFFD4]" />
+                          <span>{profile.industry}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-[#7FFFD4]" />
-                        <span>{profile.city}, {profile.country}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Building2 className="w-4 h-4 text-[#7FFFD4]" />
-                        <span>{profile.industry}</span>
-                      </div>
+                      {profile.updated_at && (
+                        <div className="mt-4 pt-4 border-t border-gray-700">
+                          <p className="text-sm text-gray-500">
+                            Last updated: {formatDate(profile.updated_at)}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    {profile.updated_at && (
-                      <div className="mt-4 pt-4 border-t border-gray-700">
-                        <p className="text-sm text-gray-500">
-                          Last updated: {formatDate(profile.updated_at)}
-                        </p>
-                      </div>
-                    )}
+                  </div>
+                </div>
+                <div className="bg-[#1C2128] rounded-lg p-6 border border-gray-700 w-full md:w-1/3">
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    Contact Details
+                  </h2>
+                  <div className="flex flex-col gap-2 text-gray-400">
+                    <div className="flex items-center space-x-2">
+                      <Mail className="w-4 h-4 text-[#7FFFD4]" />
+                      <span>{profile.email}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Phone className="w-4 h-4 text-[#7FFFD4]" />
+                      <span>{profile.phone}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <LinkedInLogoIcon className="w-4 h-4 text-[#7FFFD4]" />
+                      <span>{profile.linkedin || 'Not available'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -177,7 +149,9 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
                     <Briefcase className="w-5 h-5 text-[#7FFFD4]" />
                     <h3 className="text-white font-semibold">Experience</h3>
                   </div>
-                  <p className="text-gray-400 text-sm line-clamp-2">{profile.missions}</p>
+                  <p className="text-gray-400 text-sm line-clamp-3">
+                    {profile.missions}
+                  </p>
                 </div>
 
                 <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
@@ -185,7 +159,9 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
                     <GraduationCap className="w-5 h-5 text-[#7FFFD4]" />
                     <h3 className="text-white font-semibold">Education</h3>
                   </div>
-                  <p className="text-gray-400 text-sm line-clamp-2">{profile.education}</p>
+                  <p className="text-gray-400 text-sm line-clamp-3">
+                    {profile.education || 'No education information available'}
+                  </p>
                 </div>
 
                 <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
@@ -193,100 +169,176 @@ export function ProfileDetails({ initialProfile }: { initialProfile?: APIProfile
                     <MessageCircle className="w-5 h-5 text-[#7FFFD4]" />
                     <h3 className="text-white font-semibold">Communication</h3>
                   </div>
-                  <p className="text-gray-400 text-sm line-clamp-2">{profile.communication_insights}</p>
+                  <p className="text-gray-400 text-sm line-clamp-3">
+                    {profile.communication_insights}
+                  </p>
                 </div>
               </div>
 
               {/* Detailed Sections */}
               <div className="space-y-4">
-                {/* Background Section */}
+                {/* Ice Breakers Section */}
                 <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
                   <button
-                    onClick={() => toggleSection('background')}
+                    onClick={() => toggleSection('ice_breaker')}
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
                   >
                     <div className="flex items-center space-x-2">
                       <Briefcase className="w-5 h-5 text-[#7FFFD4]" />
-                      <h3 className="text-lg font-semibold text-white">Professional Background</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Ice Breakers
+                      </h3>
                     </div>
-                    {expandedSections.background ? (
+                    {expandedSections.ice_breaker ? (
                       <ChevronUp className="w-5 h-5 text-gray-400" />
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     )}
                   </button>
-                  {expandedSections.background && (
+                  {expandedSections.ice_breaker && (
                     <div className="px-6 py-4 border-t border-gray-700">
-                      <p className="text-gray-400 whitespace-pre-wrap">{profile.background}</p>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        <ul className="list-disc list-inside space-y-2">
+                          {profile.ice_breaker?.map((ice_breaker, index) => (
+                            <li key={index}>{ice_breaker}</li>
+                          ))}
+                        </ul>
+                      </p>
                     </div>
                   )}
                 </div>
 
-                {/* Company Section */}
+                {/* Professional Overview Section */}
                 <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
                   <button
-                    onClick={() => toggleSection('company')}
+                    onClick={() => toggleSection('professional_overview')}
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
                   >
                     <div className="flex items-center space-x-2">
                       <Building2 className="w-5 h-5 text-[#7FFFD4]" />
-                      <h3 className="text-lg font-semibold text-white">Company Information</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Professional Overview
+                      </h3>
                     </div>
-                    {expandedSections.company ? (
+                    {expandedSections.professional_overview ? (
                       <ChevronUp className="w-5 h-5 text-gray-400" />
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     )}
                   </button>
-                  {expandedSections.company && (
-                    <div className="px-6 py-4 border-t border-gray-700">
-                      <p className="text-gray-400 whitespace-pre-wrap">{profile.company_description}</p>
+                  {expandedSections.professional_overview && (
+                    <div className="px-6 py-4 border-t border-gray-700 space-y-4">
+                      <h4 className="text-white font-semibold">
+                        Role and Responsibilities
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {
+                          profile.professional_overview
+                            ?.role_and_responsibilities
+                        }
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Professional Background
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.professional_overview?.background}
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Personality Insights
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.professional_overview?.personality_traits}
+                      </p>
                     </div>
                   )}
                 </div>
 
-                {/* Communication Section */}
+                {/* Company Overview Section */}
                 <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
                   <button
-                    onClick={() => toggleSection('communication')}
+                    onClick={() => toggleSection('company_overview')}
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
                   >
                     <div className="flex items-center space-x-2">
                       <MessageCircle className="w-5 h-5 text-[#7FFFD4]" />
-                      <h3 className="text-lg font-semibold text-white">Communication Style</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Company Overview
+                      </h3>
                     </div>
-                    {expandedSections.communication ? (
+                    {expandedSections.company_overview ? (
                       <ChevronUp className="w-5 h-5 text-gray-400" />
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     )}
                   </button>
-                  {expandedSections.communication && (
-                    <div className="px-6 py-4 border-t border-gray-700">
-                      <p className="text-gray-400 whitespace-pre-wrap">{profile.communication_insights}</p>
+                  {expandedSections.company_overview && (
+                    <div className="px-6 py-4 border-t border-gray-700 space-y-4">
+                      <h4 className="text-white font-semibold">
+                        Basic Information
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.company_overview?.basic_info}
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Market Position
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.company_overview?.market_position}
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Challenges and Opportunities
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.company_overview?.challenges}
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Industry Trends
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.company_overview?.industry_trends}
+                      </p>
                     </div>
                   )}
                 </div>
 
-                {/* Personality Section */}
+                {/* Engagement Insights Section */}
                 <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
                   <button
-                    onClick={() => toggleSection('personality')}
+                    onClick={() => toggleSection('engagement_insights')}
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
                   >
                     <div className="flex items-center space-x-2">
                       <Heart className="w-5 h-5 text-[#7FFFD4]" />
-                      <h3 className="text-lg font-semibold text-white">Personality Traits</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        Engagement Insights
+                      </h3>
                     </div>
-                    {expandedSections.personality ? (
+                    {expandedSections.engagement_insights ? (
                       <ChevronUp className="w-5 h-5 text-gray-400" />
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     )}
                   </button>
-                  {expandedSections.personality && (
-                    <div className="px-6 py-4 border-t border-gray-700">
-                      <p className="text-gray-400 whitespace-pre-wrap">{profile.personality_traits}</p>
+                  {expandedSections.engagement_insights && (
+                    <div className="px-6 py-4 border-t border-gray-700 space-y-4">
+                      <h4 className="text-white font-semibold">
+                        Communication Tips
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        {profile.engagement_insights?.communication_tips}
+                      </p>
+                      <h4 className="text-white font-semibold">
+                        Key Questions
+                      </h4>
+                      <p className="text-gray-400 whitespace-pre-wrap">
+                        <ul className="list-disc list-inside space-y-2">
+                          {profile.engagement_insights?.key_questions?.map(
+                            (key_question, index) => (
+                              <li key={index}>{key_question}</li>
+                            )
+                          )}
+                        </ul>
+                      </p>
                     </div>
                   )}
                 </div>

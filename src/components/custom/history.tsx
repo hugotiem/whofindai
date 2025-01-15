@@ -1,6 +1,6 @@
 'use client';
 
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 import { SidebarMenu } from '../ui/sidebar';
 import { useHistory } from '@/hooks/use-history';
 import { useEffect } from 'react';

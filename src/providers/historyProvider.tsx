@@ -1,6 +1,6 @@
 'use client';
 
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 import { db } from '@/lib/firebase/client';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { createContext, useState } from 'react';

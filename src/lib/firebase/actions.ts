@@ -1,4 +1,4 @@
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 // import { Profile } from '../definitions';
 import { adminDb } from './admin';
 import { loadUserId } from './session';

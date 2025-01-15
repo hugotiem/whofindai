@@ -2,7 +2,7 @@ export const maxDuration = 30;
 
 import { adminAuth } from '@/lib/firebase/admin';
 import { NextRequest, NextResponse } from 'next/server';
-import { APIProfile } from '../../completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 
 export async function POST(request: NextRequest) {
   const session = request.cookies.get('__session')?.value;
@@ -78,6 +78,9 @@ export async function POST(request: NextRequest) {
       'company_description',
       'personality_traits',
       'communication_insights',
+      'engagement_insights',
+      'company_overview',
+      'professional_overview',
       'country',
       'city',
       'industry',

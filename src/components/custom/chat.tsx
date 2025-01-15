@@ -11,20 +11,14 @@ import { useCompletionAPI } from '@/hooks/use-completion-api';
 import { useSession } from '@/hooks/use-session';
 import { sendEmailAddressVerification } from '@/lib/firebase/auth';
 import { ProgressBar } from './progress-bar';
-import { Button } from '../ui/button';
 import { RefreshCw, Share } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '../ui/tooltip';
+
 import { useRouter } from 'next/navigation';
-import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
+// import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { UpgradeDialog } from './dialog/UpgradeDialog';
 import { ProfileDetails } from './profile-details';
-import { APIProfile } from '@/app/api/completion/route';
+import { APIProfile } from '@/app/api/completion/prompt';
 
 export function Chat({
   id,
@@ -59,8 +53,8 @@ export function Chat({
   const { copyLink } = useShare();
   const router = useRouter();
 
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
+  // const [messagesContainerRef, messagesEndRef] =
+  //   useScrollToBottom<HTMLDivElement>();
 
   useEffect(() => {
     if (from_storage) {
@@ -96,23 +90,38 @@ export function Chat({
         lang: initialLang
       }));
     }
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
-    }
-  }, [
-    setInput,
-    input,
-    from_storage,
-    id,
-    router,
-    setCompletion,
-    updateHistory,
-    messagesContainerRef
-  ]);
+    // if (messagesContainerRef.current) {
+    //   messagesContainerRef.current.scrollTop =
+    //     messagesContainerRef.current.scrollHeight;
+    // }
+  }, [setInput, input, from_storage, id, router, setCompletion, updateHistory]);
 
   return (
     <>
+      <div className="flex justify-end sticky top-10 items-center mb-6 container mx-auto">
+        {profile && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => copyLink({ path: `/profile/${id}` })}
+              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'}`}
+            >
+              <Share className={`w-4 h-4 mr-2`} />
+              Share
+            </button>
+            <button
+              onClick={() => fetchCompletion()}
+              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isLoading
+                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  : 'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'
+              }`}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2`} />
+              Update Profile
+            </button>
+          </div>
+        )}
+      </div>
       {showUpgradeDialog && (
         <UpgradeDialog
           open={showUpgradeDialog}
@@ -158,7 +167,7 @@ export function Chat({
                 'gap-4 w-full relative',
                 isLoading && !completion && 'h-dvh'
               )}
-              ref={messagesContainerRef}
+              // ref={messagesContainerRef}
             >
               {/* {isLoading && completion.length === 0 && <ChatSkeleton />} */}
               {isLoading && !completion && (
@@ -180,10 +189,10 @@ export function Chat({
                   <ProfileDetails initialProfile={profile} />
                 </>
               )}
-              <div
+              {/* <div
                 ref={messagesEndRef}
                 className="shrink-0 min-w-[24px] min-h-[24px]"
-              />
+              /> */}
             </div>
 
             {/* {completion && !isLoading && (
@@ -215,7 +224,7 @@ export function Chat({
           )}
         </div>
       </div>
-      {completion && !isLoading && (
+      {/* {completion && !isLoading && (
         <div className="sticky left-[50%] translate-x-[-50%] mx-auto bottom-8 z-50 bg-background border border-border rounded-full w-fit p-2">
           <TooltipProvider>
             {profile?.userId === session?.user?.uid && (
@@ -252,7 +261,7 @@ export function Chat({
             )}
           </TooltipProvider>
         </div>
-      )}
+      )} */}
     </>
   );
 }

@@ -1,31 +1,11 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PromptProps, systemPrompt, userPrompt } from './prompt';
+import { APIProfile, PromptProps, systemPrompt, userPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 
-export interface APIProfile {
-  id: string;
-  userId: string;
-  created_at: string;
-  updated_at: string;
-  fullName: string;
-  company: string;
-  role: string;
-  missions: string;
-  background: string;
-  education: string;
-  company_description: string;
-  personality_traits: string;
-  communication_insights: string;
-  country: string;
-  city: string;
-  industry: string;
-  seo_title: string;
-  seo_description: string;
-  seo_keywords: string[];
-}
+
 
 export async function POST(request: NextRequest) {
   const { id, fullName, prompt, company, lang }: PromptProps =
@@ -137,8 +117,8 @@ export async function POST(request: NextRequest) {
 
 const generateProfile = async ({
   fullName,
-  company
-  // prompt,
+  company,
+  // prompt
   // lang
   // onFinish
 }: PromptProps & {
