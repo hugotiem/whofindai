@@ -73,6 +73,8 @@ export function ProfileDetails({
     }));
   };
 
+  console.log(profile?.engagement_insights?.key_questions);
+
   return (
     <>
       <div>
@@ -330,15 +332,19 @@ export function ProfileDetails({
                       <h4 className="text-white font-semibold">
                         Key Questions
                       </h4>
-                      <p className="text-gray-400 whitespace-pre-wrap">
-                        <ul className="list-disc list-inside space-y-2">
+                      <div className="text-gray-400 whitespace-pre-wrap">
+                        <ul className="list-disc list-outside space-y-4 pl-4">
                           {profile.engagement_insights?.key_questions?.map(
                             (key_question, index) => (
-                              <li key={index}>{key_question}</li>
+                              <li key={index}>
+                                <span className="italic"><strong className='not-italic'>Question: </strong> {key_question.question}</span>
+                                <br />
+                                <span className="italic"><strong className='not-italic'>Follow-up: </strong> {key_question.follow_up}</span>
+                              </li>
                             )
                           )}
                         </ul>
-                      </p>
+                      </div>
                     </div>
                   )}
                 </div>

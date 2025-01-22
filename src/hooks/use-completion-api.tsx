@@ -9,6 +9,7 @@ export interface CompletionInput {
   company: string;
   prompt: string;
   lang: string;
+  linkedinUrl?: string;
 }
 
 interface UseCompletionAPIProps {
@@ -29,7 +30,8 @@ export const useCompletionAPI = ({
     fullName: initialCompletionInput?.fullName || '',
     company: initialCompletionInput?.company || '',
     prompt: '',
-    lang: 'en'
+    lang: 'en',
+    linkedinUrl: initialCompletionInput?.linkedin || ''
   });
 
   const { updateHistory } = useHistory();

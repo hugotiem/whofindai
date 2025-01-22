@@ -6,7 +6,8 @@ import React, {
   useEffect,
   useCallback,
   Dispatch,
-  SetStateAction
+  SetStateAction,
+  useState
 } from 'react';
 import { toast } from 'sonner';
 
@@ -41,6 +42,7 @@ export function MultimodalInput({
     chatRequestOptions?: ChatRequestOptions
   ) => void;
 }) {
+  const [showLinkedinUrl, setShowLinkedinUrl] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -75,15 +77,15 @@ export function MultimodalInput({
     <div className="relative w-full flex flex-col gap-4">
       <div className="grid sm:grid-cols-2 gap-2 w-full md:px-0 mx-auto md:max-w-[600px]">
         <Input
-              placeholder="Prospect's full name"
-              value={input?.fullName}
-              onChange={onFullNameChange}
-              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
-            />
-            <Input
-              placeholder="Prospect's company"
-              value={input?.company}
-              onChange={onCompanyChange}
+          placeholder="Prospect's full name"
+          value={input?.fullName}
+          onChange={onFullNameChange}
+          className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
+        />
+        <Input
+          placeholder="Prospect's company"
+          value={input?.company}
+          onChange={onCompanyChange}
           className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted"
         />
       </div>
@@ -137,38 +139,65 @@ export function MultimodalInput({
             <StopIcon size={14} />
           </Button>
         ) : (
-          <div className="flex justify-between items-center">
-            <Select
-              value={input?.lang || 'en'}
-              onValueChange={(value) => {
-                if (value !== input?.lang && value !== '') {
-                  setInput((prev) => ({ ...prev, lang: value }));
-                  localStorage.setItem('app.winanycall.com/lang', value);
-                }
-              }}
-            >
-              <SelectTrigger className="w-fit focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:bg-sidebar hover:text-sidebar-primary-foreground">
-                <SelectValue placeholder="Language" />
-                <div className="w-2" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="it">Italian</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              className="rounded-full p-1.5 h-fit m-2"
-              onClick={(event) => {
-                event.preventDefault();
-                handleSubmit(undefined);
-              }}
-              disabled={false}
-            >
-              <ArrowUpIcon size={14} />
-            </Button>
+          <div className="flex flex-col gap-2">
+            {showLinkedinUrl && (
+              <Input
+                placeholder="LinkedIn URL"
+                className="focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:text-sidebar-primary-foreground text-muted-foreground rounded-full"
+                value={input?.linkedinUrl}
+                onChange={(event) => {
+                  setInput((prev) => ({
+                    ...prev,
+                    linkedinUrl: event.target.value
+                  }));
+                }}
+              />
+            )}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-1">
+                <Select
+                  value={input?.lang || 'en'}
+                  onValueChange={(value) => {
+                    if (value !== input?.lang && value !== '') {
+                      setInput((prev) => ({ ...prev, lang: value }));
+                      localStorage.setItem('app.winanycall.com/lang', value);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-fit focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground rounded-full">
+                    <SelectValue placeholder="Language" />
+                    <div className="w-2" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Spanish</SelectItem>
+                    <SelectItem value="fr">French</SelectItem>
+                    <SelectItem value="de">German</SelectItem>
+                    <SelectItem value="it">Italian</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  className="rounded-full hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground"
+                  variant="ghost"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setShowLinkedinUrl((e) => !e);
+                  }}
+                >
+                  {showLinkedinUrl ? 'Hide' : 'Add'} LinkedIn URL
+                </Button>
+              </div>
+              <Button
+                className="rounded-full p-1.5 h-fit m-2"
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleSubmit(undefined);
+                }}
+                disabled={false}
+              >
+                <ArrowUpIcon size={14} />
+              </Button>
+            </div>
           </div>
         )}
       </div>

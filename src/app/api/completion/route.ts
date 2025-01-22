@@ -4,11 +4,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { APIProfile, PromptProps, systemPrompt, userPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
+import {
+  // DynamicRetrievalMode,
+  GoogleGenerativeAI
+} from '@google/generative-ai';
 
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
+// First, let's define interfaces for the grounding metadata
+interface GroundingMetadata {
+  citations: {
+    startIndex: number;
+    endIndex: number;
+    url: string;
+    title: string;
+    snippet: string;
+    publishedDate?: string;
+  }[];
+  searchQueries: string[];
+}
+
+// Update the APIProfile interface to include grounding metadata
+interface EnhancedAPIProfile extends APIProfile {
+  sources?: GroundingMetadata;
+}
 
 export async function POST(request: NextRequest) {
-  const { id, fullName, prompt, company, lang }: PromptProps =
+  const { id, fullName, prompt, company, lang, linkedinUrl }: PromptProps =
     await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
@@ -66,6 +89,7 @@ export async function POST(request: NextRequest) {
           userId: uid,
           lang,
           createdAt: admin.firestore.Timestamp.now()
+          // ...(profile.sources && { sources: profile.sources })
         });
 
         const userRef = adminDb.collection('users').doc(uid);
@@ -102,7 +126,8 @@ export async function POST(request: NextRequest) {
         fullName,
         company,
         prompt,
-        lang
+        lang,
+        linkedinUrl
       });
       return NextResponse.json({ profile });
     } catch (e) {
@@ -118,69 +143,48 @@ export async function POST(request: NextRequest) {
 const generateProfile = async ({
   fullName,
   company,
-  // prompt
-  // lang
-  // onFinish
-}: PromptProps & {
-  // onFinish?: (completion: string) => Promise<APIProfile>;
-}): Promise<APIProfile> => {
+  prompt,
+  lang,
+  linkedinUrl
+}: PromptProps): Promise<APIProfile> => {
+  // return generateGeminiProfile({ fullName, company });
   try {
-    if (!fullName || !company) {
-      throw new Error('Full name and company are required');
-    }
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        temperature: 0.3,
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt({ fullName, company, linkedinUrl })
+          },
+          { role: 'user', content: userPrompt(fullName, company) }
+        ]
+      })
+    });
 
-    const response = await fetch(
-      `${process.env.PERPLEXITY_BASE_URL!}/chat/completions`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-online',
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt(fullName, company)
-            },
-            {
-              role: 'user',
-              content: userPrompt(fullName, company)
-            }
-          ],
-          max_tokens: 2048,
-          temperature: 0.7
-        })
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `API request failed: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const data = await response.json();
-
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid API response format: No content in response');
-    }
-
-    const content = data.choices[0].message.content.trim();
-
-    // Remove any potential markdown formatting or extra text
-    const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+    const content = await response.text();
 
     let profileData: APIProfile;
     try {
-      profileData = JSON.parse(jsonString);
+      // Try to parse the content directly first
+      profileData = JSON.parse(content);
     } catch (e) {
-      console.error('Failed to parse profile data:', jsonString);
-      throw new Error('Invalid JSON format in API response' + e);
+      // If direct parsing fails, try to clean the content
+      const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+      try {
+        profileData = JSON.parse(jsonString);
+      } catch (e) {
+        console.error('Failed to parse profile data:', content);
+        throw new Error('Invalid JSON format in API response: ' + e);
+      }
     }
 
-    // Validate required fields
     const requiredFields = [
       'fullName',
       'company',
@@ -198,6 +202,7 @@ const generateProfile = async ({
       'seo_description',
       'seo_keywords'
     ];
+
     for (const field of requiredFields) {
       if (!(field in profileData)) {
         throw new Error(`Missing required field in API response: ${field}`);
@@ -209,11 +214,140 @@ const generateProfile = async ({
     }
 
     return profileData;
-  } catch (error) {
-    console.error(
-      'Error generating profile:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
-    throw error;
+  } catch (e) {
+    console.error('Error generating profile:', e);
+    throw e;
   }
 };
+
+// const generateGeminiProfile = async ({
+//   fullName,
+//   company,
+//   linkedinUrl
+// }: PromptProps): Promise<EnhancedAPIProfile> => {
+//   try {
+//     if (!fullName || !company) {
+//       throw new Error('Full name and company are required');
+//     }
+
+//     // Get the model
+//     const model = genAI.getGenerativeModel({
+//       model: 'gemini-1.5-pro'
+//     });
+
+//     // Create prompt parts with explicit JSON instruction
+//     const prompt = [
+//       { text: systemPrompt({ fullName, company, linkedinUrl }) },
+//       { text: userPrompt(fullName, company) }
+//     ];
+//     // Generate content
+//     const result = await model.generateContent({
+//       contents: [
+//         {
+//           role: 'user',
+//           parts: prompt
+//         }
+//       ],
+//       // generationConfig: {},
+//       tools: [
+//         {
+//           googleSearchRetrieval: {
+//             dynamicRetrievalConfig: {
+//               mode: DynamicRetrievalMode.MODE_UNSPECIFIED
+//             }
+//           }
+//         }
+//       ]
+//     });
+
+//     const response = result.response;
+//     console.log('response', response);
+//     const content = response.text().trim();
+//     console.log('content', content);
+//     // Extract grounding metadata
+//     const groundingMetadata: GroundingMetadata = {
+//       citations: [],
+//       searchQueries: []
+//     };
+
+//     // // Get citations if available
+//     // if (response.candidates?.[0]?.citationMetadata?.citationSources) {
+//     //   groundingMetadata.citations =
+//     //     response.candidates[0].citationMetadata.citationSources.map((citation) => ({
+//     //       startIndex: citation.startIndex,
+//     //       endIndex: citation.endIndex,
+//     //       url: citation.uri,
+//     //       // title: citation.title,
+//     //       // snippet: citation.snippet,
+//     //       // publishedDate: citation.publishedDate
+//     //     }));
+//     // }
+
+//     // // Get search queries if available
+//     // if (response.promptFeedback?.) {
+//     //   groundingMetadata.searchQueries = response.promptFeedback.searchQueries;
+//     // }
+
+//     let profileData: APIProfile;
+//     try {
+//       // Try to parse the content directly first
+//       profileData = JSON.parse(content);
+//     } catch (e) {
+//       // If direct parsing fails, try to clean the content
+//       const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+//       try {
+//         profileData = JSON.parse(jsonString);
+//       } catch (e) {
+//         console.error('Failed to parse profile data:', content);
+//         throw new Error('Invalid JSON format in API response: ' + e);
+//       }
+//     }
+
+//     // Validate the JSON structure
+//     const requiredFields = [
+//       'fullName',
+//       'company',
+//       'role',
+//       'missions',
+//       'background',
+//       'education',
+//       'company_description',
+//       'personality_traits',
+//       'communication_insights',
+//       'country',
+//       'city',
+//       'industry',
+//       'seo_title',
+//       'seo_description',
+//       'seo_keywords'
+//     ];
+
+//     for (const field of requiredFields) {
+//       if (!(field in profileData)) {
+//         throw new Error(`Missing required field in API response: ${field}`);
+//       }
+//     }
+
+//     if (!Array.isArray(profileData.seo_keywords)) {
+//       throw new Error('seo_keywords must be an array');
+//     }
+
+//     // if (!Array.isArray(profileData.personality_traits)) {
+//     //   throw new Error('personality_traits must be an array');
+//     // }
+
+//     // Combine profile data with grounding metadata
+//     const enhancedProfile: EnhancedAPIProfile = {
+//       ...profileData,
+//       sources: groundingMetadata
+//     };
+
+//     return enhancedProfile;
+//   } catch (error) {
+//     console.error(
+//       'Error generating profile:',
+//       error instanceof Error ? error.message : 'Unknown error'
+//     );
+//     throw error;
+//   }
+// };

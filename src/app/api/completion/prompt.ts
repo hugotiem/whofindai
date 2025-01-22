@@ -27,7 +27,7 @@ export interface APIProfile {
   };
   engagement_insights: {
     communication_tips: string;
-    key_questions: string[];
+    key_questions: { question: string; follow_up: string }[];
   };
   missions: string;
   background: string;
@@ -43,12 +43,12 @@ export interface APIProfile {
   seo_keywords: string[];
 }
 
-export const systemPrompt = (
-  fullName: string,
-  company: string,
-  //   prompt: string
-  //   lang: string
-) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company.
+export const systemPrompt = ({
+  fullName,
+  company,
+  linkedinUrl
+}: PromptProps) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company. First, Browse the internet.
+
     Format the response as a valid JSON object with the following structure, ensuring all fields are filled and properly escaped:
     {
         "fullName": "${fullName}",
@@ -86,7 +86,9 @@ export const systemPrompt = (
         "seo_title": "SEO-friendly title",
         "seo_description": "Brief SEO description",
         "seo_keywords": ["keyword1", "keyword2", "keyword3"]
-    }`;
+    }
+
+In a second part, verify that the infos are valid by looking LinkedIn profile and all links from this page. Here is the Edouard Tiem's Linkedin Profile : ${linkedinUrl}`;
 
 export const userPrompt = (
   fullName: string,
@@ -101,6 +103,7 @@ export interface PromptProps {
   id?: string;
   fullName: string;
   company: string;
-  prompt: string;
-  lang: string;
+  prompt?: string;
+  lang?: string;
+  linkedinUrl?: string;
 }

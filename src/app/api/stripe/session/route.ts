@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         { error: 'Unauthorized Error' },
         { status: 401 }
       );
-    const { uid } = await adminAuth.verifySessionCookie(jwt, true);
+    const { uid, email } = await adminAuth.verifySessionCookie(jwt, true);
     const userData = await adminDb.collection('users').doc(uid).get();
     if (!userData.exists)
       return NextResponse.json(
@@ -19,9 +19,7 @@ export async function POST(request: NextRequest) {
       );
     const user = userData.data()!;
     if (!user.stripe_customer_id) {
-      const customer = await stripe.customers.create({
-        email: user.email
-      });
+      const customer = await stripe.customers.create({ email });
       await adminDb.collection('users').doc(uid).update({
         stripe_customer_id: customer.id
       });
