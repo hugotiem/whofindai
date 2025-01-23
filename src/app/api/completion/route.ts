@@ -164,7 +164,7 @@ const generateProfile = async ({
           },
           {
             role: 'user',
-            content: `Generate a profile for ${fullName} at ${company} for the following product or service: ${prompt}`
+            content: `Profile for ${fullName} at ${company}. Product/service: ${prompt}`
           }
         ],
         max_tokens: 2048,
