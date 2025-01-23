@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Building2,
-  GraduationCap,
   Briefcase,
   User,
   MapPin,
@@ -11,11 +10,14 @@ import {
   ChevronUp,
   Mail,
   Phone,
+  LinkIcon,
+  ExternalLink
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { APIProfile } from '@/app/api/completion/prompt';
 import { LinkedInLogoIcon } from '@radix-ui/react-icons';
-
+import Link from 'next/link';
+import { ExternalLinkCitation } from './external-link-citation';
 // type Profile = Database['public']['Tables']['profiles']['Row'];
 
 // Add date formatting utility
@@ -45,7 +47,8 @@ export function ProfileDetails({
     professional_overview: false,
     company_overview: false,
     engagement_insights: false,
-    ice_breaker: false
+    ice_breaker: false,
+    citations: false
   });
 
   useEffect(() => {
@@ -66,14 +69,54 @@ export function ProfileDetails({
     loadProfile();
   }, [id]);
 
+  const getWebsiteInfo = async (
+    url: string
+  ): Promise<{ title: string | null; favicon: string | null }> => {
+    try {
+      // Fetch the HTML content
+      const response = await fetch(url);
+      const html = await response.text();
+
+      // Create a DOM parser
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Get the title
+      const title = doc.querySelector('title')?.textContent || null;
+
+      // Try different favicon possibilities
+      let favicon: string | null = null;
+
+      // Check for explicit favicon link
+      const faviconLink =
+        doc.querySelector('link[rel="icon"]') ||
+        doc.querySelector('link[rel="shortcut icon"]') ||
+        doc.querySelector('link[rel="apple-touch-icon"]');
+
+      if (faviconLink) {
+        const faviconHref = faviconLink.getAttribute('href');
+        if (faviconHref) {
+          // Handle relative URLs
+          favicon = new URL(faviconHref, url).href;
+        }
+      } else {
+        // Try the default favicon location
+        favicon = new URL('/favicon.ico', url).href;
+      }
+
+      return { title, favicon };
+    } catch (error) {
+      console.error('Error fetching website info:', error);
+      return { title: null, favicon: null };
+    }
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
-
-  console.log(profile?.engagement_insights?.key_questions);
 
   return (
     <>
@@ -84,16 +127,15 @@ export function ProfileDetails({
               Loading profile...
             </div>
           ) : profile ? (
-            <div className="space-y-6">
+            <div className="space-y-6 mb-10">
               {/* Key Information Card */}
-              {/* TODO: create row with 2 columns. one is twice as wide as the other */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="bg-[#1C2128] rounded-lg p-6 border border-gray-700 w-full md:w-2/3">
                   <div className="flex items-start space-x-4">
                     <User className="w-12 h-12 text-[#7FFFD4] mt-1" />
                     <div className="flex-1">
                       <h2 className="text-2xl font-bold text-white mb-2">
-                        {profile.fullName}
+                        {profile.full_name}
                       </h2>
                       <div className="space-y-2 text-gray-400">
                         <div className="flex items-center space-x-2">
@@ -130,22 +172,30 @@ export function ProfileDetails({
                   <div className="flex flex-col gap-2 text-gray-400">
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-[#7FFFD4]" />
-                      <span>{profile.email}</span>
+                      <span>{profile.contact_details?.email}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-[#7FFFD4]" />
-                      <span>{profile.phone}</span>
+                      <span>{profile.contact_details?.phone}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <LinkedInLogoIcon className="w-4 h-4 text-[#7FFFD4]" />
-                      <span>{profile.linkedin || 'Not available'}</span>
+                      <Link
+                        href={profile.contact_details?.linkedin || ''}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-2"
+                      >
+                        <span>LinkedIn Profile</span>
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center space-x-2 mb-2">
                     <Briefcase className="w-5 h-5 text-[#7FFFD4]" />
@@ -175,7 +225,7 @@ export function ProfileDetails({
                     {profile.communication_insights}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               {/* Detailed Sections */}
               <div className="space-y-4">
@@ -199,13 +249,13 @@ export function ProfileDetails({
                   </button>
                   {expandedSections.ice_breaker && (
                     <div className="px-6 py-4 border-t border-gray-700">
-                      <p className="text-gray-400 whitespace-pre-wrap">
-                        <ul className="list-disc list-inside space-y-2">
-                          {profile.ice_breaker?.map((ice_breaker, index) => (
+                      <div className="text-gray-400 whitespace-pre-wrap">
+                        <ul className="list-disc space-y-2 ml-4">
+                          {profile.ice_breakers?.map((ice_breaker, index) => (
                             <li key={index}>{ice_breaker}</li>
                           ))}
                         </ul>
-                      </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -234,10 +284,7 @@ export function ProfileDetails({
                         Role and Responsibilities
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {
-                          profile.professional_overview
-                            ?.role_and_responsibilities
-                        }
+                        {profile.professional_overview?.responsibilities}
                       </p>
                       <h4 className="text-white font-semibold">
                         Professional Background
@@ -248,9 +295,18 @@ export function ProfileDetails({
                       <h4 className="text-white font-semibold">
                         Personality Insights
                       </h4>
-                      <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.professional_overview?.personality_traits}
-                      </p>
+                      <div className="text-gray-400 whitespace-pre-wrap flex flex-wrap gap-2">
+                        {profile.professional_overview?.personality_traits.map(
+                          (e, index) => (
+                            <span
+                              key={index}
+                              className="bg-[#0D1116] text-gray-400 px-3 py-1 rounded-full text-sm"
+                            >
+                              {e}
+                            </span>
+                          )
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -337,12 +393,57 @@ export function ProfileDetails({
                           {profile.engagement_insights?.key_questions?.map(
                             (key_question, index) => (
                               <li key={index}>
-                                <span className="italic"><strong className='not-italic'>Question: </strong> {key_question.question}</span>
+                                <span className="italic">
+                                  <strong className="not-italic">
+                                    Question:{' '}
+                                  </strong>{' '}
+                                  {key_question.question}
+                                </span>
                                 <br />
-                                <span className="italic"><strong className='not-italic'>Follow-up: </strong> {key_question.follow_up}</span>
+                                <span className="italic">
+                                  <strong className="not-italic">
+                                    Follow-up:{' '}
+                                  </strong>{' '}
+                                  {key_question.follow_up}
+                                </span>
                               </li>
                             )
                           )}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
+                  <button
+                    onClick={() => toggleSection('citations')}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <LinkIcon className="w-5 h-5 text-[#7FFFD4]" />
+                      <h3 className="text-lg font-semibold text-white">
+                        Citations
+                      </h3>
+                    </div>
+                    {expandedSections.citations ? (
+                      <ChevronUp className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
+                  {expandedSections.citations && (
+                    <div className="px-6 py-4 border-t border-gray-700 space-y-4">
+                      <div className="text-gray-400 whitespace-pre-wrap">
+                        <ul className="list-disc space-y-3 ml-4">
+                          {profile.citations.map((citation, index) => (
+                            <li key={index} className="">
+                              <ExternalLinkCitation
+                                citation={citation}
+                                profileId={profile.id}
+                              />
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>

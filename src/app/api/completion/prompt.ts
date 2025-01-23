@@ -1,53 +1,26 @@
+import { ProfileResponseSchema } from "@/lib/prompts/profile";
+
 export const promptContext =
   "You are an AI assistant helping sales professionals prepare for calls or meetings by creating profiles of prospects. Based on a person's name, company, and the product/service offered, you will generate a structured overview with actionable insights to help guide engagement.";
 
-export interface APIProfile {
+export interface APIProfile extends ProfileResponseSchema {
   id: string;
   userId: string;
   created_at: string;
   updated_at: string;
-  fullName: string;
-  company: string;
-  role: string;
-  email: string;
-  phone: string;
-  linkedin: string;
-  twitter: string;
-  ice_breaker: string[];
-  professional_overview: {
-    role_and_responsibilities: string;
-    background: string;
-    personality_traits: string;
-  };
-  company_overview: {
-    basic_info: string;
-    market_position: string;
-    challenges: string;
-    industry_trends: string;
-  };
-  engagement_insights: {
-    communication_tips: string;
-    key_questions: { question: string; follow_up: string }[];
-  };
-  missions: string;
-  background: string;
-  education: string;
-  company_description: string;
-  personality_traits: string;
-  communication_insights: string;
-  country: string;
-  city: string;
-  industry: string;
-  seo_title: string;
-  seo_description: string;
-  seo_keywords: string[];
+  prompt: string;
+  citations: {
+    url: string;
+    title: string;
+    favicon: string;
+  }[];
 }
 
 export const systemPrompt = ({
   fullName,
   company,
   linkedinUrl
-}: PromptProps) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company. First, Browse the internet.
+}: PromptProps) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company.
 
     Format the response as a valid JSON object with the following structure, ensuring all fields are filled and properly escaped:
     {
@@ -87,8 +60,9 @@ export const systemPrompt = ({
         "seo_description": "Brief SEO description",
         "seo_keywords": ["keyword1", "keyword2", "keyword3"]
     }
+`;
 
-In a second part, verify that the infos are valid by looking LinkedIn profile and all links from this page. Here is the Edouard Tiem's Linkedin Profile : ${linkedinUrl}`;
+// In a second part, verify that the infos are valid by looking LinkedIn profile and all links from this page. Here is the Edouard Tiem's Linkedin Profile : ${linkedinUrl}`
 
 export const userPrompt = (
   fullName: string,

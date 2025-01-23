@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import { toast } from 'sonner';
 
-import { ArrowUpIcon, StopIcon } from './icons';
+import { StopIcon } from '@radix-ui/react-icons';
 import useWindowSize from '../../hooks/use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -25,6 +25,7 @@ import {
   SelectValue
 } from '../ui/select';
 import { Label } from '../ui/label';
+import { ArrowRightIcon } from '@radix-ui/react-icons';
 
 export function MultimodalInput({
   input,
@@ -136,7 +137,7 @@ export function MultimodalInput({
               stop();
             }}
           >
-            <StopIcon size={14} />
+            <StopIcon className="size-4" />
           </Button>
         ) : (
           <div className="flex flex-col gap-2">
@@ -177,7 +178,8 @@ export function MultimodalInput({
                   </SelectContent>
                 </Select>
                 <Button
-                  className="rounded-full hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground"
+                  type="button"
+                  className="rounded-full hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground "
                   variant="ghost"
                   onClick={(event) => {
                     event.preventDefault();
@@ -188,14 +190,16 @@ export function MultimodalInput({
                 </Button>
               </div>
               <Button
-                className="rounded-full p-1.5 h-fit m-2"
+                type="submit"
+                className="rounded-full bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1] m-2 flex items-center gap-2 font-semibold"
                 onClick={(event) => {
                   event.preventDefault();
                   handleSubmit(undefined);
                 }}
-                disabled={false}
+                // disabled={false}
               >
-                <ArrowUpIcon size={14} />
+                <span>Generate</span>
+                <ArrowRightIcon className="size-4" />
               </Button>
             </div>
           </div>

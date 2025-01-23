@@ -11,7 +11,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const profile = await getProfileById(id);
-  return { title: `${profile?.fullName} - Winanycall` };
+  return { title: `${profile?.full_name} - Winanycall` };
 }
 
 export default async function Page({
@@ -41,10 +41,8 @@ const ChatPage = async ({
 }) => {
   const profile = await getProfileById(id);
 
-  console.log('profile', profile);
-
   if (!profile && !from_storage) redirect('/');
-
+  
   return (
     <PreviewChat
       profile={{
@@ -52,29 +50,24 @@ const ChatPage = async ({
         userId: profile!.userId,
         created_at: profile!.created_at,
         updated_at: profile!.updated_at,
-        fullName: profile!.fullName,
+        full_name: profile!.full_name,
         company: profile!.company,
-        email: profile!.email,
-        phone: profile!.phone,
-        linkedin: profile!.linkedin,
-        twitter: profile!.twitter,
-        role: profile!.role,
-        ice_breaker: profile!.ice_breaker,
+        contact_details: profile!.contact_details,
+        ice_breakers: profile!.ice_breakers,
         professional_overview: profile!.professional_overview,
         company_overview: profile!.company_overview,
         engagement_insights: profile!.engagement_insights,
-        missions: profile!.missions,
-        background: profile!.background,
         education: profile!.education,
-        company_description: profile!.company_description,
-        personality_traits: profile!.personality_traits,
-        communication_insights: profile!.communication_insights,
+        personality_and_interests: profile!.personality_and_interests,
         country: profile!.country,
         city: profile!.city,
         industry: profile!.industry,
-        seo_title: profile!.seo_title,
-        seo_description: profile!.seo_description,
-        seo_keywords: profile!.seo_keywords
+        prompt: profile!.prompt,
+        role: profile!.role,
+        citations: profile!.citations
+        // seo_title: profile!.seo_title,
+        // seo_description: profile!.seo_description,
+        // seo_keywords: profile!.seo_keywords
       }}
       // lang: profile?.lang
       // initialCompletion={profile && profile.content}
@@ -84,3 +77,4 @@ const ChatPage = async ({
     />
   );
 };
+

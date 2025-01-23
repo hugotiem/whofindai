@@ -1,13 +1,17 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { APIProfile, PromptProps, systemPrompt, userPrompt } from './prompt';
+import { PromptProps } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 import {
   // DynamicRetrievalMode,
   GoogleGenerativeAI
 } from '@google/generative-ai';
+import {
+  ProfilePromptBuilder,
+  ProfileResponseSchema
+} from '@/lib/prompts/profile';
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
@@ -25,12 +29,8 @@ interface GroundingMetadata {
   searchQueries: string[];
 }
 
-// Update the APIProfile interface to include grounding metadata
-interface EnhancedAPIProfile extends APIProfile {
-  sources?: GroundingMetadata;
-}
-
 export async function POST(request: NextRequest) {
+  const start = new Date();
   const { id, fullName, prompt, company, lang, linkedinUrl }: PromptProps =
     await request.json();
 
@@ -67,20 +67,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
 
+      const end = new Date();
+      const timeDifference = end.getTime() - start.getTime();
+      console.log('Time before generation:', timeDifference / 1000, 'seconds');
+
       try {
         const profile = await generateProfile({
           fullName,
           company,
           prompt,
-          lang
-          // onFinish: async (completion) => {
-
-          // const response = NextResponse.json({ completion });
-          // if (!trialSession && !session && !authorization) {
-          //   response.cookies.set('__trial_session', 'true');
-          // }
-          // return response;
-          // }
+          lang,
+          linkedinUrl
         });
         const batch = adminDb.batch();
         const profileRef = adminDb.collection('profiles').doc(id);
@@ -146,31 +143,46 @@ const generateProfile = async ({
   prompt,
   lang,
   linkedinUrl
-}: PromptProps): Promise<APIProfile> => {
+}: PromptProps): Promise<
+  ProfileResponseSchema & { citations: { url: string }[] }
+> => {
   // return generateGeminiProfile({ fullName, company });
+  const date = new Date();
   try {
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
-        temperature: 0.3,
+        model: 'sonar-pro',
         messages: [
           {
             role: 'system',
-            content: systemPrompt({ fullName, company, linkedinUrl })
+            content: ProfilePromptBuilder.buildPrompt(lang)
           },
-          { role: 'user', content: userPrompt(fullName, company) }
-        ]
+          {
+            role: 'user',
+            content: `Generate a profile for ${fullName} at ${company} for the following product or service: ${prompt}`
+          }
+        ],
+        max_tokens: 2048,
+        temperature: 0.3
       })
     });
 
-    const content = await response.text();
+    // show date difference
+    const endDate = new Date();
+    const timeDifference = endDate.getTime() - date.getTime();
+    console.log('Time taken:', timeDifference / 1000, 'seconds');
 
-    let profileData: APIProfile;
+    const jsonResponse = await response.json();
+
+    const citations = jsonResponse.citations;
+    const content = jsonResponse.choices[0].message.content;
+
+    let profileData: ProfileResponseSchema;
     try {
       // Try to parse the content directly first
       profileData = JSON.parse(content);
@@ -179,41 +191,47 @@ const generateProfile = async ({
       const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
       try {
         profileData = JSON.parse(jsonString);
+        console.log('profileData', profileData);
       } catch (e) {
         console.error('Failed to parse profile data:', content);
         throw new Error('Invalid JSON format in API response: ' + e);
       }
     }
 
-    const requiredFields = [
-      'fullName',
-      'company',
-      'role',
-      'missions',
-      'background',
-      'education',
-      'company_description',
-      'personality_traits',
-      'communication_insights',
-      'country',
-      'city',
-      'industry',
-      'seo_title',
-      'seo_description',
-      'seo_keywords'
-    ];
+    // const requiredFields = [
+    //   'fullName',
+    //   'company',
+    //   'role',
+    //   'missions',
+    //   'background',
+    //   'education',
+    //   'company_description',
+    //   'personality_traits',
+    //   'communication_insights',
+    //   'country',
+    //   'city',
+    //   'industry',
+    //   'seo_title',
+    //   'seo_description',
+    //   'seo_keywords'
+    // ];
 
-    for (const field of requiredFields) {
-      if (!(field in profileData)) {
-        throw new Error(`Missing required field in API response: ${field}`);
-      }
-    }
+    // for (const field of requiredFields) {
+    //   if (!(field in profileData)) {
+    //     throw new Error(`Missing required field in API response: ${field}`);
+    //   }
+    // }
 
-    if (!Array.isArray(profileData.seo_keywords)) {
-      throw new Error('seo_keywords must be an array');
-    }
+    // if (!Array.isArray(profileData.seo_keywords)) {
+    //   throw new Error('seo_keywords must be an array');
+    // }
 
-    return profileData;
+    return {
+      ...profileData,
+      citations: citations.map((citation: string) => ({
+        url: citation
+      }))
+    };
   } catch (e) {
     console.error('Error generating profile:', e);
     throw e;

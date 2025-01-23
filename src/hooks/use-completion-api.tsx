@@ -23,15 +23,17 @@ export const useCompletionAPI = ({
   initialCompletion,
   initialCompletionInput
 }: UseCompletionAPIProps = {}) => {
-  const [completion, setCompletion] = useState<APIProfile | null>(initialCompletion || null);
+  const [completion, setCompletion] = useState<APIProfile | null>(
+    initialCompletion || null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
-    fullName: initialCompletionInput?.fullName || '',
+    fullName: initialCompletionInput?.full_name || '',
     company: initialCompletionInput?.company || '',
     prompt: '',
     lang: 'en',
-    linkedinUrl: initialCompletionInput?.linkedin || ''
+    linkedinUrl: initialCompletionInput?.contact_details?.linkedin || ''
   });
 
   const { updateHistory } = useHistory();
