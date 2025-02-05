@@ -13,7 +13,7 @@ export async function searchLinkedInProfile(
           cx: process.env.GOOGLE_CX!,
           q: `${fullName}`,
           siteSearch: `linkedin.com/in`,
-          num: '5',
+          num: '1',
           gl: local,
           hq: company
         })

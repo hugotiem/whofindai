@@ -234,7 +234,7 @@ export function MultimodalInput({
                 <LinkedinProfile
                   fullName={input?.fullName}
                   company={input?.company}
-                  linkedinProfileUrl={input?.linkedinUrl}
+                  // linkedinProfileUrl={input?.linkedinUrl}
                   initialLinkedinProfile={linkedinProfile}
                 />
               )}
