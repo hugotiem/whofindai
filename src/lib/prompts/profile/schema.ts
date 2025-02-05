@@ -42,5 +42,5 @@ export interface ProfileResponseSchema {
 
 export type CitationSection = {
   citations: string[];
-  [key: string]: any;
+  [key: string]: string | string[];
 };

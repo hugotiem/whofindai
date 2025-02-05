@@ -8,6 +8,7 @@ export interface APIProfile extends ProfileResponseSchema {
   userId: string;
   created_at: string;
   updated_at: string;
+  // seo_keywords: string[];
   prompt: string;
   citations: {
     url: string;

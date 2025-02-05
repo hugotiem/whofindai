@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import Image from 'next/image';
 
 export const ExternalLinkCitation = ({
   citation,
@@ -24,7 +25,7 @@ export const ExternalLinkCitation = ({
           setFavicon(data.favicon);
         });
     }
-  }, [citation]);
+  }, [citation, profileId, title, favicon, url]);
 
   return title && favicon ? (
     <Link
@@ -33,7 +34,7 @@ export const ExternalLinkCitation = ({
       rel="noopener noreferrer"
       className="flex items-center space-x-2"
     >
-      <img src={favicon} alt={title} width={16} height={16} />
+      <Image src={favicon} alt={title} width={16} height={16} />
       <span>{title}</span>
     </Link>
   ) : (

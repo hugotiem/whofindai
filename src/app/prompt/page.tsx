@@ -37,7 +37,7 @@ export default function Prompt() {
     const initialSysPrompt = localStorage.getItem('sysPrompt');
     setSystemPrompt(
       initialSysPrompt ||
-        systemPrompt('${fullName}', '${company}')
+        systemPrompt({ fullName: '${fullName}', company: '${company}' })
     );
     const initialUserPrompt = localStorage.getItem('userPrompt');
     setUserPrompt(initialUserPrompt || userPrompt('${fullName}', '${company}'));

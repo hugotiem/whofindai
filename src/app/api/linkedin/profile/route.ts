@@ -1,6 +1,6 @@
 import { adminAuth } from '@/lib/firebase/admin';
 import { NextRequest, NextResponse } from 'next/server';
-import { searchLinkedInProfile } from '../../completion/route';
+import { searchLinkedInProfile } from '../actions';
 import { JSDOM } from 'jsdom';
 export async function POST(request: NextRequest) {
   const session = request.cookies.get('__session')?.value;
@@ -41,6 +41,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ linkedin });
   } catch (error) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized', message: error },
+      { status: 401 }
+    );
   }
 }

@@ -9,7 +9,7 @@ export class ProfilePromptBuilder {
 
   private static buildCoreRequirements(): string {
     return Object.entries(CORE_REQUIREMENTS)
-      .map(([key, value]) => {
+      .map(([, value]) => {
         if (typeof value === 'string') return value;
         if ('description' in value) return value.description;
         return JSON.stringify(value);

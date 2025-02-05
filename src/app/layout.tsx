@@ -5,8 +5,8 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/custom/theme-provider';
 import { AnalyticsProvider } from '@/providers/analyticsProvider';
-import { Squares } from '@/components/ui/squares-background';
-import { memo } from 'react';
+// import { Squares } from '@/components/ui/squares-background';
+// import { memo } from 'react';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   }
 };
 
-const MemoizedSquares = memo(Squares)
+// const MemoizedSquares = memo(Squares)
 
 export default async function RootLayout({
   children
@@ -49,7 +49,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      {/* <div className="fixed inset-0 z-0 will-change-transform">
+        {/* <div className="fixed inset-0 z-0 will-change-transform">
         <MemoizedSquares 
           direction="diagonal"
           speed={0.5}

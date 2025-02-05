@@ -3,6 +3,8 @@ import { LinkedInProfile } from '@/lib/definitions';
 
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
+
 export const LinkedinProfile = ({
   fullName,
   company,
@@ -35,7 +37,7 @@ export const LinkedinProfile = ({
         .then((data) => setLinkedinProfile(data))
         .finally(() => setIsLoading(false));
     }
-  }, [linkedinProfileUrl]);
+  }, [linkedinProfileUrl, fullName, company, initialLinkedinProfile, isLoading]);
 
   return (
     <div>
@@ -46,8 +48,8 @@ export const LinkedinProfile = ({
       ) : (
         <div className="flex items-center gap-2 p-2 rounded-md bg-sidebar w-fit mx-4">
           <div className="rounded-full overflow-hidden bg-secondary w-10 h-10">
-            <img
-              src={linkedinProfile?.profileImageUrl}
+            <Image
+              src={linkedinProfile?.profileImageUrl || ''}
               alt="LinkedIn Profile"
               className="w-10 h-10 rounded-full"
             />

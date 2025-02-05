@@ -6,29 +6,26 @@ import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 import {
   // DynamicRetrievalMode,
-  GoogleGenerativeAI
+  // GoogleGenerativeAI    
 } from '@google/generative-ai';
-import {
-  ProfilePromptBuilder,
-  ProfileResponseSchema
-} from '@/lib/prompts/profile';
-import { LinkedInProfile } from '@/lib/definitions';
-
+import { ProfileResponseSchema } from '@/lib/prompts/profile';
+// import { LinkedInProfile } from '@/lib/definitions';
+import { searchLinkedInProfile } from '../linkedin/actions';
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
 // First, let's define interfaces for the grounding metadata
-interface GroundingMetadata {
-  citations: {
-    startIndex: number;
-    endIndex: number;
-    url: string;
-    title: string;
-    snippet: string;
-    publishedDate?: string;
-  }[];
-  searchQueries: string[];
-}
+// interface GroundingMetadata {
+//   citations: {
+//     startIndex: number;
+//     endIndex: number;
+//     url: string;
+//     title: string;
+//     snippet: string;
+//     publishedDate?: string;
+//   }[];
+//   searchQueries: string[];
+// }
 
 export async function POST(request: NextRequest) {
   const start = new Date();
@@ -236,6 +233,9 @@ const generateProfile = async ({
       profileData = JSON.parse(content);
     } catch (e) {
       // If direct parsing fails, try to clean the content
+      if (!(e instanceof SyntaxError)) {
+        console.error('Error', content);
+      }
       const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
       try {
         profileData = JSON.parse(jsonString);
@@ -285,42 +285,6 @@ const generateProfile = async ({
     throw e;
   }
 };
-
-export async function searchLinkedInProfile(
-  fullName: string,
-  company: string,
-  local: string
-): Promise<LinkedInProfile> {
-  try {
-    const response = await fetch(
-      `https://www.googleapis.com/customsearch/v1?` +
-        new URLSearchParams({
-          key: process.env.GOOGLE_API_KEY!,
-          cx: '200f73eda88c441ce',
-          q: `${fullName}`,
-          siteSearch: `linkedin.com/in`,
-          num: '5',
-          gl: local,
-          hq: company
-        })
-    );
-
-    const data = await response.json();
-
-    if (!data.items?.[0]) {
-      throw new Error('No LinkedIn profile found');
-    }
-
-    return {
-      profileImageUrl: data.items[0].pagemap.metatags[0]?.['og:image'],
-      title: data.items[0].title,
-      url: data.items[0].link
-    };
-  } catch (error) {
-    console.error('Error searching LinkedIn profile:', error);
-    throw error;
-  }
-}
 
 // const generateGeminiProfile = async ({
 //   fullName,
