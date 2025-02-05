@@ -52,6 +52,8 @@ export const LinkedinProfile = ({
               src={linkedinProfile?.profileImageUrl || ''}
               alt="LinkedIn Profile"
               className="w-10 h-10 rounded-full"
+              width={40}
+              height={40}
             />
           </div>
           <div>
