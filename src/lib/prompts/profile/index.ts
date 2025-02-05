@@ -4,7 +4,7 @@ import type { ProfileResponseSchema } from './schema';
 
 export class ProfilePromptBuilder {
   private static buildSystemMessage(): string {
-    return "AI assistant generating structured prospect profiles for sales professionals. Create insights based on person's name, company, and product/service.";
+    return "AI assistant generating structured prospect profiles for sales professionals. Create insights based on person's name, company, and product/service. Use the LinkedIn profile URL if available.";
   }
 
   private static buildCoreRequirements(): string {

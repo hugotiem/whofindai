@@ -1,7 +1,7 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PromptProps } from './prompt';
+import { PromptProps, systemPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 import {
@@ -12,9 +12,10 @@ import {
   ProfilePromptBuilder,
   ProfileResponseSchema
 } from '@/lib/prompts/profile';
+import { LinkedInProfile } from '@/lib/definitions';
 
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
 // First, let's define interfaces for the grounding metadata
 interface GroundingMetadata {
@@ -31,6 +32,11 @@ interface GroundingMetadata {
 
 export async function POST(request: NextRequest) {
   const start = new Date();
+
+  const local = request.headers.get('accept-language')!.split(',')[1];
+
+  console.log('local', local);
+
   const { id, fullName, prompt, company, lang, linkedinUrl }: PromptProps =
     await request.json();
 
@@ -67,17 +73,41 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
 
-      const end = new Date();
-      const timeDifference = end.getTime() - start.getTime();
-      console.log('Time before generation:', timeDifference / 1000, 'seconds');
-
       try {
+        const _linkedinUrl = linkedinUrl
+          ? { url: linkedinUrl }
+          : await searchLinkedInProfile(fullName, company, local);
+
+        const end = new Date();
+        const timeDifference = end.getTime() - start.getTime();
+        console.log(
+          'Time before generation:',
+          timeDifference / 1000,
+          'seconds'
+        );
+
+        console.log('linkedinUrl', _linkedinUrl);
+
+        // Step 2: Send initial response
+        // const stream = new TransformStream();
+        // const writer = stream.writable.getWriter();
+        // const encoder = new TextEncoder();
+
+        // Send the LinkedIn search result
+        // const initialResponse = {
+        //   status: 'searching',
+        //   linkedInProfile: linkedinUrl
+        // };
+        // await writer.write(
+        //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
+        // );
+
         const profile = await generateProfile({
           fullName,
           company,
           prompt,
           lang,
-          linkedinUrl
+          linkedinUrl: _linkedinUrl.url
         });
         const batch = adminDb.batch();
         const profileRef = adminDb.collection('profiles').doc(id);
@@ -105,6 +135,15 @@ export async function POST(request: NextRequest) {
           });
         }
 
+        // return NextResponse.json({ profile });
+
+        // const finalResponse = {
+        //   status: 'complete',
+        //   profile
+        // };
+        // await writer.write(encoder.encode(JSON.stringify(finalResponse)));
+        // await writer.close();
+
         return NextResponse.json({ profile });
       } catch (e) {
         console.error('API error', e);
@@ -119,12 +158,15 @@ export async function POST(request: NextRequest) {
     }
   } else {
     try {
+      const _linkedinUrl = linkedinUrl
+        ? { url: linkedinUrl }
+        : await searchLinkedInProfile(fullName, company, local);
       const profile = await generateProfile({
         fullName,
         company,
         prompt,
         lang,
-        linkedinUrl
+        linkedinUrl: _linkedinUrl.url
       });
       return NextResponse.json({ profile });
     } catch (e) {
@@ -156,15 +198,21 @@ const generateProfile = async ({
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'sonar-pro',
+        model: 'sonar-reasoning-pro',
         messages: [
           {
             role: 'system',
-            content: ProfilePromptBuilder.buildPrompt(lang)
+            content: systemPrompt({
+              fullName,
+              company,
+              prompt,
+              lang,
+              linkedinUrl
+            })
           },
           {
             role: 'user',
-            content: `Profile for ${fullName} at ${company}. Product/service: ${prompt}`
+            content: `Profile for ${fullName} at ${company}. LinkedIn profile: ${linkedinUrl}`
           }
         ],
         max_tokens: 2048,
@@ -237,6 +285,42 @@ const generateProfile = async ({
     throw e;
   }
 };
+
+export async function searchLinkedInProfile(
+  fullName: string,
+  company: string,
+  local: string
+): Promise<LinkedInProfile> {
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/customsearch/v1?` +
+        new URLSearchParams({
+          key: process.env.GOOGLE_API_KEY!,
+          cx: '200f73eda88c441ce',
+          q: `${fullName}`,
+          siteSearch: `linkedin.com/in`,
+          num: '5',
+          gl: local,
+          hq: company
+        })
+    );
+
+    const data = await response.json();
+
+    if (!data.items?.[0]) {
+      throw new Error('No LinkedIn profile found');
+    }
+
+    return {
+      profileImageUrl: data.items[0].pagemap.metatags[0]?.['og:image'],
+      title: data.items[0].title,
+      url: data.items[0].link
+    };
+  } catch (error) {
+    console.error('Error searching LinkedIn profile:', error);
+    throw error;
+  }
+}
 
 // const generateGeminiProfile = async ({
 //   fullName,

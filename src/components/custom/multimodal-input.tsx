@@ -26,7 +26,16 @@ import {
 } from '../ui/select';
 import { Label } from '../ui/label';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
-
+import { LinkedinProfile } from './linkedin-profile';
+import { Stars } from 'lucide-react';
+import { LinkedInProfile } from '@/lib/definitions';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '../ui/tooltip';
+import { cn } from '@/lib/utils';
 export function MultimodalInput({
   input,
   setInput,
@@ -43,7 +52,10 @@ export function MultimodalInput({
     chatRequestOptions?: ChatRequestOptions
   ) => void;
 }) {
-  const [showLinkedinUrl, setShowLinkedinUrl] = useState(false);
+  const [isFinding, setIsFinding] = useState(false);
+  const [linkedinProfile, setLinkedinProfile] = useState<
+    LinkedInProfile | undefined
+  >(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -141,7 +153,7 @@ export function MultimodalInput({
           </Button>
         ) : (
           <div className="flex flex-col gap-2">
-            {showLinkedinUrl && (
+            <div className="flex items-center justify-between gap-2">
               <Input
                 placeholder="LinkedIn URL"
                 className="focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:text-sidebar-primary-foreground text-muted-foreground rounded-full"
@@ -153,7 +165,77 @@ export function MultimodalInput({
                   }));
                 }}
               />
+              <Tooltip>
+                <TooltipTrigger
+                  className={cn(
+                    !input?.fullName || !input?.company || isFinding
+                      ? 'cursor-not-allowed'
+                      : ''
+                  )}
+                >
+                  <Button
+                    disabled={!input?.fullName || !input?.company || isFinding}
+                    type="button"
+                    className={cn(
+                      'rounded-full hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground ',
+                      !input?.fullName || !input?.company || isFinding
+                        ? 'cursor-not-allowed'
+                        : ''
+                    )}
+                    variant="ghost"
+                    onClick={(event) => {
+                      event.preventDefault();
+
+                      setIsFinding(true);
+                      fetch('api/linkedin/profile', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                          fullName: input?.fullName,
+                          company: input?.company
+                        })
+                      })
+                        .then((res) => res.json())
+                        .then((data) => {
+                          const profile = data.linkedin;
+                          setInput((prev) => ({
+                            ...prev,
+                            linkedinUrl: profile.url
+                          }));
+                          setIsFinding(false);
+                          setLinkedinProfile(profile);
+                        });
+                    }}
+                  >
+                    <span>Find</span>
+                    <Stars className="ml-1 size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="bg-sidebar text-sidebar-primary-foreground">
+                  {!input?.fullName || !input?.company || isFinding ? (
+                    <p>
+                      You need to provide the full name and company of the
+                      <br />
+                      prospect to find their LinkedIn profile.
+                    </p>
+                  ) : (
+                    <p>
+                      Find LinkedIn profile for {input?.fullName} at{' '}
+                      {input?.company}
+                    </p>
+                  )}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            {input?.linkedinUrl && (
+              <LinkedinProfile
+                fullName={input?.fullName}
+                company={input?.company}
+                linkedinProfileUrl={input?.linkedinUrl}
+                initialLinkedinProfile={linkedinProfile}
+              />
             )}
+
             <div className="flex justify-between items-center">
               <div className="flex gap-1">
                 <Select
@@ -177,7 +259,7 @@ export function MultimodalInput({
                     <SelectItem value="it">Italian</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
+                {/* <Button
                   type="button"
                   className="rounded-full hover:bg-sidebar hover:text-sidebar-primary-foreground text-muted-foreground "
                   variant="ghost"
@@ -187,7 +269,7 @@ export function MultimodalInput({
                   }}
                 >
                   {showLinkedinUrl ? 'Hide' : 'Add'} LinkedIn URL
-                </Button>
+                </Button> */}
               </div>
               <Button
                 type="submit"

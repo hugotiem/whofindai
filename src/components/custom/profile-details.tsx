@@ -11,7 +11,8 @@ import {
   Mail,
   Phone,
   LinkIcon,
-  ExternalLink
+  ExternalLink,
+  GraduationCap
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { APIProfile } from '@/app/api/completion/prompt';
@@ -68,48 +69,6 @@ export function ProfileDetails({
 
     loadProfile();
   }, [id]);
-
-  const getWebsiteInfo = async (
-    url: string
-  ): Promise<{ title: string | null; favicon: string | null }> => {
-    try {
-      // Fetch the HTML content
-      const response = await fetch(url);
-      const html = await response.text();
-
-      // Create a DOM parser
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      // Get the title
-      const title = doc.querySelector('title')?.textContent || null;
-
-      // Try different favicon possibilities
-      let favicon: string | null = null;
-
-      // Check for explicit favicon link
-      const faviconLink =
-        doc.querySelector('link[rel="icon"]') ||
-        doc.querySelector('link[rel="shortcut icon"]') ||
-        doc.querySelector('link[rel="apple-touch-icon"]');
-
-      if (faviconLink) {
-        const faviconHref = faviconLink.getAttribute('href');
-        if (faviconHref) {
-          // Handle relative URLs
-          favicon = new URL(faviconHref, url).href;
-        }
-      } else {
-        // Try the default favicon location
-        favicon = new URL('/favicon.ico', url).href;
-      }
-
-      return { title, favicon };
-    } catch (error) {
-      console.error('Error fetching website info:', error);
-      return { title: null, favicon: null };
-    }
-  };
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
@@ -195,8 +154,8 @@ export function ProfileDetails({
               </div>
 
               {/* Quick Stats */}
-              {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center space-x-2 mb-2">
                     <Briefcase className="w-5 h-5 text-[#7FFFD4]" />
                     <h3 className="text-white font-semibold">Experience</h3>
@@ -204,7 +163,7 @@ export function ProfileDetails({
                   <p className="text-gray-400 text-sm line-clamp-3">
                     {profile.missions}
                   </p>
-                </div>
+                </div> */}
 
                 <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center space-x-2 mb-2">
@@ -216,7 +175,7 @@ export function ProfileDetails({
                   </p>
                 </div>
 
-                <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
+                {/* <div className="bg-[#1C2128] rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center space-x-2 mb-2">
                     <MessageCircle className="w-5 h-5 text-[#7FFFD4]" />
                     <h3 className="text-white font-semibold">Communication</h3>
@@ -224,8 +183,8 @@ export function ProfileDetails({
                   <p className="text-gray-400 text-sm line-clamp-3">
                     {profile.communication_insights}
                   </p>
-                </div>
-              </div> */}
+                </div> */}
+              </div>
 
               {/* Detailed Sections */}
               <div className="space-y-4">
