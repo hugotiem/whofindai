@@ -94,9 +94,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!Array.isArray(profileData.seo_keywords)) {
-      throw new Error('seo_keywords must be an array');
-    }
+    // if (!Array.isArray(profileData.seo_keywords)) {
+    //   throw new Error('seo_keywords must be an array');
+    // }
 
     return NextResponse.json({ profile: profileData });
   } catch (error) {

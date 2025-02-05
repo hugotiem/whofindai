@@ -11,21 +11,19 @@ export const Overview = () => {
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.5 }}
     >
-      <div className="border rounded-lg p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
+      <div className="p-1 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
         {/* <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
           <VercelIcon />
           <span>+</span>
           <MessageIcon />
         </p> */}
-        <p className="font-bold">Welcome to WinAnyCall.com!</p>
-        <p>
-          We&apos;re in Beta, so while our AI is powerful, there may be occasional
-          inaccuracies; please verify sensitive details.
-        </p>
-        <p>
-          {' '}
-          Our new Google Chrome Extension now lets you generate profiles
-          directly from LinkedIn (available to all soon)
+        <h1 className="font-semibold text-5xl text-[#7FFFD4]">Hi there,</h1>
+        <h3 className="text-3xl text-white font-semibold">
+          Who would you like to know about?
+        </h3>
+        <p className="">
+          Get instant AI-generated insights about any professional. Discover
+          their role, communication style, and business context—all in seconds.
         </p>
         <p>
           Save time, boost confidence, and make your cold calls more effective.

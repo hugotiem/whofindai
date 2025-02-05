@@ -96,6 +96,8 @@ export function Chat({
     // }
   }, [setInput, input, from_storage, id, router, setCompletion, updateHistory]);
 
+  
+
   return (
     <>
       <div className="flex justify-end sticky top-10 items-center mb-6 container mx-auto">
@@ -103,7 +105,7 @@ export function Chat({
           <div className="flex gap-2">
             <button
               onClick={() => copyLink({ path: `/profile/${id}` })}
-              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'}`}
+              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#1C2128] hover:bg-[#1C2128]/80`}
             >
               <Share className={`w-4 h-4 mr-2`} />
               Share

@@ -1,92 +1,53 @@
+import { ProfileResponseSchema } from "@/lib/prompts/profile";
+
 export const promptContext =
   "You are an AI assistant helping sales professionals prepare for calls or meetings by creating profiles of prospects. Based on a person's name, company, and the product/service offered, you will generate a structured overview with actionable insights to help guide engagement.";
 
-export interface APIProfile {
+export interface APIProfile extends ProfileResponseSchema {
   id: string;
   userId: string;
   created_at: string;
   updated_at: string;
-  fullName: string;
-  company: string;
-  role: string;
-  email: string;
-  phone: string;
-  linkedin: string;
-  twitter: string;
-  ice_breaker: string[];
-  professional_overview: {
-    role_and_responsibilities: string;
-    background: string;
-    personality_traits: string;
-  };
-  company_overview: {
-    basic_info: string;
-    market_position: string;
-    challenges: string;
-    industry_trends: string;
-  };
-  engagement_insights: {
-    communication_tips: string;
-    key_questions: string[];
-  };
-  missions: string;
-  background: string;
-  education: string;
-  company_description: string;
-  personality_traits: string;
-  communication_insights: string;
-  country: string;
-  city: string;
-  industry: string;
-  seo_title: string;
-  seo_description: string;
-  seo_keywords: string[];
+  // seo_keywords: string[];
+  prompt: string;
+  citations: {
+    url: string;
+    title: string;
+    favicon: string;
+  }[];
 }
 
-export const systemPrompt = (
-  fullName: string,
-  company: string,
-  //   prompt: string
-  //   lang: string
-) => `You are a professional profile generator. Generate a detailed professional profile for the specified person and company.
-    Format the response as a valid JSON object with the following structure, ensuring all fields are filled and properly escaped:
-    {
-        "fullName": "${fullName}",
-        "company": "${company}",
-        "role": "Job Title",
-        "email": "Email address. If not available, return an empty string.",
-        "phone": "Phone number. Ensure the phone number is valid and accessible. If not available, return an empty string.",
-        "linkedin": "LinkedIn profile URL. If not available, return an empty string. Ensure the URL is valid and accessible.",
-        "twitter": "Twitter profile URL. If not available, return an empty string. Ensure the URL is valid and accessible.",
-        "ice_breaker": "List of ice breaker questions",
-        "professional_overview": {
-          "role_and_responsibilities": "Role and responsibilities",
-          "background": "Professional background, expertise and experience. If not available, return an empty string.",
-          "personality_traits": "Professional personality characteristics and soft skills",
-        }
-        "company_overview": {
-          "basic_info": "Basic information about the company ${company}",
-          "market_position": "Main competitors and market position",
-          "challenges": "Challenges and opportunities",
-          "industry_trends": "Industry trends and future outlook",
-        }
-        "engagement_insights": {
-          "communication_tips": "Communication tips and best practices",
-          "key_questions": "List of 4-5 open-ended questions, along with follow-ups, related to ${fullName}. Focus on engaging with the person and identifying any pain points or optimizations that ${fullName} may have.",
-        }
-        "missions": "short description in one sentence of Key responsibilities, missions and objectives",
-        "background": "Professional background, expertise and experience",
-        "education": "Educational background, provide a small description of the school/university attended",
-        "company_description": "company overview and the branch ${fullName} is working, Main competitors and market position",
-        "personality_traits": "Professional personality characteristics and soft skills",
-        "communication_insights": "Communication style, preferences and interpersonal approach",
-        "country": "Country name",
-        "city": "City name",
-        "industry": "Industry sector",
-        "seo_title": "SEO-friendly title",
-        "seo_description": "Brief SEO description",
-        "seo_keywords": ["keyword1", "keyword2", "keyword3"]
-    }`;
+export const systemPrompt = ({
+  fullName,
+  company,
+  // prompt,
+  // lang,
+  linkedinUrl
+}: PromptProps) => `*Reasoning Step:*
+
+1.⁠ ⁠*LinkedIn Profile Analysis:*
+   - *Extract Key Details:*  
+     Retrieve essential information from the ${linkedinUrl} profile, including current job title, responsibilities, previous experiences, education, and skills.
+   - *Focus on the Current Role:*  
+     Highlight specifics related to ${fullName}'s position at ${company}, emphasizing recent projects, achievements, and any indicators of sales relevance.
+
+2.⁠ ⁠*Supplementary Data Collection:*
+   - *Extended Research on ${fullName}:*  
+     Perform additional searches (news articles, blog posts, public mentions) to uncover further insights about ${fullName}.
+   - *Company Insights:*  
+     Investigate recent developments, industry trends, and press releases concerning ${company} to contextualize the prospect’s role within the broader business environment.
+
+3.⁠ ⁠*Synthesis and Profiling:*
+   - *Combine Data Sources:*  
+     Integrate information from the LinkedIn profile with findings from external sources to build a comprehensive view.
+   - *Highlight Sales-Relevant Insights:*  
+     Identify key strengths, challenges, or opportunities that could be leveraged in a sales context.
+   - *Generate a Concise, Actionable Profile:*  
+     Summarize the insights into a clear profile tailored for sales engagement, offering specific talking points or strategies for outreach.
+
+`;
+
+// In a second part, verify that the infos are valid by looking LinkedIn profile and all links from this page. Here is the Edouard Tiem's Linkedin Profile : ${linkedinUrl}`
 
 export const userPrompt = (
   fullName: string,
@@ -101,6 +62,7 @@ export interface PromptProps {
   id?: string;
   fullName: string;
   company: string;
-  prompt: string;
-  lang: string;
+  prompt?: string;
+  lang?: string;
+  linkedinUrl?: string;
 }

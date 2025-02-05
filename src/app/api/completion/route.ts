@@ -1,14 +1,40 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { APIProfile, PromptProps, systemPrompt, userPrompt } from './prompt';
+import { PromptProps, systemPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
+import {
+  // DynamicRetrievalMode,
+  // GoogleGenerativeAI    
+} from '@google/generative-ai';
+import { ProfileResponseSchema } from '@/lib/prompts/profile';
+// import { LinkedInProfile } from '@/lib/definitions';
+import { searchLinkedInProfile } from '../linkedin/actions';
+// Initialize Gemini
+// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
-
+// First, let's define interfaces for the grounding metadata
+// interface GroundingMetadata {
+//   citations: {
+//     startIndex: number;
+//     endIndex: number;
+//     url: string;
+//     title: string;
+//     snippet: string;
+//     publishedDate?: string;
+//   }[];
+//   searchQueries: string[];
+// }
 
 export async function POST(request: NextRequest) {
-  const { id, fullName, prompt, company, lang }: PromptProps =
+  const start = new Date();
+
+  const local = request.headers.get('accept-language')!.split(',')[1];
+
+  console.log('local', local);
+
+  const { id, fullName, prompt, company, lang, linkedinUrl }: PromptProps =
     await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
@@ -45,19 +71,40 @@ export async function POST(request: NextRequest) {
       }
 
       try {
+        const _linkedinUrl = linkedinUrl
+          ? { url: linkedinUrl }
+          : await searchLinkedInProfile(fullName, company, local);
+
+        const end = new Date();
+        const timeDifference = end.getTime() - start.getTime();
+        console.log(
+          'Time before generation:',
+          timeDifference / 1000,
+          'seconds'
+        );
+
+        console.log('linkedinUrl', _linkedinUrl);
+
+        // Step 2: Send initial response
+        // const stream = new TransformStream();
+        // const writer = stream.writable.getWriter();
+        // const encoder = new TextEncoder();
+
+        // Send the LinkedIn search result
+        // const initialResponse = {
+        //   status: 'searching',
+        //   linkedInProfile: linkedinUrl
+        // };
+        // await writer.write(
+        //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
+        // );
+
         const profile = await generateProfile({
           fullName,
           company,
           prompt,
-          lang
-          // onFinish: async (completion) => {
-
-          // const response = NextResponse.json({ completion });
-          // if (!trialSession && !session && !authorization) {
-          //   response.cookies.set('__trial_session', 'true');
-          // }
-          // return response;
-          // }
+          lang,
+          linkedinUrl: _linkedinUrl.url
         });
         const batch = adminDb.batch();
         const profileRef = adminDb.collection('profiles').doc(id);
@@ -66,6 +113,7 @@ export async function POST(request: NextRequest) {
           userId: uid,
           lang,
           createdAt: admin.firestore.Timestamp.now()
+          // ...(profile.sources && { sources: profile.sources })
         });
 
         const userRef = adminDb.collection('users').doc(uid);
@@ -84,6 +132,15 @@ export async function POST(request: NextRequest) {
           });
         }
 
+        // return NextResponse.json({ profile });
+
+        // const finalResponse = {
+        //   status: 'complete',
+        //   profile
+        // };
+        // await writer.write(encoder.encode(JSON.stringify(finalResponse)));
+        // await writer.close();
+
         return NextResponse.json({ profile });
       } catch (e) {
         console.error('API error', e);
@@ -98,11 +155,15 @@ export async function POST(request: NextRequest) {
     }
   } else {
     try {
+      const _linkedinUrl = linkedinUrl
+        ? { url: linkedinUrl }
+        : await searchLinkedInProfile(fullName, company, local);
       const profile = await generateProfile({
         fullName,
         company,
         prompt,
-        lang
+        lang,
+        linkedinUrl: _linkedinUrl.url
       });
       return NextResponse.json({ profile });
     } catch (e) {
@@ -118,102 +179,241 @@ export async function POST(request: NextRequest) {
 const generateProfile = async ({
   fullName,
   company,
-  // prompt
-  // lang
-  // onFinish
-}: PromptProps & {
-  // onFinish?: (completion: string) => Promise<APIProfile>;
-}): Promise<APIProfile> => {
+  prompt,
+  lang,
+  linkedinUrl
+}: PromptProps): Promise<
+  ProfileResponseSchema & { citations: { url: string }[] }
+> => {
+  // return generateGeminiProfile({ fullName, company });
+  const date = new Date();
   try {
-    if (!fullName || !company) {
-      throw new Error('Full name and company are required');
-    }
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'sonar-reasoning-pro',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt({
+              fullName,
+              company,
+              prompt,
+              lang,
+              linkedinUrl
+            })
+          },
+          {
+            role: 'user',
+            content: `Profile for ${fullName} at ${company}. LinkedIn profile: ${linkedinUrl}`
+          }
+        ],
+        max_tokens: 2048,
+        temperature: 0.3
+      })
+    });
 
-    const response = await fetch(
-      `${process.env.PERPLEXITY_BASE_URL!}/chat/completions`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-online',
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt(fullName, company)
-            },
-            {
-              role: 'user',
-              content: userPrompt(fullName, company)
-            }
-          ],
-          max_tokens: 2048,
-          temperature: 0.7
-        })
-      }
-    );
+    // show date difference
+    const endDate = new Date();
+    const timeDifference = endDate.getTime() - date.getTime();
+    console.log('Time taken:', timeDifference / 1000, 'seconds');
 
-    if (!response.ok) {
-      throw new Error(
-        `API request failed: ${response.status} ${response.statusText}`
-      );
-    }
+    const jsonResponse = await response.json();
 
-    const data = await response.json();
+    const citations = jsonResponse.citations;
+    const content = jsonResponse.choices[0].message.content;
 
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid API response format: No content in response');
-    }
-
-    const content = data.choices[0].message.content.trim();
-
-    // Remove any potential markdown formatting or extra text
-    const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
-
-    let profileData: APIProfile;
+    let profileData: ProfileResponseSchema;
     try {
-      profileData = JSON.parse(jsonString);
+      // Try to parse the content directly first
+      profileData = JSON.parse(content);
     } catch (e) {
-      console.error('Failed to parse profile data:', jsonString);
-      throw new Error('Invalid JSON format in API response' + e);
-    }
-
-    // Validate required fields
-    const requiredFields = [
-      'fullName',
-      'company',
-      'role',
-      'missions',
-      'background',
-      'education',
-      'company_description',
-      'personality_traits',
-      'communication_insights',
-      'country',
-      'city',
-      'industry',
-      'seo_title',
-      'seo_description',
-      'seo_keywords'
-    ];
-    for (const field of requiredFields) {
-      if (!(field in profileData)) {
-        throw new Error(`Missing required field in API response: ${field}`);
+      // If direct parsing fails, try to clean the content
+      if (!(e instanceof SyntaxError)) {
+        console.error('Error', content);
+      }
+      const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+      try {
+        profileData = JSON.parse(jsonString);
+        console.log('profileData', profileData);
+      } catch (e) {
+        console.error('Failed to parse profile data:', content);
+        throw new Error('Invalid JSON format in API response: ' + e);
       }
     }
 
-    if (!Array.isArray(profileData.seo_keywords)) {
-      throw new Error('seo_keywords must be an array');
-    }
+    // const requiredFields = [
+    //   'fullName',
+    //   'company',
+    //   'role',
+    //   'missions',
+    //   'background',
+    //   'education',
+    //   'company_description',
+    //   'personality_traits',
+    //   'communication_insights',
+    //   'country',
+    //   'city',
+    //   'industry',
+    //   'seo_title',
+    //   'seo_description',
+    //   'seo_keywords'
+    // ];
 
-    return profileData;
-  } catch (error) {
-    console.error(
-      'Error generating profile:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
-    throw error;
+    // for (const field of requiredFields) {
+    //   if (!(field in profileData)) {
+    //     throw new Error(`Missing required field in API response: ${field}`);
+    //   }
+    // }
+
+    // if (!Array.isArray(profileData.seo_keywords)) {
+    //   throw new Error('seo_keywords must be an array');
+    // }
+
+    return {
+      ...profileData,
+      citations: citations.map((citation: string) => ({
+        url: citation
+      }))
+    };
+  } catch (e) {
+    console.error('Error generating profile:', e);
+    throw e;
   }
 };
+
+// const generateGeminiProfile = async ({
+//   fullName,
+//   company,
+//   linkedinUrl
+// }: PromptProps): Promise<EnhancedAPIProfile> => {
+//   try {
+//     if (!fullName || !company) {
+//       throw new Error('Full name and company are required');
+//     }
+
+//     // Get the model
+//     const model = genAI.getGenerativeModel({
+//       model: 'gemini-1.5-pro'
+//     });
+
+//     // Create prompt parts with explicit JSON instruction
+//     const prompt = [
+//       { text: systemPrompt({ fullName, company, linkedinUrl }) },
+//       { text: userPrompt(fullName, company) }
+//     ];
+//     // Generate content
+//     const result = await model.generateContent({
+//       contents: [
+//         {
+//           role: 'user',
+//           parts: prompt
+//         }
+//       ],
+//       // generationConfig: {},
+//       tools: [
+//         {
+//           googleSearchRetrieval: {
+//             dynamicRetrievalConfig: {
+//               mode: DynamicRetrievalMode.MODE_UNSPECIFIED
+//             }
+//           }
+//         }
+//       ]
+//     });
+
+//     const response = result.response;
+//     console.log('response', response);
+//     const content = response.text().trim();
+//     console.log('content', content);
+//     // Extract grounding metadata
+//     const groundingMetadata: GroundingMetadata = {
+//       citations: [],
+//       searchQueries: []
+//     };
+
+//     // // Get citations if available
+//     // if (response.candidates?.[0]?.citationMetadata?.citationSources) {
+//     //   groundingMetadata.citations =
+//     //     response.candidates[0].citationMetadata.citationSources.map((citation) => ({
+//     //       startIndex: citation.startIndex,
+//     //       endIndex: citation.endIndex,
+//     //       url: citation.uri,
+//     //       // title: citation.title,
+//     //       // snippet: citation.snippet,
+//     //       // publishedDate: citation.publishedDate
+//     //     }));
+//     // }
+
+//     // // Get search queries if available
+//     // if (response.promptFeedback?.) {
+//     //   groundingMetadata.searchQueries = response.promptFeedback.searchQueries;
+//     // }
+
+//     let profileData: APIProfile;
+//     try {
+//       // Try to parse the content directly first
+//       profileData = JSON.parse(content);
+//     } catch (e) {
+//       // If direct parsing fails, try to clean the content
+//       const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+//       try {
+//         profileData = JSON.parse(jsonString);
+//       } catch (e) {
+//         console.error('Failed to parse profile data:', content);
+//         throw new Error('Invalid JSON format in API response: ' + e);
+//       }
+//     }
+
+//     // Validate the JSON structure
+//     const requiredFields = [
+//       'fullName',
+//       'company',
+//       'role',
+//       'missions',
+//       'background',
+//       'education',
+//       'company_description',
+//       'personality_traits',
+//       'communication_insights',
+//       'country',
+//       'city',
+//       'industry',
+//       'seo_title',
+//       'seo_description',
+//       'seo_keywords'
+//     ];
+
+//     for (const field of requiredFields) {
+//       if (!(field in profileData)) {
+//         throw new Error(`Missing required field in API response: ${field}`);
+//       }
+//     }
+
+//     if (!Array.isArray(profileData.seo_keywords)) {
+//       throw new Error('seo_keywords must be an array');
+//     }
+
+//     // if (!Array.isArray(profileData.personality_traits)) {
+//     //   throw new Error('personality_traits must be an array');
+//     // }
+
+//     // Combine profile data with grounding metadata
+//     const enhancedProfile: EnhancedAPIProfile = {
+//       ...profileData,
+//       sources: groundingMetadata
+//     };
+
+//     return enhancedProfile;
+//   } catch (error) {
+//     console.error(
+//       'Error generating profile:',
+//       error instanceof Error ? error.message : 'Unknown error'
+//     );
+//     throw error;
+//   }
+// };

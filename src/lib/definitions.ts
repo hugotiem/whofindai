@@ -10,3 +10,9 @@ export type Profile = {
   lang: string;
   createdAt?: Date;
 }
+
+export type LinkedInProfile = {
+  profileImageUrl: string;
+  title: string;
+  url: string;
+}
