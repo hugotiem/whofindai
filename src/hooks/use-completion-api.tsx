@@ -41,6 +41,15 @@ export const useCompletionAPI = ({
   const router = useRouter();
 
   const fetchCompletion = async () => {
+    if (input.linkedinUrl) {
+      const response = await fetch('/api/linkedin/profile/scrap', {
+        method: 'POST',
+        body: JSON.stringify({ url: input.linkedinUrl })
+      });
+      const data = await response.json();
+      console.log(data);
+      return;
+    }
     if (!input || !input.prompt || !input.company || !input.fullName) return;
     setIsLoading(true);
     setCompletion(null);

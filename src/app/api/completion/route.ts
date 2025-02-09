@@ -1,31 +1,12 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PromptProps, systemPrompt } from './prompt';
+import { promptContext, PromptProps, systemPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
-import {
-  // DynamicRetrievalMode,
-  // GoogleGenerativeAI    
-} from '@google/generative-ai';
 import { ProfileResponseSchema } from '@/lib/prompts/profile';
-// import { LinkedInProfile } from '@/lib/definitions';
 import { searchLinkedInProfile } from '../linkedin/actions';
-// Initialize Gemini
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-
-// First, let's define interfaces for the grounding metadata
-// interface GroundingMetadata {
-//   citations: {
-//     startIndex: number;
-//     endIndex: number;
-//     url: string;
-//     title: string;
-//     snippet: string;
-//     publishedDate?: string;
-//   }[];
-//   searchQueries: string[];
-// }
+import { formatProfilePrompt } from '@/lib/prompts/profile/formatters';
 
 export async function POST(request: NextRequest) {
   const start = new Date();
@@ -199,17 +180,11 @@ const generateProfile = async ({
         messages: [
           {
             role: 'system',
-            content: systemPrompt({
-              fullName,
-              company,
-              prompt,
-              lang,
-              linkedinUrl
-            })
+            content:promptContext
           },
           {
             role: 'user',
-            content: `Profile for ${fullName} at ${company}. LinkedIn profile: ${linkedinUrl}`
+            content: formatProfilePrompt(fullName, company, prompt, linkedinUrl)
           }
         ],
         max_tokens: 2048,
@@ -226,6 +201,8 @@ const generateProfile = async ({
 
     const citations = jsonResponse.citations;
     const content = jsonResponse.choices[0].message.content;
+
+    console.log('content', content);
 
     let profileData: ProfileResponseSchema;
     try {
@@ -245,6 +222,8 @@ const generateProfile = async ({
         throw new Error('Invalid JSON format in API response: ' + e);
       }
     }
+
+    console.log('profileData', profileData);
 
     // const requiredFields = [
     //   'fullName',
