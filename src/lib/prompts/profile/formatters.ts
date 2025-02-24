@@ -1,11 +1,12 @@
 import { SECTIONS } from './sections';
 import { TEMPLATES } from './templates';
-
+import { ProfileData } from '@/app/api/completion/prompt';
 export function formatProfilePrompt(
   name: string,
   company: string,
   product?: string,
-  linkedinUrl?: string
+  linkedinUrl?: string,
+  linkedinProfile?: ProfileData
 ): string {
   // Build sections
   const formattedSections = Object.entries(SECTIONS)

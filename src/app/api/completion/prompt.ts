@@ -65,4 +65,32 @@ export interface PromptProps {
   prompt?: string;
   lang?: string;
   linkedinUrl?: string;
+  linkedinProfile?: ProfileData;
+}
+
+interface Experience {
+  companyName: string
+  occupation: string
+  location: string
+  duration?: {
+    startDate: string
+    endDate: string
+  }
+}
+
+interface Education {
+  schoolName: string
+  degree: string
+}
+
+export interface ProfileData {
+  fullName: string
+  pictureUrl: string
+  company: string
+  education: Education[]
+  description: string
+  currentOccupation: string
+  headline: string
+  location: string
+  experiences: Experience[]
 }

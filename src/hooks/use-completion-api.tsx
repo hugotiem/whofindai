@@ -26,7 +26,24 @@ export const useCompletionAPI = ({
   const [completion, setCompletion] = useState<APIProfile | null>(
     initialCompletion || null
   );
+  const [linkedInData, setLinkedInData] = useState<{
+    url: string;
+    name: string;
+    pictureUrl: string;
+  } | null>(null);
+  const [sources, setSources] = useState<Array<{ url: string }>>([]);
+  const [status, setStatus] = useState<
+    'idle' | 'loading' | 'complete' | 'error'
+  >('idle');
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [thinking, setThinking] = useState<{
+    status: 'loading' | 'success' | 'not-started';
+    content: string;
+  } | null>({
+    status: 'not-started',
+    content: ''
+  });
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [input, setInput] = useState<CompletionInput>({
     fullName: initialCompletionInput?.full_name || '',
@@ -41,18 +58,12 @@ export const useCompletionAPI = ({
   const router = useRouter();
 
   const fetchCompletion = async () => {
-    if (input.linkedinUrl) {
-      const response = await fetch('/api/linkedin/profile/scrap', {
-        method: 'POST',
-        body: JSON.stringify({ url: input.linkedinUrl })
-      });
-      const data = await response.json();
-      console.log(data);
-      return;
-    }
     if (!input || !input.prompt || !input.company || !input.fullName) return;
-    setIsLoading(true);
+
+    setStatus('loading');
     setCompletion(null);
+    setError(null);
+
     try {
       const response = await fetch('/api/completion', {
         method: 'POST',
@@ -61,52 +72,93 @@ export const useCompletionAPI = ({
         },
         body: JSON.stringify({ ...input, id })
       });
-      if (!response.ok) throw Error('API Error', { cause: response.status });
-      const data = await response.json();
-      const profile = data.profile as APIProfile; //!session?.user ? data.substring(0, 500) : data;
-      setCompletion(profile);
-      if (session?.user) {
-        router.replace(`/profile/${id}`);
-        updateHistory(profile);
-      }
 
-      if (!session?.user) {
-        window.history.replaceState({}, '', `/profile/${id}`);
-        localStorage.setItem(
-          `/profile/${id}`,
-          JSON.stringify({
-            id,
-            userId: session?.user?.uid,
-            fullName: input.fullName,
-            company: input.company,
-            prompt: input.prompt,
-            content: data,
-            lang: input.lang
-          })
-        );
-      }
-      setIsLoading(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.cause === 402) {
-          setShowUpgradeDialog(true);
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const messages = chunk.split('\n').filter(Boolean);
+
+          for (const messageText of messages) {
+            const message = JSON.parse(messageText);
+
+            console.log('message', message.type);
+
+            switch (message.type) {
+              case 'linkedin':
+                if (message.status === 'success') {
+                  setLinkedInData(message.data);
+                }
+                break;
+
+              case 'sources':
+                if (message.status === 'success') {
+                  setSources(message.data);
+                }
+                break;
+
+              case 'thinking':
+                // if (message.status === 'success') {
+                console.log('message.data', message.status);
+                const thinking = {
+                  status: message.status,
+                  content: message.data?.content || ''
+                };
+                setThinking(thinking);
+                // }
+                break;
+
+              // case 'profile':
+              //   if (message.status === 'success') {
+              //     setCompletion(message.data);
+              //     setStatus('complete');
+
+              //     if (session?.user) {
+              //       router.replace(`/profile/${id}`);
+              //       updateHistory(message.data);
+              //     }
+              //   }
+              //   break;
+
+              case 'error':
+                setError(message.error);
+                setStatus('error');
+                break;
+            }
+          }
         }
-      } else {
-        console.error(error);
+      } finally {
+        reader.releaseLock();
       }
-      setIsLoading(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Unknown error');
+      setStatus('error');
+
+      if (error instanceof Error && 'cause' in error && error.cause === 402) {
+        setShowUpgradeDialog(true);
+      }
     }
   };
 
   return {
     completion,
-    isLoading,
+    linkedInData,
+    sources,
+    status,
+    error,
+    isLoading: status === 'loading',
     input,
     fetchCompletion,
     setInput,
     setCompletion,
     updateHistory,
     showUpgradeDialog,
-    setShowUpgradeDialog
+    setShowUpgradeDialog,
+    thinking
   };
 };

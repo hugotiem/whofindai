@@ -11,9 +11,7 @@ export const LinkedinProfile = ({
   // linkedinProfileUrl,
   initialLinkedinProfile
 }: {
-  fullName: string;
-  company: string;
-  // linkedinProfileUrl?: string;
+
   initialLinkedinProfile?: LinkedInProfile;
 }) => {
   const [linkedinProfile] = useState<

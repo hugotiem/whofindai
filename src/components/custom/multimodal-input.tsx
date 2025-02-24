@@ -166,7 +166,7 @@ export function MultimodalInput({
                     }));
                   }}
                 />
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger
                     className={cn(
                       !input?.fullName || !input?.company || isFinding
@@ -227,13 +227,13 @@ export function MultimodalInput({
                       </p>
                     )}
                   </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
               </div>
 
               {input?.linkedinUrl && (
                 <LinkedinProfile
-                  fullName={input?.fullName}
-                  company={input?.company}
+                  // fullName={input?.fullName}
+                  // company={input?.company}
                   // linkedinProfileUrl={input?.linkedinUrl}
                   initialLinkedinProfile={linkedinProfile}
                 />

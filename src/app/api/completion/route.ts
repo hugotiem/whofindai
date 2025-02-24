@@ -5,18 +5,30 @@ import { promptContext, PromptProps, systemPrompt } from './prompt';
 import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
 import { stripe } from '@/lib/stripe/client';
 import { ProfileResponseSchema } from '@/lib/prompts/profile';
-import { searchLinkedInProfile } from '../linkedin/actions';
 import { formatProfilePrompt } from '@/lib/prompts/profile/formatters';
+import { ProfileData } from './prompt';
+
+interface StreamMessage {
+  type: 'linkedin' | 'sources' | 'thinking' | 'profile';
+  status: 'loading' | 'success' | 'error';
+  data?: any;
+  error?: string;
+}
 
 export async function POST(request: NextRequest) {
   const start = new Date();
 
   const local = request.headers.get('accept-language')!.split(',')[1];
 
-  console.log('local', local);
-
-  const { id, fullName, prompt, company, lang, linkedinUrl }: PromptProps =
-    await request.json();
+  const {
+    id,
+    fullName,
+    prompt,
+    company,
+    lang,
+    linkedinUrl,
+    linkedinProfile
+  }: PromptProps = await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
   const session = request.cookies.get('__session')?.value;
@@ -51,102 +63,148 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
       }
 
-      try {
-        const _linkedinUrl = linkedinUrl
-          ? { url: linkedinUrl }
-          : await searchLinkedInProfile(fullName, company, local);
+      const encoder = new TextEncoder();
 
-        const end = new Date();
-        const timeDifference = end.getTime() - start.getTime();
-        console.log(
-          'Time before generation:',
-          timeDifference / 1000,
-          'seconds'
-        );
+      // Create a ReadableStream
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            const sendMessage = (message: StreamMessage) => {
+              controller.enqueue(
+                encoder.encode(JSON.stringify(message) + '\n')
+              );
+            };
 
-        console.log('linkedinUrl', _linkedinUrl);
+            // Phase 1: LinkedIn Profile
+            sendMessage({
+              type: 'linkedin',
+              status: 'loading'
+            });
 
-        // Step 2: Send initial response
-        // const stream = new TransformStream();
-        // const writer = stream.writable.getWriter();
-        // const encoder = new TextEncoder();
+            // const linkedInProfile =
+            //   linkedinUrl &&
+            //   (await fetch(
+            //     `${process.env.BASE_URL}/api/linkedin/profile/scrap`,
+            //     {
+            //       method: 'POST',
+            //       body: JSON.stringify({ url: linkedinUrl })
+            //     }
+            //   ).then(async (res) => {
+            //     if (!res.ok) {
+            //       throw new Error('Failed to fetch LinkedIn profile');
+            //     }
+            //     const data = await res.json();
+            //     return data.item;
+            //   }));
 
-        // Send the LinkedIn search result
-        // const initialResponse = {
-        //   status: 'searching',
-        //   linkedInProfile: linkedinUrl
-        // };
-        // await writer.write(
-        //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
-        // );
+            sendMessage({
+              type: 'linkedin',
+              status: 'success',
+              data: {
+                name: 'HUGO TIEM',
+                url: 'https://fr.linkedin.com/in/hugotiem'
+                // name: linkedInProfile?.fullName,
+                // url: linkedInProfile?.linkedinUrl,
+                // pictureUrl: linkedInProfile?.profilePicHighQuality
+              }
+            });
 
-        const profile = await generateProfile({
-          fullName,
-          company,
-          prompt,
-          lang,
-          linkedinUrl: _linkedinUrl.url
-        });
-        const batch = adminDb.batch();
-        const profileRef = adminDb.collection('profiles').doc(id);
-        batch.set(profileRef, {
-          ...profile,
-          userId: uid,
-          lang,
-          createdAt: admin.firestore.Timestamp.now()
-          // ...(profile.sources && { sources: profile.sources })
-        });
+            sendMessage({
+              type: 'thinking',
+              status: 'loading'
+            });
 
-        const userRef = adminDb.collection('users').doc(uid);
-        batch.set(
-          userRef,
-          { used_credits: admin.firestore.FieldValue.increment(1) },
-          { merge: true }
-        );
+            // Step 2: Send initial response
+            // const stream = new TransformStream();
+            // const writer = stream.writable.getWriter();
+            // const encoder = new TextEncoder();
 
-        await batch.commit();
+            // Send the LinkedIn search result
+            // const initialResponse = {
+            //   status: 'searching',
+            //   linkedInProfile: linkedinUrl
+            // };
+            // await writer.write(
+            //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
+            // );
 
-        if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
-          await stripe.billing.meterEvents.create({
-            event_name: 'generated_result',
-            payload: { value: '1', stripe_customer_id }
-          });
+            const profile = await generateProfile({
+              fullName,
+              company,
+              prompt,
+              lang,
+              linkedinUrl,
+              controller
+            });
+            // const batch = adminDb.batch();
+            // const profileRef = adminDb.collection('profiles').doc(id);
+            // batch.set(profileRef, {
+            //   ...profile,
+            //   userId: uid,
+            //   lang,
+            //   createdAt: admin.firestore.Timestamp.now()
+            //   // ...(profile.sources && { sources: profile.sources })
+            // });
+
+            // const userRef = adminDb.collection('users').doc(uid);
+            // batch.set(
+            //   userRef,
+            //   { used_credits: admin.firestore.FieldValue.increment(1) },
+            //   { merge: true }
+            // );
+
+            // await batch.commit();
+
+            // if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
+            //   await stripe.billing.meterEvents.create({
+            //     event_name: 'generated_result',
+            //     payload: { value: '1', stripe_customer_id }
+            //   });
+            // }
+
+            // // Send final profile data
+            // sendMessage({
+            //   type: 'profile',
+            //   status: 'success',
+            //   data: profile
+            // });
+
+            controller.close();
+          } catch (e) {
+            console.error('API error', e);
+            return NextResponse.json(
+              { error: 'No content generated' },
+              { status: 500 }
+            );
+          }
         }
-
-        // return NextResponse.json({ profile });
-
-        // const finalResponse = {
-        //   status: 'complete',
-        //   profile
-        // };
-        // await writer.write(encoder.encode(JSON.stringify(finalResponse)));
-        // await writer.close();
-
-        return NextResponse.json({ profile });
-      } catch (e) {
-        console.error('API error', e);
-        return NextResponse.json(
-          { error: 'No content generated' },
-          { status: 500 }
-        );
-      }
+      });
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive'
+        }
+      });
     } catch (e) {
       console.error('API error', e);
       return NextResponse.json({ error: e }, { status: 500 });
     }
   } else {
     try {
-      const _linkedinUrl = linkedinUrl
-        ? { url: linkedinUrl }
-        : await searchLinkedInProfile(fullName, company, local);
-      const profile = await generateProfile({
-        fullName,
-        company,
-        prompt,
-        lang,
-        linkedinUrl: _linkedinUrl.url
-      });
-      return NextResponse.json({ profile });
+      throw new Error('Not implemented');
+      // const _linkedinUrl = linkedinUrl
+      //   ? { url: linkedinUrl }
+      //   : await searchLinkedInProfile(fullName, company, local);
+      // const profile = await generateProfile({
+      //   fullName,
+      //   company,
+      //   prompt,
+      //   lang,
+      //   linkedinUrl: _linkedinUrl.url,
+      //   controller
+      // });
+      // return NextResponse.json({ profile });
     } catch (e) {
       console.error('API error', e);
       return NextResponse.json(
@@ -162,12 +220,17 @@ const generateProfile = async ({
   company,
   prompt,
   lang,
-  linkedinUrl
-}: PromptProps): Promise<
-  ProfileResponseSchema & { citations: { url: string }[] }
-> => {
+  linkedinUrl,
+  controller,
+  linkedinProfile
+}: PromptProps & {
+  controller: ReadableStreamDefaultController;
+  linkedinProfile?: ProfileData;
+}): Promise<ProfileResponseSchema & { citations: { url: string }[] }> => {
   // return generateGeminiProfile({ fullName, company });
   const date = new Date();
+  const encoder = new TextEncoder();
+
   try {
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -180,78 +243,161 @@ const generateProfile = async ({
         messages: [
           {
             role: 'system',
-            content:promptContext
+            content: promptContext
           },
           {
             role: 'user',
-            content: formatProfilePrompt(fullName, company, prompt, linkedinUrl)
+            content: formatProfilePrompt(
+              fullName,
+              company,
+              prompt,
+              linkedinUrl,
+              linkedinProfile
+            )
           }
         ],
         max_tokens: 2048,
-        temperature: 0.3
+        temperature: 0.3,
+        stream: true
       })
     });
 
-    // show date difference
-    const endDate = new Date();
-    const timeDifference = endDate.getTime() - date.getTime();
-    console.log('Time taken:', timeDifference / 1000, 'seconds');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    const jsonResponse = await response.json();
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let accumulatedContent = '';
+    let citations: string[] = [];
 
-    const citations = jsonResponse.citations;
-    const content = jsonResponse.choices[0].message.content;
+    let thinkingEnded = false;
 
-    console.log('content', content);
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(Boolean);
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+
+              // Handle citations if present
+              if (parsed.citations && parsed.citations.length > 0) {
+                citations = parsed.citations;
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: 'sources',
+                      status: 'success',
+                      data: citations.map((url) => ({ url }))
+                    }) + '\n'
+                  )
+                );
+              }
+
+              // Handle content streaming
+              const content = parsed.choices[0]?.message?.content;
+              if (content) {
+                // extract content between start and end of <thinking> and </thinking>
+                const start = content.indexOf('<think>');
+                const end = content.indexOf('</think>');
+                if (start !== -1 && !thinkingEnded) {
+                  const thinkingContent = content.slice(start + 7);
+
+                  if (end !== -1) {
+                    console.log(
+                      'thinkingEnded',
+                      thinkingContent.split('</think>')[0]
+                    );
+                    thinkingEnded = true;
+                    controller.enqueue(
+                      encoder.encode(
+                        JSON.stringify({
+                          type: 'thinking',
+                          status: 'success',
+                          data: {
+                            content: thinkingContent.split('</think>')[0]
+                          }
+                        }) + '\n'
+                      )
+                    );
+                  }
+
+                  // console.log('thinkingContent', thinkingContent);
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'thinking',
+                        status: 'loading',
+                        data: { content: thinkingContent }
+                      }) + '\n'
+                    )
+                  );
+                } else {
+                  // return content after </think>
+                  // const resultContent = ;
+                  // // console.log('resultContent', resultContent);
+                  // controller.enqueue(
+                  //   encoder.encode(
+                  //     JSON.stringify({
+                  //       type: 'profile',
+                  //       status: 'loading',
+                  //       data: { content: resultContent }
+                  //     }) + '\n'
+                  //   )
+                  // );
+                  accumulatedContent = content.slice(end + 7);
+                }
+              }
+            } catch (e) {
+              console.error('Error parsing streaming response:', e);
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
 
     let profileData: ProfileResponseSchema;
     try {
       // Try to parse the content directly first
-      profileData = JSON.parse(content);
+      profileData = JSON.parse(accumulatedContent);
     } catch (e) {
       // If direct parsing fails, try to clean the content
       if (!(e instanceof SyntaxError)) {
-        console.error('Error', content);
+        console.error('Error', accumulatedContent);
       }
-      const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
+      const jsonString = accumulatedContent
+        .replace(/```json\n?|\n?```/g, '')
+        .trim();
       try {
         profileData = JSON.parse(jsonString);
-        console.log('profileData', profileData);
+        // console.log('profileData', profileData);
       } catch (e) {
-        console.error('Failed to parse profile data:', content);
+        console.error('Failed to parse profile data:', accumulatedContent);
         throw new Error('Invalid JSON format in API response: ' + e);
       }
     }
 
-    console.log('profileData', profileData);
+    // console.log('profileData', profileData);
 
-    // const requiredFields = [
-    //   'fullName',
-    //   'company',
-    //   'role',
-    //   'missions',
-    //   'background',
-    //   'education',
-    //   'company_description',
-    //   'personality_traits',
-    //   'communication_insights',
-    //   'country',
-    //   'city',
-    //   'industry',
-    //   'seo_title',
-    //   'seo_description',
-    //   'seo_keywords'
-    // ];
-
-    // for (const field of requiredFields) {
-    //   if (!(field in profileData)) {
-    //     throw new Error(`Missing required field in API response: ${field}`);
-    //   }
-    // }
-
-    // if (!Array.isArray(profileData.seo_keywords)) {
-    //   throw new Error('seo_keywords must be an array');
-    // }
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'profile',
+          status: 'loading',
+          data: { content: profileData }
+        }) + '\n'
+      )
+    );
 
     return {
       ...profileData,

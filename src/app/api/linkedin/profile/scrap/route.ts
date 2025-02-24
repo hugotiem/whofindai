@@ -28,18 +28,30 @@ function cleanLinkedInUrl(url: string): string {
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
 
-  const cleanedUrl = cleanLinkedInUrl(url);
+  console.log('url', url);
 
-  const input = {
-    urls: [{ url: cleanedUrl }],
-    findContacts: false
-  };
+  try {
+    const cleanedUrl = cleanLinkedInUrl(url);
 
-  const { defaultDatasetId } = await client
-    .actor('supreme_coder/linkedin-profile-scraper')
-    .call(input);
+    console.log('cleanedUrl', cleanedUrl);
 
-  const { items } = await client.dataset(defaultDatasetId).listItems();
+    const input = { profileUrls: [cleanedUrl] };
 
-  return NextResponse.json({ item: items[0] });
+    const { defaultDatasetId } = await client
+      .actor('dev_fusion/Linkedin-Profile-Scraper')
+      .call(input);
+
+    const { items } = await client.dataset(defaultDatasetId).listItems();
+
+    console.log('items', items[0]);
+
+    if (!items[0] || items[0].error) {
+      return NextResponse.json({ error: 'profile not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ item: items[0] });
+  } catch (error) {
+    console.error('Error', error);
+    return NextResponse.json({ error: 'Error' }, { status: 500 });
+  }
 }

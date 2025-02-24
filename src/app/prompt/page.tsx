@@ -1,17 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  systemPrompt,
-  userPrompt
-} from '../api/completion/prompt';
+import { systemPrompt, userPrompt } from '../api/completion/prompt';
 import { Textarea } from '@/components/ui/textarea';
 import { MultimodalInput } from '@/components/custom/multimodal-input';
 import { CompletionInput } from '@/hooks/use-completion-api';
 
-import { ChatSkeleton } from '@/components/custom/chat-skeletion';
 import { cn } from '@/lib/utils';
-import { ProgressBar } from '@/components/custom/progress-bar';
+import { ProfileProgressBar } from '@/components/custom/progress-bar';
 import { SessionProvider } from '@/providers/sessionProvider';
 import Link from 'next/link';
 import { ProfileDetails } from '@/components/custom/profile-details';
@@ -90,11 +86,11 @@ export default function Prompt() {
           )}
         >
           <div className={cn('gap-4 w-full relative', isLoading && 'h-dvh')}>
-            {isLoading && <ChatSkeleton />}
+            {/* {isLoading && <ChatSkeleton />} */}
             {isLoading && (
               <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                 <div className=" text-white">
-                  <ProgressBar />
+                  <ProfileProgressBar linkedin={null} thinking={null} profile={null} />
                 </div>
               </div>
             )}
