@@ -1,47 +1,101 @@
-import { SECTIONS } from './sections';
-import { TEMPLATES } from './templates';
 import { ProfileData } from '@/app/api/completion/prompt';
+import { SECTION_REQUIREMENTS } from './instructions';
+// import { TEMPLATES } from './templates';
+
 export function formatProfilePrompt(
-  name: string,
-  company: string,
-  product?: string,
-  linkedinUrl?: string,
-  linkedinProfile?: ProfileData
+  profileData: ProfileData,
+  product: string
 ): string {
-  // Build sections
-  const formattedSections = Object.entries(SECTIONS)
-    .map(([_, section]) => {
-      return `${section.title} (REQUIRED)\n${section.points.map((point) => `• ${point}`).join('\n')}`;
+  // Format work experience
+  const experienceContext = profileData.experiences?.length
+    ? `\nWork Experience:\n${profileData.experiences
+        .map(
+          (exp) => `• ${exp.occupation} at ${exp.companyName}
+  Location: ${exp.location}
+  Duration: ${exp.duration ? `${exp.duration.startDate} to ${exp.duration.endDate}` : 'Not specified'}`
+        )
+        .join('\n')}`
+    : '';
+
+  // Format education
+  const educationContext = profileData.education?.length
+    ? `\nEducation:\n${profileData.education
+        .map((edu) => `• ${edu.degree} from ${edu.schoolName}`)
+        .join('\n')}`
+    : '';
+
+  const inputData = `
+Input Variables:
+• fullName: ${profileData.fullName}
+• pictureUrl: ${profileData.pictureUrl || 'Not provided'}
+• company: ${profileData.company}
+• description: ${profileData.description || 'Not provided'}
+• currentOccupation: ${profileData.currentOccupation || 'Not provided'}
+• headline: ${profileData.headline || 'Not provided'}
+• location: ${profileData.location || 'Not provided'}
+• product: ${product}${experienceContext}${educationContext}`;
+
+  const sections = Object.entries(SECTION_REQUIREMENTS)
+    .map(([section, { description, requirements }]) => {
+      return `${section}:\n${description}\n${requirements.map((req) => `• ${req}`).join('\n')}`;
     })
     .join('\n\n');
 
-  // Build formatting rules
-  const formattedRules = TEMPLATES.FORMATTING_RULES.map(
-    (rule) => `• ${rule}`
-  ).join('\n');
+  return `Generate a comprehensive sales profile for ${profileData.fullName} at ${profileData.company} regarding ${product}.
 
-  const linkedinContext = linkedinUrl
-    ? `\nLinkedIn Profile: ${linkedinUrl}`
-    : '';
-
-  return `Generate a comprehensive professional profile for ${name} at ${company}${product ? ` regarding ${product}` : ''}.${linkedinContext}
-
-CRITICAL: You MUST provide detailed information for ALL sections. Do not skip any section or provide placeholder content.
+${inputData}
 
 Required Sections:
-${formattedSections}
+${sections}
 
-Writing Guidelines:
-${formattedRules}
+Research Requirements:
+• When company information is not provided or incomplete:
+  - Research the company's business model, market position, and recent developments
+  - Look for news articles, press releases, and company website information
+  - Analyze industry reports and market trends
+  - Investigate competitors and market challenges
+  - Find recent company achievements or initiatives
 
-Return the information in the exact format specified in RESPONSE_FORMAT.
+• When education/experience information is limited:
+  - Research the mentioned institutions and companies
+  - Look for company reviews, culture, and work environment
+  - Find information about typical roles and responsibilities in similar positions
+  - Research industry standards and common career paths
 
-IMPORTANT:
-• Write content in natural paragraphs
-• Provide substantial, meaningful content for each field
-• Do not skip any required fields
-• Do not use placeholder text
-• Ensure all information is accurate and professional
-• Cross-verify information from multiple sources
-${linkedinUrl ? '• Use LinkedIn profile as primary source when available' : ''}`;
+• For engagement strategy:
+  - Research industry-specific challenges and trends
+  - Look for recent news or developments in the prospect's industry
+  - Investigate common pain points for similar roles/companies
+  - Research how similar companies have implemented or benefited from similar products
+
+Additional Guidelines:
+• Integrate insights from both LinkedIn data and supplementary external research
+• Ensure the profile is coherent, actionable, and directly applicable for sales outreach
+• Use clear and concise language, maintaining professional tone throughout
+• Cross-reference all research findings for accuracy and relevance
+• Prioritize recent information (within the last 2 years when possible)
+• The final answer must be a valid JSON object containing the following structure:
+{
+  "professionalOverview": {
+    "background": "string",
+    "achievements": ["string"],
+    "hobbiesAndPassions": ["string"]
+  },
+  "companyOverview": {
+    "currentRoleSummary": "string",
+    "companyDescription": "string",
+    "marketPosition": "string",
+    "recentDevelopments": "string",
+    "productFit": "string"
+  },
+  "engagementStrategy": {
+    "icebreakers": ["string", "string"],
+    "strategicQuestions": [
+      {
+        "question": "string",
+        "context": "string"
+      }
+    ]
+  }
+}`;
 }

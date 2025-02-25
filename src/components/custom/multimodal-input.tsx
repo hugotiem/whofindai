@@ -6,8 +6,7 @@ import React, {
   useEffect,
   useCallback,
   Dispatch,
-  SetStateAction,
-  useState
+  SetStateAction
 } from 'react';
 import { toast } from 'sonner';
 
@@ -26,16 +25,7 @@ import {
 } from '../ui/select';
 import { Label } from '../ui/label';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
-import { LinkedinProfile } from './linkedin-profile';
-import { Stars } from 'lucide-react';
-import { LinkedInProfile } from '@/lib/definitions';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '../ui/tooltip';
-import { cn } from '@/lib/utils';
+import { TooltipProvider } from '../ui/tooltip';
 export function MultimodalInput({
   input,
   setInput,
@@ -43,7 +33,7 @@ export function MultimodalInput({
   handleSubmit
 }: {
   input: CompletionInput | undefined;
-  setInput: Dispatch<SetStateAction<CompletionInput>>;
+  setInput?: Dispatch<SetStateAction<CompletionInput>>;
   isLoading: boolean;
   handleSubmit: (
     event?: {
@@ -52,10 +42,10 @@ export function MultimodalInput({
     chatRequestOptions?: ChatRequestOptions
   ) => void;
 }) {
-  const [isFinding, setIsFinding] = useState(false);
-  const [linkedinProfile, setLinkedinProfile] = useState<
-    LinkedInProfile | undefined
-  >(undefined);
+  // const [isFinding, setIsFinding] = useState(false);
+  // const [linkedinProfile, setLinkedinProfile] = useState<
+  //   LinkedInProfile | undefined
+  // >(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -71,12 +61,11 @@ export function MultimodalInput({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
     }
   };
-
   const onFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setInput((prev) => ({ ...prev, fullName: event.target.value }));
+    setInput?.((prev) => ({ ...prev, fullName: event.target.value }));
 
   const onCompanyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setInput((prev) => ({ ...prev, company: event.target.value }));
+    setInput?.((prev) => ({ ...prev, company: event.target.value }));
 
   const submitForm = useCallback(() => {
     handleSubmit(undefined);
@@ -119,7 +108,7 @@ export function MultimodalInput({
             placeholder="Please describe what the company is selling and the benefits it provides"
             value={input?.prompt}
             onChange={(value) => {
-              setInput((prev) => ({ ...prev, prompt: value.target.value }));
+              setInput?.((prev) => ({ ...prev, prompt: value.target.value }));
               localStorage.setItem(
                 'app.winanycall.com/prompt',
                 value.target.value
@@ -155,7 +144,7 @@ export function MultimodalInput({
           ) : (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-2">
-                <Input
+                {/* <Input
                   placeholder="LinkedIn URL"
                   className="focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-ring hover:text-sidebar-primary-foreground text-muted-foreground rounded-full"
                   value={input?.linkedinUrl}
@@ -165,7 +154,7 @@ export function MultimodalInput({
                       linkedinUrl: event.target.value
                     }));
                   }}
-                />
+                /> */}
                 {/* <Tooltip>
                   <TooltipTrigger
                     className={cn(
@@ -230,14 +219,14 @@ export function MultimodalInput({
                 </Tooltip> */}
               </div>
 
-              {input?.linkedinUrl && (
+              {/* {input?.linkedinUrl && (
                 <LinkedinProfile
                   // fullName={input?.fullName}
                   // company={input?.company}
                   // linkedinProfileUrl={input?.linkedinUrl}
                   initialLinkedinProfile={linkedinProfile}
                 />
-              )}
+              )} */}
 
               <div className="flex justify-between items-center">
                 <div className="flex gap-1">
@@ -245,7 +234,7 @@ export function MultimodalInput({
                     value={input?.lang || 'en'}
                     onValueChange={(value) => {
                       if (value !== input?.lang && value !== '') {
-                        setInput((prev) => ({ ...prev, lang: value }));
+                        setInput?.((prev) => ({ ...prev, lang: value }));
                         localStorage.setItem('app.winanycall.com/lang', value);
                       }
                     }}

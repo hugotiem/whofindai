@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { LinkedinProfile } from './linkedin-profile';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 

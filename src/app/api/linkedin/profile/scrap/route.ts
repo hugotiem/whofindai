@@ -21,7 +21,7 @@ function cleanLinkedInUrl(url: string): string {
 
     return `https://www.linkedin.com/in/${publicIdentifier}/`;
   } catch (error) {
-    throw new Error('Invalid LinkedIn URL');
+    throw new Error('Invalid LinkedIn URL', { cause: error });
   }
 }
 

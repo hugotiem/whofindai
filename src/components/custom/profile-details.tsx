@@ -11,13 +11,13 @@ import {
   Mail,
   Phone,
   LinkIcon,
-  ExternalLink,
+  // ExternalLink,
   GraduationCap
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { APIProfile } from '@/app/api/completion/prompt';
 import { LinkedInLogoIcon } from '@radix-ui/react-icons';
-import Link from 'next/link';
+// import Link from 'next/link';
 import { ExternalLinkCitation } from './external-link-citation';
 // type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -94,24 +94,26 @@ export function ProfileDetails({
                     <User className="w-12 h-12 text-[#7FFFD4] mt-1" />
                     <div className="flex-1">
                       <h2 className="text-2xl font-bold text-white mb-2">
-                        {profile.full_name}
+                        {profile.fullName}
                       </h2>
                       <div className="space-y-2 text-gray-400">
                         <div className="flex items-center space-x-2">
                           <Briefcase className="w-4 h-4 text-[#7FFFD4]" />
                           <span>
-                            {profile.role} at {profile.company}
+                              {/* {profile.role} at {profile.company} */}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <MapPin className="w-4 h-4 text-[#7FFFD4]" />
                           <span>
-                            {profile.city}, {profile.country}
+                            {/* {profile.city}, {profile.country} */}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Building2 className="w-4 h-4 text-[#7FFFD4]" />
-                          <span>{profile.industry}</span>
+                          <span>
+                            {/* {profile.industry} */}
+                          </span>
                         </div>
                       </div>
                       {profile.updated_at && (
@@ -131,23 +133,27 @@ export function ProfileDetails({
                   <div className="flex flex-col gap-2 text-gray-400">
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-[#7FFFD4]" />
-                      <span>{profile.contact_details?.email}</span>
+                      <span>
+                        {/* {profile.contact_details?.email} */}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-[#7FFFD4]" />
-                      <span>{profile.contact_details?.phone}</span>
+                      <span>
+                        {/* {profile.contact_details?.phone} */}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <LinkedInLogoIcon className="w-4 h-4 text-[#7FFFD4]" />
-                      <Link
-                        href={profile.contact_details?.linkedin || ''}
+                      {/* <Link
+                          href={profile.contact_details?.linkedin || ''}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center space-x-2"
                       >
                         <span>LinkedIn Profile</span>
                         <ExternalLink className="w-4 h-4 ml-2" />
-                      </Link>
+                      </Link> */}
                     </div>
                   </div>
                 </div>
@@ -171,7 +177,7 @@ export function ProfileDetails({
                     <h3 className="text-white font-semibold">Education</h3>
                   </div>
                   <p className="text-gray-400 text-sm line-clamp-3">
-                    {profile.education || 'No education information available'}
+                    {/* {profile.education || 'No education information available'} */}
                   </p>
                 </div>
 
@@ -210,9 +216,9 @@ export function ProfileDetails({
                     <div className="px-6 py-4 border-t border-gray-700">
                       <div className="text-gray-400 whitespace-pre-wrap">
                         <ul className="list-disc space-y-2 ml-4">
-                          {profile.ice_breakers?.map((ice_breaker, index) => (
+                          {/* {profile.ice_breakers?.map((ice_breaker, index) => (
                             <li key={index}>{ice_breaker}</li>
-                          ))}
+                          ))} */}
                         </ul>
                       </div>
                     </div>
@@ -243,19 +249,19 @@ export function ProfileDetails({
                         Role and Responsibilities
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.professional_overview?.responsibilities}
+                        {/* {profile.professional_overview?.responsibilities} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Professional Background
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.professional_overview?.background}
+                        {/* {profile.professional_overview?.background} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Personality Insights
                       </h4>
                       <div className="text-gray-400 whitespace-pre-wrap flex flex-wrap gap-2">
-                        {profile.professional_overview?.personality_traits.map(
+                        {/* {profile.professional_overview?.personality_traits.map(
                           (e, index) => (
                             <span
                               key={index}
@@ -264,7 +270,7 @@ export function ProfileDetails({
                               {e}
                             </span>
                           )
-                        )}
+                        )} */}
                       </div>
                     </div>
                   )}
@@ -294,25 +300,25 @@ export function ProfileDetails({
                         Basic Information
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.company_overview?.basic_info}
+                        {/* {profile.company_overview?.basic_info} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Market Position
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.company_overview?.market_position}
+                        {/* {profile.company_overview?.market_position} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Challenges and Opportunities
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.company_overview?.challenges}
+                        {/* {profile.company_overview?.challenges} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Industry Trends
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.company_overview?.industry_trends}
+                        {/* {profile.company_overview?.industry_trends} */}
                       </p>
                     </div>
                   )}
@@ -342,14 +348,14 @@ export function ProfileDetails({
                         Communication Tips
                       </h4>
                       <p className="text-gray-400 whitespace-pre-wrap">
-                        {profile.engagement_insights?.communication_tips}
+                        {/* {profile.engagement_insights?.communication_tips} */}
                       </p>
                       <h4 className="text-white font-semibold">
                         Key Questions
                       </h4>
                       <div className="text-gray-400 whitespace-pre-wrap">
                         <ul className="list-disc list-outside space-y-4 pl-4">
-                          {profile.engagement_insights?.key_questions?.map(
+                          {/* {profile.engagement_insights?.key_questions?.map(
                             (key_question, index) => (
                               <li key={index}>
                                 <span className="italic">
@@ -367,7 +373,7 @@ export function ProfileDetails({
                                 </span>
                               </li>
                             )
-                          )}
+                          )} */}
                         </ul>
                       </div>
                     </div>

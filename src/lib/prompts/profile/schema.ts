@@ -1,46 +1,55 @@
+export interface Experience {
+  companyName: string;
+  occupation: string;
+  location: string;
+  duration: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface Education {
+  schoolName: string;
+  degree: string;
+}
+
 export interface ProfileResponseSchema {
-  full_name: string;
-  company: string;
-  role: string;
-  education: string;
-  country: string;
-  city: string;
-  industry: string;
-  // seo_title: string;
-  // seo_description: string;
-  // seo_keywords: string[];
-  contact_details: {
-    email: string;
-    phone: string;
-    linkedin: string;
-  };
-  ice_breakers: string[];
-  professional_overview: {
-    // role: string;
-    responsibilities: string;
+  professionalOverview: {
     background: string;
-    personality_traits: string[];
+    achievements: string[];
+    hobbiesAndPassions: string[];
   };
-  engagement_insights: {
-    communication_tips: string;
-    key_questions: { question: string; follow_up: string }[];
+  companyOverview: {
+    currentRoleSummary: string;
+    companyDescription: string;
+    marketPosition: string;
+    recentDevelopments: string;
+    productFit: string;
   };
-  company_overview: {
-    basic_info: string;
-    market_position: string;
-    competitors: string[];
-    recent_developments: string;
-    challenges: string;
-    industry_trends: string[];
+  engagementStrategy: {
+    icebreakers: string[];
+    strategicQuestions: {
+      question: string;
+      context: string;
+    }[];
   };
-  personality_and_interests: {
-    interests: string[];
-    hobbies: string[];
-    philanthropy: string;
+  metadata: {
+    fullName: string;
+    pictureUrl: string;
+    company: string;
+    linkedin: string;
+    description: string;
+    currentOccupation: string;
+    headline: string;
+    location: string;
+    experiences: Experience[];
+    education: Education[];
+    product: string;
   };
+  // citations: string[];
 }
 
 export type CitationSection = {
   citations: string[];
-  [key: string]: string | string[];
+  [key: string]: string | string[] | object[];
 };

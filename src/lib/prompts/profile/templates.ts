@@ -1,63 +1,74 @@
 export const TEMPLATES = {
-  FORMATTING_RULES: [
-    'Use bullet points for clarity',
-    'Start each highlight with a strong action verb',
-    'Include specific metrics and numbers',
-    'Keep highlights concise (10-15 words max)',
-    'Focus on quantifiable achievements',
-    'Use industry-specific terminology',
-    'Highlight scope of responsibility'
-  ],
+  FORMATTING_GUIDELINES: {
+    general: [
+      'Use clear, professional language',
+      'Include specific metrics and achievements',
+      'Focus on relevance to product/service',
+      'Maintain actionable insights',
+      'Support claims with evidence'
+    ],
+    achievements: [
+      'Start with strong action verbs',
+      'Include quantifiable results',
+      'Highlight scope and impact',
+      'Focus on recent accomplishments',
+      'Connect to business value'
+    ]
+  },
 
-  HIGHLIGHT_CATEGORIES: [
-    'Leadership & Team Management',
-    'Budget & Financial Impact',
-    'Project Delivery & Success',
-    'Innovation & Technical Achievement',
-    'Business Growth & Revenue',
-    'Client Relations & Satisfaction',
-    'Process Improvement & Efficiency'
-  ],
+  ANALYSIS_CATEGORIES: {
+    professional: [
+      'Career Progression',
+      'Leadership Experience',
+      'Technical Expertise',
+      'Industry Knowledge',
+      'Project Management',
+      'Team Development',
+      'Strategic Planning'
+    ],
+    company: [
+      'Market Position',
+      'Business Model',
+      'Growth Trajectory',
+      'Competitive Landscape',
+      'Industry Challenges',
+      'Technology Stack',
+      'Strategic Initiatives'
+    ]
+  },
 
-  // Maintain existing schema structure
   RESPONSE_FORMAT: {
-    full_name: 'Full name',
-    company: 'Company name',
-    role: 'Current position',
-    country: 'Country',
-    city: 'City',
-    industry: 'Industry',
-    education: 'Education background',
-    contact_details: {
-      email: 'Email if available',
-      phone: 'Phone if available',
-      linkedin: 'LinkedIn URL'
+    professionalOverview: {
+      summary: 'Comprehensive professional background summary',
+      keyAchievements: 'List of significant accomplishments',
+      hobbiesAndPassions: 'Relevant personal interests'
     },
-    ice_breakers: 'Two relevant conversation starters',
-    professional_overview: {
-      responsibilities: 'Key responsibilities',
-      background: 'Professional background',
-      personality_traits: 'Key traits'
+    companyOverview: {
+      currentRole: 'Detailed current position description',
+      companyDescription: 'Company business model and focus',
+      marketContext: 'Market position and competitive landscape',
+      recentDevelopments: 'Recent company news and initiatives',
+      productRelevance: 'Connection to product/service value proposition'
     },
-    engagement_insights: {
-      communication_tips: 'Communication best practices',
-      key_questions: {
-        question: 'Main question',
-        follow_up: 'Follow-up'
+    engagementStrategy: {
+      icebreakers: 'Product-relevant conversation starters',
+      strategicQuestions: {
+        question: 'Pain point discovery question',
+        rationale: 'Question objective and relevance'
       }
     },
-    company_overview: {
-      basic_info: 'Company description',
-      market_position: 'Market position',
-      competitors: 'Main competitors',
-      recent_developments: 'Recent news',
-      challenges: 'Key challenges',
-      industry_trends: 'Major trends'
-    },
-    personality_and_interests: {
-      interests: 'Professional interests',
-      hobbies: 'Personal hobbies',
-      philanthropy: 'Philanthropic activities'
+    metadata: {
+      fullName: 'Full name of prospect',
+      pictureUrl: 'Profile picture URL',
+      company: 'Current company name',
+      linkedin: 'LinkedIn profile URL',
+      description: 'Professional summary/bio',
+      currentOccupation: 'Current role title',
+      headline: 'LinkedIn headline',
+      location: 'Geographic location',
+      experiences: 'Work history',
+      education: 'Educational background',
+      product: 'Product/service being sold'
     }
   }
 };

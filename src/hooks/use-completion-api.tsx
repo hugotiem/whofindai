@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useHistory } from './use-history';
-import { useSession } from './use-session';
-import { useRouter } from 'next/navigation';
+// import { useSession } from './use-session';
+// import { useRouter } from 'next/navigation';
 import { APIProfile } from '@/app/api/completion/prompt';
-
+import { ProfileData } from '@/app/api/completion/prompt';
 export interface CompletionInput {
   fullName: string;
   company: string;
   prompt: string;
   lang: string;
-  linkedinUrl?: string;
+  linkedinProfile: ProfileData;
 }
 
 interface UseCompletionAPIProps {
@@ -21,7 +21,7 @@ interface UseCompletionAPIProps {
 export const useCompletionAPI = ({
   id,
   initialCompletion,
-  initialCompletionInput
+  // initialCompletionInput
 }: UseCompletionAPIProps = {}) => {
   const [completion, setCompletion] = useState<APIProfile | null>(
     initialCompletion || null
@@ -36,7 +36,7 @@ export const useCompletionAPI = ({
     'idle' | 'loading' | 'complete' | 'error'
   >('idle');
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [thinking, setThinking] = useState<{
     status: 'loading' | 'success' | 'not-started';
     content: string;
@@ -45,17 +45,18 @@ export const useCompletionAPI = ({
     content: ''
   });
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [input, setInput] = useState<CompletionInput>({
-    fullName: initialCompletionInput?.full_name || '',
-    company: initialCompletionInput?.company || '',
-    prompt: '',
-    lang: 'en',
-    linkedinUrl: initialCompletionInput?.contact_details?.linkedin || ''
-  });
+  const [input, setInput] = useState<CompletionInput>();
+  // {
+  //   fullName: initialCompletionInput?.full_name || '',
+  //   company: initialCompletionInput?.company || '',
+  //   prompt: '',
+  //   lang: 'en',
+  //   linkedinProfile: initialCompletionInput?.linkedinProfile || ''
+  // }
 
   const { updateHistory } = useHistory();
-  const { session } = useSession();
-  const router = useRouter();
+  // const { session } = useSession();
+  // const router = useRouter();
 
   const fetchCompletion = async () => {
     if (!input || !input.prompt || !input.company || !input.fullName) return;

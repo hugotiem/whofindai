@@ -43,8 +43,8 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
           )}
         >
           <div>
-            <div className="font-bold">{profile.full_name}</div>
-            <div className="text-xs opacity-80">{profile.company}</div>
+            {/* <div className="font-bold">{profile.full_name}</div>
+            <div className="text-xs opacity-80">{profile.company}</div> */}
           </div>
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>

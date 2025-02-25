@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { systemPrompt, userPrompt } from '../api/completion/prompt';
+import {  userPrompt } from '../api/completion/prompt';
 import { Textarea } from '@/components/ui/textarea';
 import { MultimodalInput } from '@/components/custom/multimodal-input';
 import { CompletionInput } from '@/hooks/use-completion-api';
@@ -18,23 +18,17 @@ export default function Prompt() {
 
   const [usrPrompt, setUserPrompt] = useState('');
   const [sysPrompt, setSystemPrompt] = useState('');
-  const [input, setInput] = useState<CompletionInput>({
-    fullName: 'John Doe',
-    company: 'Acme Inc.',
-    prompt:
-      'ai tool to help sales professionals prepare for calls or meetings by creating profiles of prospects',
-    lang: 'en'
-  });
+  const [input] = useState<CompletionInput>();
 
   const [isLoading, setIsLoading] = useState(false);
   const [completion, setCompletion] = useState<APIProfile | null>(null);
 
   useEffect(() => {
-    const initialSysPrompt = localStorage.getItem('sysPrompt');
-    setSystemPrompt(
-      initialSysPrompt ||
-        systemPrompt({ fullName: '${fullName}', company: '${company}' })
-    );
+    // const initialSysPrompt = localStorage.getItem('sysPrompt');
+    // setSystemPrompt(
+    //   initialSysPrompt ||
+    //     // systemPrompt({ fullName: '${fullName}', company: '${company}' })
+    // );
     const initialUserPrompt = localStorage.getItem('userPrompt');
     setUserPrompt(initialUserPrompt || userPrompt('${fullName}', '${company}'));
   }, []);
@@ -46,10 +40,10 @@ export default function Prompt() {
       body: JSON.stringify({
         sysPrompt,
         userPrompt: usrPrompt
-          .replaceAll('${fullName}', input.fullName)
-          .replaceAll('${company}', input.company)
-          .replaceAll('${prompt}', input.prompt)
-          .replaceAll('${lang}', input.lang)
+            .replaceAll('${fullName}', input?.fullName || '')
+            .replaceAll('${company}', input?.company || '')
+            .replaceAll('${prompt}', input?.prompt || '')
+            .replaceAll('${lang}', input?.lang || '')
       })
     });
     const data = await completion.json();
@@ -102,7 +96,7 @@ export default function Prompt() {
           <div className="max-w-[750px] mx-auto">
             <MultimodalInput
               input={input}
-              setInput={setInput}
+              // setInput={setInput}
               isLoading={false}
               handleSubmit={handleSubmit}
             />

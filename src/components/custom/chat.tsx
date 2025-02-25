@@ -80,17 +80,25 @@ export function Chat({
     }
     const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
     const initialLang = localStorage.getItem('app.winanycall.com/lang');
-    if (initialPrompt && (!input.prompt || input.prompt === '')) {
-      setInput((prev) => ({
-        ...prev,
-        prompt: initialPrompt
-      }));
+
+    if (input && initialPrompt && (!input.prompt || input.prompt === '')) {
+      setInput((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          prompt: initialPrompt
+        };
+      });
     }
-    if (initialLang && (!input.lang || input.lang === '')) {
-      setInput((prev) => ({
-        ...prev,
-        lang: initialLang
-      }));
+
+    if (input && initialLang && (!input.lang || input.lang === '')) {
+      setInput((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          lang: initialLang
+        };
+      });
     }
     // if (messagesContainerRef.current) {
     //   messagesContainerRef.current.scrollTop =
@@ -215,16 +223,11 @@ export function Chat({
             <form className="flex flex-row my-auto gap-2 relative items-end w-full md:max-w-[600px] max-w-[calc(100dvw-32px) px-4 md:px-0">
               <MultimodalInput
                 input={input}
-                setInput={setInput}
+                // setInput={setInput}
                 handleSubmit={() => {
                   fetchCompletion();
-                  // handleSubmit(e);
-                  // companyInfo.handleSubmit(e);
-                  // meetingInfo.handleSubmit(e);
                 }}
                 isLoading={isLoading}
-                // stop={stop}
-                // append={append}
               />
             </form>
           )}

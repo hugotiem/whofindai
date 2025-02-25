@@ -1,9 +1,9 @@
 export const maxDuration = 60; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
-import { promptContext, PromptProps, systemPrompt } from './prompt';
-import { admin, adminAuth, adminDb } from '@/lib/firebase/admin';
-import { stripe } from '@/lib/stripe/client';
+import { promptContext, PromptProps } from './prompt';
+import {  adminAuth, adminDb } from '@/lib/firebase/admin';
+// import { stripe } from '@/lib/stripe/client';
 import { ProfileResponseSchema } from '@/lib/prompts/profile';
 import { formatProfilePrompt } from '@/lib/prompts/profile/formatters';
 import { ProfileData } from './prompt';
@@ -11,28 +11,33 @@ import { ProfileData } from './prompt';
 interface StreamMessage {
   type: 'linkedin' | 'sources' | 'thinking' | 'profile';
   status: 'loading' | 'success' | 'error';
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
 export async function POST(request: NextRequest) {
-  const start = new Date();
+  // const start = new Date();
 
-  const local = request.headers.get('accept-language')!.split(',')[1];
+  // const local = request.headers.get('accept-language')!.split(',')[1];
 
   const {
     id,
-    fullName,
-    prompt,
-    company,
+    // fullName,
+    product,
+    // company,
     lang,
-    linkedinUrl,
     linkedinProfile
   }: PromptProps = await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
   const session = request.cookies.get('__session')?.value;
   const authorization = request.headers.get('Authorization')?.split(' ')[1];
+
+  console.log('product', product);
+  console.log('linkedinProfile', JSON.stringify(linkedinProfile));
+  console.log('lang', lang);
+  console.log('authorization', authorization);
+  console.log('session', session);
 
   if (trialSession && !session && !authorization) {
     return NextResponse.json(
@@ -45,11 +50,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No id provided' }, { status: 400 });
   }
 
+  if (!linkedinProfile) {
+    return NextResponse.json(
+      { error: 'No linkedin profile provided' },
+      { status: 400 }
+    );
+  }
+
   if (session || authorization) {
     try {
-      const { uid } = session
-        ? ((await adminAuth.verifySessionCookie(session)) as { uid: string })
-        : await adminAuth.verifyIdToken(authorization!);
+      const { uid } = authorization
+        ? await adminAuth.verifyIdToken(authorization)
+        : ((await adminAuth.verifySessionCookie(session!)) as { uid: string });
       const user = await adminDb.collection('users').doc(uid).get();
       const usedCredits = user.data()?.used_credits || 0;
       const subscription_name = user.data()?.stripe_subscription_name;
@@ -128,12 +140,10 @@ export async function POST(request: NextRequest) {
             //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
             // );
 
-            const profile = await generateProfile({
-              fullName,
-              company,
-              prompt,
+            await generateProfile({
+              product,
               lang,
-              linkedinUrl,
+              linkedinProfile,
               controller
             });
             // const batch = adminDb.batch();
@@ -216,11 +226,8 @@ export async function POST(request: NextRequest) {
 }
 
 const generateProfile = async ({
-  fullName,
-  company,
-  prompt,
-  lang,
-  linkedinUrl,
+  product,
+  // lang,
   controller,
   linkedinProfile
 }: PromptProps & {
@@ -228,7 +235,7 @@ const generateProfile = async ({
   linkedinProfile?: ProfileData;
 }): Promise<ProfileResponseSchema & { citations: { url: string }[] }> => {
   // return generateGeminiProfile({ fullName, company });
-  const date = new Date();
+  // const date = new Date();
   const encoder = new TextEncoder();
 
   try {
@@ -240,6 +247,14 @@ const generateProfile = async ({
       },
       body: JSON.stringify({
         model: 'sonar-reasoning-pro',
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            schema: {
+              type: 'object'
+            }
+          }
+        },
         messages: [
           {
             role: 'system',
@@ -247,13 +262,7 @@ const generateProfile = async ({
           },
           {
             role: 'user',
-            content: formatProfilePrompt(
-              fullName,
-              company,
-              prompt,
-              linkedinUrl,
-              linkedinProfile
-            )
+            content: formatProfilePrompt(linkedinProfile!, product)
           }
         ],
         max_tokens: 2048,
@@ -274,6 +283,7 @@ const generateProfile = async ({
     let thinkingEnded = false;
 
     try {
+      let citationsReturned = false;
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -289,8 +299,14 @@ const generateProfile = async ({
               const parsed = JSON.parse(data);
 
               // Handle citations if present
-              if (parsed.citations && parsed.citations.length > 0) {
+              if (
+                parsed.citations &&
+                parsed.citations.length > 0 &&
+                !citationsReturned
+              ) {
+                console.log('citations', parsed.citations);
                 citations = parsed.citations;
+                citationsReturned = true;
                 controller.enqueue(
                   encoder.encode(
                     JSON.stringify({
@@ -328,18 +344,18 @@ const generateProfile = async ({
                         }) + '\n'
                       )
                     );
+                  } else {
+                    // console.log('thinkingContent', thinkingContent);
+                    controller.enqueue(
+                      encoder.encode(
+                        JSON.stringify({
+                          type: 'thinking',
+                          status: 'loading',
+                          data: { content: thinkingContent }
+                        }) + '\n'
+                      )
+                    );
                   }
-
-                  // console.log('thinkingContent', thinkingContent);
-                  controller.enqueue(
-                    encoder.encode(
-                      JSON.stringify({
-                        type: 'thinking',
-                        status: 'loading',
-                        data: { content: thinkingContent }
-                      }) + '\n'
-                    )
-                  );
                 } else {
                   // return content after </think>
                   // const resultContent = ;
@@ -357,7 +373,9 @@ const generateProfile = async ({
                 }
               }
             } catch (e) {
-              console.error('Error parsing streaming response:', e);
+              if (process.env.NODE_ENV !== 'production') {
+                console.error('Error parsing streaming response:', e);
+              }
             }
           }
         }
@@ -373,27 +391,31 @@ const generateProfile = async ({
     } catch (e) {
       // If direct parsing fails, try to clean the content
       if (!(e instanceof SyntaxError)) {
-        console.error('Error', accumulatedContent);
+        console.error('Error', e);
       }
       const jsonString = accumulatedContent
-        .replace(/```json\n?|\n?```/g, '')
+        .replace(/```json\n?|\n?```/g, '') // Remove JSON code block markers
+        .replace(/^```\s*\n|```\s*$/g, '') // Remove any remaining code block markers
+        .replace(/^\s*```\s*$\n?/gm, '') // Remove single line code markers
+        .replace(/>/g, '') // remove ">"
+        .replace(/json\n?|\n?json/g, '') // remove just json markers
         .trim();
       try {
         profileData = JSON.parse(jsonString);
         // console.log('profileData', profileData);
       } catch (e) {
-        console.error('Failed to parse profile data:', accumulatedContent);
+        console.error('Failed to parse profile data:', jsonString);
         throw new Error('Invalid JSON format in API response: ' + e);
       }
     }
 
-    // console.log('profileData', profileData);
+    console.log('profileData', profileData);
 
     controller.enqueue(
       encoder.encode(
         JSON.stringify({
           type: 'profile',
-          status: 'loading',
+          status: 'success',
           data: { content: profileData }
         }) + '\n'
       )

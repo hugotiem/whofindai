@@ -3,11 +3,12 @@ import { ProfileResponseSchema } from "@/lib/prompts/profile";
 export const promptContext =
   "You are an AI assistant helping sales professionals prepare for calls or meetings by creating profiles of prospects. Based on a person's name, company, and the product/service offered, you will generate a structured overview with actionable insights to help guide engagement.";
 
-export interface APIProfile extends ProfileResponseSchema {
+export interface APIProfile extends Omit<ProfileResponseSchema, 'citations'> {
   id: string;
   userId: string;
   created_at: string;
   updated_at: string;
+  fullName?: string;
   // seo_keywords: string[];
   prompt: string;
   citations: {
@@ -15,27 +16,23 @@ export interface APIProfile extends ProfileResponseSchema {
     title: string;
     favicon: string;
   }[];
-}
+  }
 
 export const systemPrompt = ({
-  fullName,
-  company,
-  // prompt,
-  // lang,
-  linkedinUrl
+  linkedinProfile
 }: PromptProps) => `*Reasoning Step:*
 
 1.⁠ ⁠*LinkedIn Profile Analysis:*
    - *Extract Key Details:*  
-     Retrieve essential information from the ${linkedinUrl} profile, including current job title, responsibilities, previous experiences, education, and skills.
+     Retrieve essential information from the ${linkedinProfile.pictureUrl} profile, including current job title, responsibilities, previous experiences, education, and skills.
    - *Focus on the Current Role:*  
-     Highlight specifics related to ${fullName}'s position at ${company}, emphasizing recent projects, achievements, and any indicators of sales relevance.
+     Highlight specifics related to ${linkedinProfile.fullName}'s position at ${linkedinProfile.company}, emphasizing recent projects, achievements, and any indicators of sales relevance.
 
 2.⁠ ⁠*Supplementary Data Collection:*
-   - *Extended Research on ${fullName}:*  
-     Perform additional searches (news articles, blog posts, public mentions) to uncover further insights about ${fullName}.
+   - *Extended Research on ${linkedinProfile.fullName}:*  
+     Perform additional searches (news articles, blog posts, public mentions) to uncover further insights about ${linkedinProfile.fullName}.
    - *Company Insights:*  
-     Investigate recent developments, industry trends, and press releases concerning ${company} to contextualize the prospect’s role within the broader business environment.
+     Investigate recent developments, industry trends, and press releases concerning ${linkedinProfile.company} to contextualize the prospect’s role within the broader business environment.
 
 3.⁠ ⁠*Synthesis and Profiling:*
    - *Combine Data Sources:*  
@@ -60,12 +57,9 @@ export const userPrompt = (
 
 export interface PromptProps {
   id?: string;
-  fullName: string;
-  company: string;
-  prompt?: string;
+  product: string;
   lang?: string;
-  linkedinUrl?: string;
-  linkedinProfile?: ProfileData;
+  linkedinProfile: ProfileData;
 }
 
 interface Experience {

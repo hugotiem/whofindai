@@ -1,40 +1,63 @@
-import { CORE_REQUIREMENTS, EXECUTION_RULES, FINAL_INSTRUCTIONS } from './instructions';
-import { RESPONSE_FORMAT } from './format';
+import {
+  CORE_REQUIREMENTS,
+  SECTION_REQUIREMENTS,
+  OUTPUT_REQUIREMENTS
+} from './instructions';
+import { TEMPLATES } from './templates';
 import type { ProfileResponseSchema } from './schema';
 
 export class ProfilePromptBuilder {
   private static buildSystemMessage(): string {
-    return "AI assistant generating structured prospect profiles for sales professionals. Create insights based on person's name, company, and product/service. Use the LinkedIn profile URL if available.";
+    return `AI sales assistant generating comprehensive LinkedIn prospect profiles. Create detailed insights and engagement strategies based on the prospect's profile data and the product/service being sold. Focus on actionable sales intelligence and strategic conversation starters.`;
+  }
+
+  private static buildSectionRequirements(): string {
+    return Object.entries(SECTION_REQUIREMENTS)
+      .map(
+        ([section, { description, requirements }]) =>
+          `${section}:\n${description}\n- ${requirements.join('\n- ')}`
+      )
+      .join('\n\n');
   }
 
   private static buildCoreRequirements(): string {
     return Object.entries(CORE_REQUIREMENTS)
-      .map(([, value]) => {
-        if (typeof value === 'string') return value;
-        if ('description' in value) return value.description;
-        return JSON.stringify(value);
-      })
-      .join('. ');
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
   }
 
   private static buildResponseFormat(): string {
-    return JSON.stringify({ format: RESPONSE_FORMAT }, null, 0);
+    return JSON.stringify(
+      {
+        format: TEMPLATES.RESPONSE_FORMAT,
+        formatting: TEMPLATES.FORMATTING_GUIDELINES,
+        analysis: TEMPLATES.ANALYSIS_CATEGORIES
+      },
+      null,
+      2
+    );
   }
 
   static buildPrompt(language: string = 'english'): string {
     return [
       this.buildSystemMessage(),
-      'Requirements:',
+      '\nSection Requirements:',
+      this.buildSectionRequirements(),
+      '\nCore Requirements:',
       this.buildCoreRequirements(),
-      'Format:',
+      '\nOutput Format:',
       this.buildResponseFormat(),
-      'Rules:',
-      EXECUTION_RULES.join('. '),
-      FINAL_INSTRUCTIONS.join('. '),
-      `Language: ${language}`
+      '\nOutput Rules:',
+      OUTPUT_REQUIREMENTS.join('\n'),
+      `\nLanguage: ${language}`
     ].join('\n');
   }
 }
 
 export type { ProfileResponseSchema };
-export { RESPONSE_FORMAT, CORE_REQUIREMENTS, EXECUTION_RULES, FINAL_INSTRUCTIONS };
+export {
+  TEMPLATES,
+  CORE_REQUIREMENTS,
+  SECTION_REQUIREMENTS,
+  OUTPUT_REQUIREMENTS
+};
