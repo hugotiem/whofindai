@@ -225,14 +225,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-const generateProfile = async ({
+export const generateProfile = async ({
   product,
   // lang,
   controller,
-  linkedinProfile
+  linkedinProfile,
+  sysPrompt,
+  userPrompt
 }: PromptProps & {
   controller: ReadableStreamDefaultController;
   linkedinProfile?: ProfileData;
+  sysPrompt?: string;
+  userPrompt?: string;
 }): Promise<ProfileResponseSchema & { citations: { url: string }[] }> => {
   // return generateGeminiProfile({ fullName, company });
   // const date = new Date();
@@ -258,11 +262,11 @@ const generateProfile = async ({
         messages: [
           {
             role: 'system',
-            content: promptContext
+            content: sysPrompt || promptContext
           },
           {
             role: 'user',
-            content: formatProfilePrompt(linkedinProfile!, product)
+            content: userPrompt || formatProfilePrompt(linkedinProfile!, product)
           }
         ],
         max_tokens: 2048,
@@ -404,8 +408,15 @@ const generateProfile = async ({
         profileData = JSON.parse(jsonString);
         // console.log('profileData', profileData);
       } catch (e) {
-        console.error('Failed to parse profile data:', jsonString);
-        throw new Error('Invalid JSON format in API response: ' + e);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Error', e);
+        }
+        try {
+          profileData = JSON.parse(`${jsonString}\n}`);
+        } catch (e) {
+          console.error('Failed to parse profile data:', jsonString);
+          throw new Error('Invalid JSON format in API response: ' + e);
+        }
       }
     }
 

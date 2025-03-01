@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { useCompletionAPI } from '@/hooks/use-completion-api';
 import { useSession } from '@/hooks/use-session';
 import { sendEmailAddressVerification } from '@/lib/firebase/auth';
-import { ProfileProgressBar } from './progress-bar';
 import { RefreshCw, Share } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
 
@@ -43,8 +42,6 @@ export function Chat({
     updateHistory,
     showUpgradeDialog,
     setShowUpgradeDialog,
-    linkedInData,
-    thinking
   } = useCompletionAPI({
     initialCompletionInput: profile,
     initialCompletion: profile,
@@ -183,11 +180,12 @@ export function Chat({
               {isLoading && !completion && (
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                   <div className=" text-white">
-                    <ProfileProgressBar
-                      linkedin={linkedInData}
+                    {/* <ProgressBar
+                      linkedInData={linkedInData}
                       thinking={thinking}
-                      profile={null}
-                    />
+                      completion={null}
+                      sources={null}
+                    /> */}
                   </div>
                 </div>
               )}
