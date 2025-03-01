@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id
+  email     String    @unique
+  profiles  Profile[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Profile {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  fullName           String?  @map("full_name")
+  prompt             String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  
+  // Professional Overview
+  background         String?
+  achievements       String[]
+  hobbiesAndPassions String[] @map("hobbies_and_passions")
+  
+  // Company Overview
+  currentRoleSummary String?  @map("current_role_summary")
+  companyDescription String?  @map("company_description")
+  marketPosition     String?  @map("market_position")
+  recentDevelopments String?  @map("recent_developments")
+  productFit         String?  @map("product_fit")
+  
+  // Metadata
+  pictureUrl         String?  @map("picture_url")
+  company            String?
+  linkedin           String?
+  description        String?
+  currentOccupation  String?  @map("current_occupation")
+  headline           String?
+  location           String?
+  product            String?
+  
+  // Relations
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences        Experience[]
+  education          Education[]
+  citations          Citation[]
+  icebreakers        Icebreaker[]
+  strategicQuestions StrategicQuestion[]
+
+  @@map("profiles")
+}
+
+model Experience {
+  id          String   @id @default(uuid())
+  profileId   String   @map("profile_id")
+  companyName String   @map("company_name")
+  occupation  String
+  location    String
+  startDate   String?  @map("start_date")
+  endDate     String?  @map("end_date")
+  
+  // Relations
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("experiences")
+}
+
+model Education {
+  id         String  @id @default(uuid())
+  profileId  String  @map("profile_id")
+  schoolName String  @map("school_name")
+  degree     String
+  
+  // Relations
+  profile    Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("education")
+}
+
+model Citation {
+  id        String  @id @default(uuid())
+  profileId String  @map("profile_id")
+  url       String
+  title     String
+  favicon   String?
+  
+  // Relations
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("citations")
+}
+
+model Icebreaker {
+  id        String  @id @default(uuid())
+  profileId String  @map("profile_id")
+  text      String
+  
+  // Relations
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("icebreakers")
+}
+
+model StrategicQuestion {
+  id        String  @id @default(uuid())
+  profileId String  @map("profile_id")
+  question  String
+  context   String
+  
+  // Relations
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("strategic_questions")
+} 

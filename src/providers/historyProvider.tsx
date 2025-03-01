@@ -1,8 +1,7 @@
 'use client';
 
 import { APIProfile } from '@/app/api/completion/prompt';
-import { db } from '@/lib/firebase/client';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteProfile } from '@/lib/prisma/actions';
 import { createContext, useState } from 'react';
 
 interface HistoryProviderContextType {
@@ -40,11 +39,11 @@ export const HistoryProvider = ({
     }
   };
 
-  const deleteHistory = (id: string) => {
-    const docRef = doc(db, 'profiles/', id);
-    deleteDoc(docRef).then(() => {
+  const deleteHistory = async (id: string) => {
+    const success = await deleteProfile(id);
+    if (success) {
       setHistory((prev) => prev.filter((e) => e.id !== id));
-    });
+    }
   };
 
   return (
