@@ -294,7 +294,7 @@ export default function Prompt() {
 
           <TabsContent value="editor" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-1 sticky top-32 self-start h-fit">
+              <div className="md:col-span-1 md:sticky top-4 self-start h-fit">
                 <PromptSelector onSelectPrompt={handleSelectPrompt} />
               </div>
               <div className="md:col-span-3">

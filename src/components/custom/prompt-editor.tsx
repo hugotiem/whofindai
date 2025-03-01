@@ -20,6 +20,7 @@ import {
   OUTPUT_REQUIREMENTS
 } from '@/lib/prompts/profile/instructions';
 import { TEMPLATES } from '@/lib/prompts/profile/templates';
+import { MessageSquare, Layers, CheckSquare, FileOutput } from 'lucide-react';
 
 export interface PromptEditorProps {
   initialPrompt?: string;
@@ -212,11 +213,23 @@ export function PromptEditor({
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="system">
-            <TabsList className="grid grid-cols-4 mb-4">
-              <TabsTrigger value="system">System Message</TabsTrigger>
-              <TabsTrigger value="sections">Section Requirements</TabsTrigger>
-              <TabsTrigger value="core">Core Requirements</TabsTrigger>
-              <TabsTrigger value="output">Output Requirements</TabsTrigger>
+            <TabsList className="flex w-full mb-4">
+              <TabsTrigger value="system" className="flex-1">
+                <MessageSquare className="w-4 h-4 sm:hidden" />
+                <span className="hidden sm:inline">System Message</span>
+              </TabsTrigger>
+              <TabsTrigger value="sections" className="flex-1">
+                <Layers className="w-4 h-4 sm:hidden" />
+                <span className="hidden sm:inline">Section Requirements</span>
+              </TabsTrigger>
+              <TabsTrigger value="core" className="flex-1">
+                <CheckSquare className="w-4 h-4 sm:hidden" />
+                <span className="hidden sm:inline">Core Requirements</span>
+              </TabsTrigger>
+              <TabsTrigger value="output" className="flex-1">
+                <FileOutput className="w-4 h-4 sm:hidden" />
+                <span className="hidden sm:inline">Output Requirements</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="system" className="space-y-4">
