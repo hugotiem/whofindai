@@ -10,11 +10,11 @@ import { Button } from '../../ui/button';
 interface GoogleButtonProps {
   autoLogin?: boolean;
   onClick?: () => void;
-  redirect_path?: string;
+  // redirect_path?: string;
 }
 
 const GoogleButton = ({
-  redirect_path,
+  // redirect_path,
   autoLogin = true,
   onClick
 }: GoogleButtonProps) => {
@@ -22,25 +22,15 @@ const GoogleButton = ({
   const [loading, setLoading] = useState(false);
   // const { showProgress } = useProgressBar();
 
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-
-    signInWithGoogle({ redirect_path });
-    // .then((_) => {
-    //   router.replace('/api/auth/session/create');
-    // })
-    // .catch((e) => {
-    //   setLoading(false);
-    // });
-  };
-
   return (
     <Button
       className="relative w-full"
-      onSubmit={() => {}}
-      onClick={autoLogin ? handleLogin : onClick}
+      // onSubmit={() => {}}
+      type="submit"
+      // onClick={(e) => {
+      //   e.preventDefault();
+      //   setLoading(true);
+      // }}
       variant="outline"
       // size="appXlFull"
     >

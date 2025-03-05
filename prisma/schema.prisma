@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  emailVerified    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  plan             Plan      @default(FREE)
+  profile          Profile[]
+  provider         String
+  stripeCustomerId String?
+}
+
+enum Plan {
+  FREE
+  PAY_AS_YOU_GO
+  PRO
+}
+
+model Profile {
+  id                 String       @id @default(cuid())
+  userId             String       @unique
+  fullName           String?
+  prompt             String?
+  background         String?
+  achievements       String[]
+  hobbiesAndPassions String[]
+  currentRoleSummary String?
+  companyDescription String?
+  marketPosition     String?
+  recentDevelopments String?
+  productFit         String?
+  pictureUrl         String?
+  company            String?
+  linkedin           String?
+  description        String?
+  currentOccupation  String?
+  headline           String?
+  location           String?
+  product            String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  experiences        Experience[]
+  user               User         @relation(fields: [userId], references: [id])
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  profileId   String
+  companyName String
+  occupation  String?
+  location    String?
+  startDate   String?
+  endDate     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  profile     Profile  @relation(fields: [profileId], references: [id])
+}
