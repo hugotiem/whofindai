@@ -10,18 +10,10 @@ export const metadata: Metadata = {
     'Elevate your sales game with AI-powered insights that boost your meetings.'
 };
 
-export default async function Login({
-  searchParams
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const params = await searchParams;
-
+export default async function Login() {
   return (
     <main className="h-dvh flex flex-col items-center justify-center mx-auto max-w-[300px] w-full space-y-3">
-      <SignInForm
-        redirect_path={params['redirect_path'] as string | undefined}
-      />
+      <SignInForm />
       <form action={signInWithGoogle} className="w-full">
         <GoogleButton />
       </form>

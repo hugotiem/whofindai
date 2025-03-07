@@ -1,32 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const jwt = request.cookies.get('__session')?.value;
-    if (!jwt)
+    const supabase = await createClient();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user)
       return NextResponse.json(
         { error: 'Unauthorized Error' },
         { status: 401 }
       );
-    const { uid, email } = await adminAuth.verifySessionCookie(jwt, true);
-    const userData = await adminDb.collection('users').doc(uid).get();
-    if (!userData.exists)
-      return NextResponse.json(
-        { error: 'Unauthorized Error' },
-        { status: 401 }
-      );
-    const user = userData.data()!;
-    if (!user.stripe_customer_id) {
-      const customer = await stripe.customers.create({ email });
-      await adminDb.collection('users').doc(uid).update({
-        stripe_customer_id: customer.id
+    let data = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { stripeCustomerId: true }
+    });
+    if (!data?.stripeCustomerId) {
+      const customer = await stripe.customers.create({ email: user.email });
+      data = await prisma.user.update({
+        where: { id: user.id },
+        data: { stripeCustomerId: customer.id },
+        select: { stripeCustomerId: true }
       });
-      user.stripe_customer_id = customer.id;
     }
     const customerSession = await stripe.customerSessions.create({
-      customer: user.stripe_customer_id,
+      customer: data.stripeCustomerId!,
       components: { pricing_table: { enabled: true } }
     });
     return NextResponse.json({

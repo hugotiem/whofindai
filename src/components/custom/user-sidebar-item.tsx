@@ -23,7 +23,7 @@ export const UserSidebarItem = () => {
   const [open, setOpen] = useState(false);
 
   const getFallback = () => {
-    const displayName = session?.user?.displayName;
+    const displayName = session?.user?.user_metadata?.full_name;
     if (!displayName || displayName.split(' ').length < 1) return '';
     const split = displayName.split(' ');
     const first = split[0];
@@ -38,27 +38,23 @@ export const UserSidebarItem = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="h-fit flex">
-              {session.user?.photoURL && (
+              {session.user?.user_metadata?.avatar_url && (
                 <Avatar>
                   <AvatarImage
-                    src={session.user.photoURL}
-                    alt={`${session?.user.displayName}'s avatar`}
+                    src={session.user.user_metadata.avatar_url}
+                    alt={`${session?.user.user_metadata.full_name}'s avatar`}
                   />
                   <AvatarFallback>{getFallback()}</AvatarFallback>
                 </Avatar>
               )}
               <div>
-                {session.user?.displayName && (
+                {session.user?.user_metadata?.full_name && (
                   <div className="font-semibold">
-                    {' '}
-                    {session.user.displayName}{' '}
+                    {session.user.user_metadata.full_name}
                   </div>
                 )}
                 {session.user?.email && (
-                  <div className="text-xs font-bold">
-                    {' '}
-                    {session.user.email}{' '}
-                  </div>
+                  <div className="text-xs font-bold">{session.user.email}</div>
                 )}
               </div>
             </SidebarMenuButton>
@@ -89,7 +85,7 @@ export const UserSidebarItem = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         <DialogContent>
-          <Settings />
+          <Settings user={session.user} />
         </DialogContent>
       </Dialog>
     </>

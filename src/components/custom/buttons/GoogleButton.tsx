@@ -1,39 +1,16 @@
 'use client';
 
-import { signInWithGoogle } from '@/lib/firebase/auth';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { Button } from '../../ui/button';
 // import { useProgressBar } from '@/hooks/use-progress-bar';
 
-interface GoogleButtonProps {
-  autoLogin?: boolean;
-  onClick?: () => void;
-  // redirect_path?: string;
-}
-
-const GoogleButton = ({
-  // redirect_path,
-  autoLogin = true,
-  onClick
-}: GoogleButtonProps) => {
-  // const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  // const { showProgress } = useProgressBar();
+const GoogleButton = () => {
+  const [loading] = useState(false);
 
   return (
-    <Button
-      className="relative w-full"
-      // onSubmit={() => {}}
-      type="submit"
-      // onClick={(e) => {
-      //   e.preventDefault();
-      //   setLoading(true);
-      // }}
-      variant="outline"
-      // size="appXlFull"
-    >
+    <Button className="relative w-full" type="submit" variant="outline">
       <Loader2
         className="animate-spin absolute"
         style={{

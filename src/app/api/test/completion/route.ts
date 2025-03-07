@@ -1,9 +1,9 @@
 export const maxDuration = 30;
 
-import { adminAuth } from '@/lib/firebase/admin';
 import { NextRequest, NextResponse } from 'next/server';
 import { ProfileData } from '@/app/api/completion/prompt';
 import { generateProfile } from '@/app/api/completion/route';
+import { createClient } from '@/lib/supabase/server';
 
 interface StreamMessage {
   type: 'linkedin' | 'sources' | 'thinking' | 'profile' | 'error';
@@ -13,12 +13,14 @@ interface StreamMessage {
 }
 
 export async function POST(request: NextRequest) {
-  const session = request.cookies.get('__session')?.value;
-  if (!session) {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { email } = await adminAuth.verifySessionCookie(session);
-  if (!email || !['edouard@tiemh.com', 'hugotiem@gmail.com'].includes(email)) {
+  if (!user.email || !['edouard@tiemh.com', 'hugotiem@gmail.com'].includes(user.email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { sysPrompt, userPrompt, linkedinProfile, lang } = await request.json();

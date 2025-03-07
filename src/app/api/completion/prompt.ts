@@ -1,22 +1,19 @@
-import { ProfileResponseSchema } from "@/lib/prompts/profile";
+import { ProfileResponseSchema } from '@/lib/prompts/profile';
 
 export const promptContext =
   "You are an AI assistant helping sales professionals prepare for calls or meetings by creating profiles of prospects. Based on a person's name, company, and the product/service offered, you will generate a structured overview with actionable insights to help guide engagement.";
 
 export interface APIProfile extends Omit<ProfileResponseSchema, 'citations'> {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   userId: string;
-  created_at: string;
-  updated_at: string;
-  fullName?: string;
-  // seo_keywords: string[];
-  prompt: string;
-  citations: {
-    url: string;
-    title: string;
-    favicon: string;
-  }[];
-  }
+  fullName: string | null;
+  product: string | null;
+  company: string | null;
+  linkedinUrl: string | null;
+  profileData: JSON | null;
+}
 
 export const systemPrompt = ({
   linkedinProfile
@@ -63,28 +60,29 @@ export interface PromptProps {
 }
 
 interface Experience {
-  companyName: string
-  occupation: string
-  location: string
+  companyName: string;
+  occupation: string;
+  location: string;
   duration?: {
-    startDate: string
-    endDate: string
-  }
+    startDate: string;
+    endDate: string;
+  };
 }
 
 interface Education {
-  schoolName: string
-  degree: string
+  schoolName: string;
+  degree: string;
 }
 
 export interface ProfileData {
-  fullName: string
-  pictureUrl: string
-  company: string
-  education: Education[]
-  description: string
-  currentOccupation: string
-  headline: string
-  location: string
-  experiences: Experience[]
+  fullName: string;
+  pictureUrl: string;
+  company: string;
+  education: Education[];
+  description: string;
+  currentOccupation: string;
+  headline: string;
+  location: string;
+  experiences: Experience[];
+  linkedinUrl: string;
 }

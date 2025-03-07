@@ -1,13 +1,13 @@
 'use client';
 
-import { APIProfile } from '@/app/api/completion/prompt';
 import { SidebarMenu } from '../ui/sidebar';
 import { useHistory } from '@/hooks/use-history';
 import { useEffect } from 'react';
 import { HistoryItem } from './history-item';
+import { HistoryItem as HistoryItemType } from '@/lib/definitions';
 
 interface HistoryProps {
-  initialHistory: APIProfile[];
+  initialHistory: HistoryItemType[];
 }
 
 export const History = ({ initialHistory }: HistoryProps) => {
@@ -21,7 +21,7 @@ export const History = ({ initialHistory }: HistoryProps) => {
     history.length > 0 && (
       <SidebarMenu>
         {history.map((profile) => (
-          <HistoryItem key={profile.id} profile={profile} />
+          <HistoryItem key={profile.id} {...profile} />
         ))}
       </SidebarMenu>
     )

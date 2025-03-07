@@ -1,4 +1,4 @@
-import { CirclePlus } from 'lucide-react';
+import { CirclePlus, Edit } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +8,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
 import { UserSidebarItem } from './custom/user-sidebar-item';
@@ -17,21 +16,32 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { HistorySkeleton } from './custom/history-skeleton';
 import AppIcon from './custom/icons/app-icon';
+import { User } from '@supabase/supabase-js';
 
-const items = [
-  {
-    title: 'New profile',
-    url: '/',
-    icon: CirclePlus
-  }
-];
+export function AppSidebar({ session }: { session: { user: User | undefined } }) {
+  const items = [
+    {
+      title: 'New profile',
+      url: '/prompt',
+      icon: CirclePlus
+    },
+    ...(session?.user?.email &&
+    ['edouard@tiemh.com', 'hugotiem@gmail.com'].includes(session.user.email)
+      ? [
+          {
+            title: 'Edit prompt',
+            url: '/prompt',
+            icon: Edit
+          }
+        ]
+      : [])
+  ];
 
-export function AppSidebar({ session }: { session: string | undefined }) {
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarHeader className="sticky top-0 z-50 bg-sidebar">
-          <div className=" z-50 bg-sidebar py-4">
+          <div className="z-50 bg-sidebar py-4">
             <Link href={'/'}>
               <AppIcon />
             </Link>
@@ -44,18 +54,17 @@ export function AppSidebar({ session }: { session: string | undefined }) {
               {session ? (
                 items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={{
-                          pathname: item.url,
-                          query: { init: true }
-                        }}
-                        as={item.url}
-                      >
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
+                    <Link
+                      href={{
+                        pathname: item.url,
+                        query: { init: true }
+                      }}
+                      as={item.url}
+                      className="flex items-center gap-2 w-full p-2 hover:bg-accent rounded-md"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
                   </SidebarMenuItem>
                 ))
               ) : (

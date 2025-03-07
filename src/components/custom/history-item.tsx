@@ -18,13 +18,14 @@ import { useHistory } from '@/hooks/use-history';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { APIProfile } from '@/app/api/completion/prompt';
 
 interface HistoryItemProps {
-  profile: APIProfile;
+  fullName: string;
+  company: string;
+  id: string;
 }
 
-export const HistoryItem = ({ profile }: HistoryItemProps) => {
+export const HistoryItem = ({ fullName, company, id }: HistoryItemProps) => {
   const { deleteHistory } = useHistory();
   const { copyLink } = useShare();
   const pathname = usePathname();
@@ -36,15 +37,15 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
     <SidebarMenuItem>
       <SidebarMenuButton className="h-fit pl-4" asChild>
         <Link
-          href={`/profile/${profile.id}`}
+          href={`/profile/${id}`}
           className={cn(
             'w-full text-ellipsis flex justify-between items-center',
-            pathname === `/profile/${profile.id}` ? 'bg-secondary' : ''
+            pathname === `/profile/${id}` ? 'bg-secondary' : ''
           )}
         >
           <div>
-            {/* <div className="font-bold">{profile.full_name}</div>
-            <div className="text-xs opacity-80">{profile.company}</div> */}
+            <div className="font-bold">{fullName}</div>
+            <div className="text-xs opacity-80">{company}</div>
           </div>
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
@@ -53,13 +54,13 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
               </SidebarMenuAction>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {profile.id && (
+              {id && (
                 <>
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.preventDefault();
                       setOpen(false);
-                      copyLink({ path: `/profile/${profile.id}` });
+                      copyLink({ path: `/profile/${id}` });
                     }}
                   >
                     <Share className="h-4 w-4 mr-4" />
@@ -68,8 +69,8 @@ export const HistoryItem = ({ profile }: HistoryItemProps) => {
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.preventDefault();
-                      deleteHistory(profile.id!);
-                      if (pathname.includes(profile.id!)) {
+                      deleteHistory(id);
+                      if (pathname.includes(id)) {
                         router.replace('/');
                       }
                     }}

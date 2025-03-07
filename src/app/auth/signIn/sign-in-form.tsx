@@ -4,14 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { signInWithEmail } from '@/lib/supabase/auth';
-import { useState } from 'react';
 import { useFormState } from 'react-dom';
 
-interface SignInFormProps {
-  redirect_path?: string;
-}
-
-export const SignInForm = ({ redirect_path }: SignInFormProps) => {
+export const SignInForm = () => {
   const initialState = {
     message: ''
   };
@@ -23,16 +18,8 @@ export const SignInForm = ({ redirect_path }: SignInFormProps) => {
       className="flex flex-col justify-center items-center mx-auto max-w-[300px] w-full space-y-3"
     >
       <div className="flex flex-col justify-center items-center mx-auto max-w-[300px] w-full space-y-3">
-        <Input
-          name="email"
-          type="email"
-          placeholder="Email"
-        />
-        <Input
-          name="password"
-          type="password"
-          placeholder="Password"
-        />
+        <Input name="email" type="email" placeholder="Email" />
+        <Input name="password" type="password" placeholder="Password" />
         <Button
           size="sm"
           variant="secondary"

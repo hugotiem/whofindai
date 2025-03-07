@@ -3,18 +3,19 @@
 import { useSession } from '@/hooks/use-session';
 import { Input } from '../ui/input';
 import { DialogHeader, DialogTitle } from '../ui/dialog';
-import { ThemeToggle } from './theme-toggle';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { useState } from 'react';
+import { User } from '@supabase/supabase-js';
 
-export const Settings = () => {
+export const Settings = ({ user }: { user: User }) => {
   const { session, deleteAccount, updateDisplayName } = useSession();
 
-  const [displayName, setDisplayName] = useState(
-    session?.user?.displayName || undefined
+  const [displayName, setDisplayName] = useState<string | undefined>(
+    user.user_metadata.full_name
   );
 
+  console.log('user', user);
   return (
     <>
       <DialogHeader>
@@ -27,9 +28,7 @@ export const Settings = () => {
             <div>
               <Label>Email</Label>
               <Input
-                disabled={
-                  session.user.providerData[0].providerId === 'google.com'
-                }
+                disabled={session.user.identities?.[0]?.provider === 'google'}
                 // onChange={(e) => {
 
                 // }}
@@ -47,7 +46,7 @@ export const Settings = () => {
                 />
                 <Button
                   disabled={
-                    session.user.displayName === displayName?.trim() &&
+                    user.user_metadata.full_name === displayName?.trim() &&
                     displayName !== undefined
                   }
                   onClick={(e) => {
@@ -65,10 +64,10 @@ export const Settings = () => {
         )}
 
         {/* Themes */}
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <Label>Theme</Label>
           <ThemeToggle />
-        </div>
+        </div> */}
 
         {/* app info */}
         <div></div>

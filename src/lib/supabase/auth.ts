@@ -6,15 +6,19 @@ import { createClient } from './server';
 
 import { redirect } from 'next/navigation';
 
-export async function signUpWithEmail(email: string, password: string) {
+export async function signUpWithEmail(
+  currentState: { message: string },
+  formData: FormData
+) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+    email: formData.get('email') as string,
+    password: formData.get('password') as string,
     options: {
       emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback`,
       data: {
         email_confirm: process.env.NODE_ENV !== 'production'
+        // full_name: formData.get('name') as string
       }
     }
   });
@@ -28,7 +32,7 @@ export async function signUpWithEmail(email: string, password: string) {
     }
 
     console.error('Error signing up with email', error);
-    return { error: error.message };
+    return { message: error.message };
   }
 
   if (!data?.user || !data.user.email) {
@@ -54,7 +58,7 @@ export async function signUpWithEmail(email: string, password: string) {
 }
 
 export async function signInWithEmail(
-  currentState: { message: string },
+  _: { message: string },
   formData: FormData
 ) {
   const supabase = await createClient();
@@ -86,6 +90,6 @@ export async function signInWithGoogle() {
   }
 
   if (data.url) {
-    redirect(data.url); // use the redirect API for your server framework
+    redirect(data.url);
   }
 }

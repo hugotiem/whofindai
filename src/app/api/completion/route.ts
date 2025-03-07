@@ -2,12 +2,14 @@ export const maxDuration = 60; // This function can run for a maximum of 60 seco
 
 import { NextRequest, NextResponse } from 'next/server';
 import { promptContext, PromptProps } from './prompt';
-import {  adminAuth, adminDb } from '@/lib/firebase/admin';
 // import { stripe } from '@/lib/stripe/client';
 import { ProfileResponseSchema } from '@/lib/prompts/profile';
 import { formatProfilePrompt } from '@/lib/prompts/profile/formatters';
 import { ProfileData } from './prompt';
-
+import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
+import { Plan, Prisma } from '@prisma/client';
+import { stripe } from '@/lib/stripe/client';
 interface StreamMessage {
   type: 'linkedin' | 'sources' | 'thinking' | 'profile';
   status: 'loading' | 'success' | 'error';
@@ -33,11 +35,10 @@ export async function POST(request: NextRequest) {
   const session = request.cookies.get('__session')?.value;
   const authorization = request.headers.get('Authorization')?.split(' ')[1];
 
-  console.log('product', product);
-  console.log('linkedinProfile', JSON.stringify(linkedinProfile));
-  console.log('lang', lang);
-  console.log('authorization', authorization);
-  console.log('session', session);
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser(authorization);
 
   if (trialSession && !session && !authorization) {
     return NextResponse.json(
@@ -57,19 +58,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (session || authorization) {
+  if (user || authorization) {
     try {
-      const { uid } = authorization
-        ? await adminAuth.verifyIdToken(authorization)
-        : ((await adminAuth.verifySessionCookie(session!)) as { uid: string });
-      const user = await adminDb.collection('users').doc(uid).get();
-      const usedCredits = user.data()?.used_credits || 0;
-      const subscription_name = user.data()?.stripe_subscription_name;
-      const stripe_customer_id = user.data()?.stripe_customer_id as string;
+      // const { uid } = authorization
+      //   ? await adminAuth.verifyIdToken(authorization)
+      //   : ((await adminAuth.verifySessionCookie(session!)) as { uid: string });
+      // const user = await adminDb.collection('users').doc(uid).get();
+      const userInfo = await prisma.user.findUnique({
+        where: { id: user?.id }
+      });
+      const usedCredits = userInfo?.usedCredits || 0;
+      const subscription_name = userInfo?.plan as Plan;
+      const stripe_customer_id = userInfo?.stripeCustomerId as string;
       if (
         usedCredits >= 5 &&
         (!subscription_name ||
-          subscription_name === 'free' ||
+          subscription_name === 'FREE' ||
           !stripe_customer_id)
       ) {
         return NextResponse.json({ error: 'Credits expired' }, { status: 402 });
@@ -126,26 +130,36 @@ export async function POST(request: NextRequest) {
               status: 'loading'
             });
 
-            // Step 2: Send initial response
-            // const stream = new TransformStream();
-            // const writer = stream.writable.getWriter();
-            // const encoder = new TextEncoder();
-
-            // Send the LinkedIn search result
-            // const initialResponse = {
-            //   status: 'searching',
-            //   linkedInProfile: linkedinUrl
-            // };
-            // await writer.write(
-            //   encoder.encode(JSON.stringify(initialResponse) + '\n'  )
-            // );
-
-            await generateProfile({
+            const profile = await generateProfile({
               product,
               lang,
               linkedinProfile,
               controller
             });
+
+            await prisma.user.update({
+              where: { id: user?.id },
+              data: {
+                usedCredits: usedCredits + 1,
+                profiles: {
+                  create: {
+                    linkedinUrl: linkedinProfile.linkedinUrl,
+                    company: linkedinProfile.company,
+                    product,
+                    fullName: linkedinProfile.fullName,
+                    profileData: profile as unknown as Prisma.InputJsonValue
+                  }
+                }
+              }
+            });
+
+            if (stripe_customer_id && subscription_name === 'PAY_AS_YOU_GO') {
+              await stripe.billing.meterEvents.create({
+                event_name: 'generated_result',
+                payload: { value: '1', stripe_customer_id }
+              });
+            }
+
             // const batch = adminDb.batch();
             // const profileRef = adminDb.collection('profiles').doc(id);
             // batch.set(profileRef, {
@@ -266,7 +280,8 @@ export const generateProfile = async ({
           },
           {
             role: 'user',
-            content: userPrompt || formatProfilePrompt(linkedinProfile!, product)
+            content:
+              userPrompt || formatProfilePrompt(linkedinProfile!, product)
           }
         ],
         max_tokens: 2048,

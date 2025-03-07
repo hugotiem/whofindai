@@ -73,6 +73,7 @@ export default function Prompt() {
     prompt: '',
     lang: 'english',
     linkedinProfile: {
+      linkedinUrl: 'https://www.linkedin.com/in/john-doe/',
       fullName: 'John Doe',
       company: 'Acme Inc.',
       pictureUrl: '',
