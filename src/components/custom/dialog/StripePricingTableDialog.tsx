@@ -6,14 +6,10 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 // import { useAnalytics } from '@/hooks/use-analytics';
 import { Loader2 } from 'lucide-react';
 import { getCustomerSessionClientSecret } from '@/lib/stripe/actions';
-import { useTheme } from 'next-themes';
-
 
 export const StripePricingTable = () => {
   const [clientSecret, setClientSecret] = useState<string>();
   // const { analytics } = useAnalytics();
-
-  const { theme } = useTheme();
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -33,10 +29,7 @@ export const StripePricingTable = () => {
 
   return clientSecret ? (
     React.createElement('stripe-pricing-table', {
-      'pricing-table-id':
-        theme === 'dark'
-          ? process.env.NEXT_PUBLIC_STRIPE_DARK_PRICING_TABLE_ID
-          : process.env.NEXT_PUBLIC_STRIPE_LIGHT_PRICING_TABLE_ID,
+      'pricing-table-id': process.env.NEXT_PUBLIC_STRIPE_DARK_PRICING_TABLE_ID,
       'publishable-key': process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY,
       'customer-session-client-secret': clientSecret
     })

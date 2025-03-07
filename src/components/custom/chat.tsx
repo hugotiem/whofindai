@@ -9,7 +9,6 @@ import { Overview } from './overview';
 import { cn } from '@/lib/utils';
 import { useCompletionAPI } from '@/hooks/use-completion-api';
 import { useSession } from '@/hooks/use-session';
-import { sendEmailAddressVerification } from '@/lib/firebase/auth';
 import { RefreshCw, Share } from 'lucide-react';
 import { useShare } from '@/hooks/use-share';
 
@@ -141,7 +140,7 @@ export function Chat({
           (!completion || isLoading) && 'h-full'
         )}
       >
-        {session?.user && !session.user.emailVerified && (
+        {session?.user && !session.user.email_confirmed_at && (
           <div className="w-full bg-foreground text-background p-4 text-sm font-semibold">
             <div>
               Your email {session?.user?.email} is not verified. Please verify
@@ -151,7 +150,7 @@ export function Chat({
                 className="cursor-pointer underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  sendEmailAddressVerification(session.user!);
+                  // sendEmailAddressVerification(session.user!);
                 }}
               >
                 here

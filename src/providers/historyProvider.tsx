@@ -1,15 +1,13 @@
 'use client';
 
-import { APIProfile } from '@/app/api/completion/prompt';
-import { db } from '@/lib/firebase/client';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { HistoryItem } from '@/lib/definitions';
 import { createContext, useState } from 'react';
 
 interface HistoryProviderContextType {
-  updateHistory: (profile: APIProfile) => void;
+  updateHistory: (profile: HistoryItem) => void;
   deleteHistory: (id: string) => void;
-  init: (profiles: APIProfile[]) => void;
-  history: APIProfile[];
+  init: (profiles: HistoryItem[]) => void;
+  history: HistoryItem[];
 }
 
 export const HistoryProviderContext = createContext<
@@ -21,9 +19,9 @@ export const HistoryProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [history, setHistory] = useState<APIProfile[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
-  const updateHistory = (profile: APIProfile) => {
+  const updateHistory = (profile: HistoryItem) => {
     if (history.find((e) => e.id === profile.id)) {
       setHistory((prev) => [
         profile,
@@ -34,17 +32,24 @@ export const HistoryProvider = ({
     }
   };
 
-  const init = (profiles: APIProfile[]) => {
+  const init = (profiles: HistoryItem[]) => {
     if (history.length === 0) {
       setHistory(profiles);
     }
   };
 
   const deleteHistory = (id: string) => {
-    const docRef = doc(db, 'profiles/', id);
-    deleteDoc(docRef).then(() => {
+    // TODO: delete history from supabase
+    fetch('/api/history', {
+      method: 'DELETE',
+      body: JSON.stringify({ id })
+    }).then(() => {
       setHistory((prev) => prev.filter((e) => e.id !== id));
     });
+    // const docRef = doc(db, 'profiles/', id);
+    // deleteDoc(docRef).then(() => {
+    //   setHistory((prev) => prev.filter((e) => e.id !== id));
+    // });
   };
 
   return (

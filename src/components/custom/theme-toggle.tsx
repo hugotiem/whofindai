@@ -26,7 +26,11 @@ export function ThemeToggle() {
         setTheme(theme === 'dark' ? 'light' : 'dark');
       }}
     >
-      {theme === 'dark' ? <MoonIcon className='h-4 w-4'/> : <Sun className='h-4 w-4'/>}
+      {theme === 'dark' ? (
+        <MoonIcon className="h-4 w-4" />
+      ) : (
+        <Sun className="h-4 w-4" />
+      )}
       {/* {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`} */}
     </Button>
   );

@@ -1,16 +1,15 @@
 import { Chat as PreviewChat } from '@/components/custom/chat';
-import { ChatSkeleton } from '@/components/custom/chat-skeletion';
-import { getProfileById } from '@/lib/firebase/actions';
 import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
-
+import { prisma } from '@/lib/prisma';
 export async function generateMetadata({
   params
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const profile = await getProfileById(id);
+  const profile = await prisma.profile.findUnique({
+    where: { id }
+  });
   return { title: `${profile?.fullName} - Winanycall` };
 }
 
@@ -25,11 +24,7 @@ export default async function Page({
 
   const from_storage = (await searchParams)['from_storage'] === 'true';
 
-  return (
-    <Suspense fallback={<ChatSkeleton />}>
-      <ChatPage id={id} from_storage={from_storage} />
-    </Suspense>
-  );
+  return <ChatPage id={id} from_storage={from_storage} />;
 }
 
 const ChatPage = async ({
@@ -39,7 +34,9 @@ const ChatPage = async ({
   id: string;
   from_storage: boolean;
 }) => {
-  const profile = await getProfileById(id);
+  const profile = await prisma.profile.findUnique({
+    where: { id }
+  });
 
   if (!profile && !from_storage) redirect('/');
   

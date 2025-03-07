@@ -1,11 +1,10 @@
 'use client';
 
-import { logout } from '@/lib/firebase/auth';
-import { auth, db } from '@/lib/firebase/client';
-import { signInWithCustomToken, updateProfile, User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { createClient } from '@/lib/supabase/client';
+import { User } from '@supabase/supabase-js';
 import { usePathname } from 'next/navigation';
 import { createContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface SessionProviderContextType {
   session: { user: User | undefined; plan?: string } | undefined;
@@ -23,55 +22,62 @@ export const SessionProvider = ({
   initialSession
 }: {
   children: React.ReactNode;
-  initialSession?: string;
+  initialSession?: { user: User | undefined; plan?: string };
 }) => {
-  const [session, setSession] = useState<{
-    user: User | undefined;
-    plan?: string;
-  }>({
-    user: auth.currentUser || undefined
-  });
+  const [session, setSession] = useState<
+    { user: User | undefined; plan?: string } | undefined
+  >(initialSession);
 
   const pathname = usePathname();
 
   const signOut = async () => {
-    logout().then(() => (window.location.href = '/api/auth/logout'));
+    fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+      const supabase = createClient();
+      supabase.auth.signOut().then(() => {
+        toast.success('Signed out');
+        window.location.reload();
+      });
+    });
   };
 
   const deleteAccount = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-    await user.delete();
-    await signOut();
+    fetch('/api/auth', { method: 'DELETE' }).then(() => {
+      const supabase = createClient();
+      supabase.auth.signOut().then(() => {
+        toast.success('Account deleted');
+        window.location.reload();
+      });
+    });
   };
 
   const updateDisplayName = async (displayName: string) => {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    await updateProfile(user, { displayName });
-    await user.reload();
-    setSession((prev) => ({ ...prev, user }));
+    const supabase = createClient();
+    supabase.auth
+      .updateUser({
+        data: {
+          full_name: displayName
+        }
+      })
+      .then(({ error }) => {
+        if (error) {
+          toast.error('Error updating display name');
+        } else {
+          toast.success('Display name updated');
+        }
+      });
   };
 
   useEffect(() => {
-    if (initialSession) {
-      signInWithCustomToken(auth, initialSession).then(async (credentials) => {
-        setSession((prev) => ({ ...prev, user: credentials.user }));
-        const docRef = doc(db, 'users', credentials.user.uid);
-        const userData = await getDoc(docRef);
-        if (userData.exists()) {
-          setSession((prev) => ({
-            ...prev,
-            plan: userData.data()?.stripe_subscription_name
-          }));
-        }
-      });
-    } else {
-      localStorage.removeItem('app.winanycall.com/prompt');
-      localStorage.removeItem('app.winanycall.com/lang');
-      // window.location.href = `/auth/signIn${pathname && `?redirect_path=${pathname}`}`;
-    }
+    const supabase = createClient();
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_UPDATED') {
+        console.log('USER_UPDATED', session);
+        setSession({
+          user: session?.user,
+          plan: session?.user.user_metadata.plan
+        });
+      }
+    });
   }, [initialSession, pathname]);
 
   return (

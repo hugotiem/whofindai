@@ -18,20 +18,19 @@ import { useParams } from 'next/navigation';
 import { APIProfile } from '@/app/api/completion/prompt';
 import { LinkedInLogoIcon } from '@radix-ui/react-icons';
 // import Link from 'next/link';
-import { ExternalLinkCitation } from './external-link-citation';
 // type Profile = Database['public']['Tables']['profiles']['Row'];
 
 // Add date formatting utility
-const formatDate = (dateString: string) => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short'
-  }).format(new Date(dateString));
-};
+// const formatDate = (dateString: string) => {
+//   return new Intl.DateTimeFormat('en-US', {
+//     year: 'numeric',
+//     month: 'long',
+//     day: 'numeric',
+//     hour: '2-digit',
+//     minute: '2-digit',
+//     timeZoneName: 'short'
+//   }).format(new Date(dateString));
+// };
 
 export function ProfileDetails({
   initialProfile
@@ -116,13 +115,13 @@ export function ProfileDetails({
                           </span>
                         </div>
                       </div>
-                      {profile.updated_at && (
+                      {/* {profile.updatedAt && (
                         <div className="mt-4 pt-4 border-t border-gray-700">
                           <p className="text-sm text-gray-500">
-                            Last updated: {formatDate(profile.updated_at)}
+                            Last updated: {formatDate(profile.updatedAt)}
                           </p>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
@@ -401,14 +400,14 @@ export function ProfileDetails({
                     <div className="px-6 py-4 border-t border-gray-700 space-y-4">
                       <div className="text-gray-400 whitespace-pre-wrap">
                         <ul className="list-disc space-y-3 ml-4">
-                          {profile.citations.map((citation, index) => (
+                          {/* {profile.citations.map((citation, index) => (
                             <li key={index} className="">
                               <ExternalLinkCitation
                                 citation={citation}
                                 profileId={profile.id}
                               />
                             </li>
-                          ))}
+                          ))} */}
                         </ul>
                       </div>
                     </div>
