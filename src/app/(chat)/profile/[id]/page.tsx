@@ -70,7 +70,6 @@ const ChatPage = async ({
       // initialCompletion={profile && profile.content}
       id={id}
       from_storage={from_storage}
-      showLoginButton
     />
   );
 };

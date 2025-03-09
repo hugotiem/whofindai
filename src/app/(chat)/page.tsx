@@ -19,7 +19,7 @@ export default async function Page({
       {isSubscribed && plan && (
         <CongratulationDialog initialOpen={true} plan={plan as string} />
       )}
-      <Chat /*key={id}*/ id={id} showLoginButton />
+      <Chat /*key={id}*/ id={id} />
     </>
   );
 }
