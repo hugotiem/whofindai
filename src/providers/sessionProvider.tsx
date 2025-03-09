@@ -69,15 +69,20 @@ export const SessionProvider = ({
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'USER_UPDATED') {
-        console.log('USER_UPDATED', session);
         setSession({
           user: session?.user,
           plan: session?.user.user_metadata.plan
         });
       }
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [initialSession, pathname]);
 
   return (
