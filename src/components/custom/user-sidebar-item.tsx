@@ -12,15 +12,20 @@ import {
 } from '../ui/dropdown-menu';
 import { Cog, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 import { Settings } from './settings';
 import { StripePricingTableDialog } from './dialog/StripePricingTableDialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 export const UserSidebarItem = () => {
   const { session, signOut } = useSession();
+
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [open, setOpen] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
 
   const getFallback = () => {
     const displayName = session?.user?.user_metadata?.full_name;
@@ -31,10 +36,35 @@ export const UserSidebarItem = () => {
     return `${first[0]} ${second[0]}`;
   };
 
+  useEffect(() => {
+    if (searchParams.get('ntod') === 'pricing') {
+      setOpen(true);
+    }
+    if (searchParams.get('ntod') === 'settings') {
+      setOpenSettings(true);
+    }
+  }, [searchParams]);
+
   return session?.user ? (
     <>
-      <StripePricingTableDialog open={open} setOpen={setOpen} />
-      <Dialog>
+      <StripePricingTableDialog
+        open={open}
+        setOpen={(value) => {
+          setOpen(value);
+          if (!value) {
+            router.replace('/');
+          }
+        }}
+      />
+      <Dialog
+        open={openSettings}
+        onOpenChange={(value) => {
+          setOpenSettings(value);
+          if (!value) {
+            router.replace('/');
+          }
+        }}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="h-fit flex">

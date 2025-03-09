@@ -19,6 +19,7 @@ export async function POST() {
       select: { stripeCustomerId: true }
     });
     if (!data?.stripeCustomerId) {
+      console.log(user.id);
       const customer = await stripe.customers.create({ email: user.email });
       data = await prisma.user.update({
         where: { id: user.id },
@@ -34,6 +35,7 @@ export async function POST() {
       customer_session_client_secret: customerSession.client_secret
     });
   } catch (e) {
+    console.error(e);
     return NextResponse.json({ error: e }, { status: 500 });
   }
 }

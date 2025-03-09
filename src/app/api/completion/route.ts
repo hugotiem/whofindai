@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
 
             await prisma.user.update({
               where: { id: user?.id },
-              data: { usedCredits: usedCredits + 1 }
+              data: { usedCredits: { increment: 1 } }
             });
 
             if (stripe_customer_id && subscription_name === 'PAY_AS_YOU_GO') {

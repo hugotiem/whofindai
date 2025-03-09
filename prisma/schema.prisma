@@ -32,6 +32,13 @@ model User {
   lastPaymentDate    DateTime?
 }
 
+model Session {
+  id           String @id @default(cuid())
+  code         String @unique
+  accessToken  String @unique
+  refreshToken String @unique
+}
+
 enum Plan {
   FREE
   PAY_AS_YOU_GO

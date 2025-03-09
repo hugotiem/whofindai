@@ -2,8 +2,6 @@
 
 import { useEffect } from 'react';
 
-// import { Message as PreviewMessage } from '@/components/custom/message';
-
 import { MultimodalInput } from './multimodal-input';
 import { Overview } from './overview';
 import { cn } from '@/lib/utils';
@@ -21,12 +19,9 @@ import { APIProfile } from '@/app/api/completion/prompt';
 export function Chat({
   id,
   profile,
-  // showLoginButton,
-  // initialCompletion,
   from_storage
 }: {
   id?: string;
-  showLoginButton: boolean;
   initialCompletion?: APIProfile;
   from_storage?: boolean;
   profile?: APIProfile;
@@ -40,7 +35,7 @@ export function Chat({
     setCompletion,
     updateHistory,
     showUpgradeDialog,
-    setShowUpgradeDialog,
+    setShowUpgradeDialog
   } = useCompletionAPI({
     initialCompletionInput: profile,
     initialCompletion: profile,
@@ -50,9 +45,6 @@ export function Chat({
   const { session } = useSession();
   const { copyLink } = useShare();
   const router = useRouter();
-
-  // const [messagesContainerRef, messagesEndRef] =
-  //   useScrollToBottom<HTMLDivElement>();
 
   useEffect(() => {
     if (from_storage) {
@@ -96,10 +88,6 @@ export function Chat({
         };
       });
     }
-    // if (messagesContainerRef.current) {
-    //   messagesContainerRef.current.scrollTop =
-    //     messagesContainerRef.current.scrollHeight;
-    // }
   }, [setInput, input, from_storage, id, router, setCompletion, updateHistory]);
 
   return (
@@ -191,12 +179,6 @@ export function Chat({
 
               {completion && (
                 <>
-                  {/* <PreviewMessage
-                    showLoginButton={showLoginButton}
-                    id={id}
-                    role={'system'}
-                    textContent={completion}
-                  /> */}
                   <ProfileDetails initialProfile={profile} />
                 </>
               )}
