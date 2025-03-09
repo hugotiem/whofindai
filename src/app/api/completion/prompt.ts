@@ -11,7 +11,7 @@ export interface APIProfile extends Omit<ProfileResponseSchema, 'citations'> {
   fullName: string | null;
   product: string | null;
   company: string | null;
-  linkedinUrl: string | null;
+  // linkedinUrl: string | null;
   profileData: JSON | null;
 }
 
