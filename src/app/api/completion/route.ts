@@ -97,31 +97,12 @@ export async function POST(request: NextRequest) {
               status: 'loading'
             });
 
-            // const linkedInProfile =
-            //   linkedinUrl &&
-            //   (await fetch(
-            //     `${process.env.BASE_URL}/api/linkedin/profile/scrap`,
-            //     {
-            //       method: 'POST',
-            //       body: JSON.stringify({ url: linkedinUrl })
-            //     }
-            //   ).then(async (res) => {
-            //     if (!res.ok) {
-            //       throw new Error('Failed to fetch LinkedIn profile');
-            //     }
-            //     const data = await res.json();
-            //     return data.item;
-            //   }));
-
             sendMessage({
               type: 'linkedin',
               status: 'success',
               data: {
-                name: 'HUGO TIEM',
-                url: 'https://fr.linkedin.com/in/hugotiem'
-                // name: linkedInProfile?.fullName,
-                // url: linkedInProfile?.linkedinUrl,
-                // pictureUrl: linkedInProfile?.profilePicHighQuality
+                name: linkedinProfile.fullName,
+                url: linkedinProfile.linkedinUrl
               }
             });
 
@@ -137,20 +118,29 @@ export async function POST(request: NextRequest) {
               controller
             });
 
+            await prisma.profile.upsert({
+              where: {
+                userId_linkedinUrl: {
+                  userId: user?.id as string,
+                  linkedinUrl: linkedinProfile.linkedinUrl
+                }
+              },
+              update: {
+                profileData: profile as unknown as Prisma.InputJsonValue
+              },
+              create: {
+                linkedinUrl: linkedinProfile.linkedinUrl,
+                company: linkedinProfile.company,
+                product,
+                fullName: linkedinProfile.fullName,
+                profileData: profile as unknown as Prisma.InputJsonValue,
+                user: { connect: { id: user?.id as string } }
+              }
+            });
+
             await prisma.user.update({
               where: { id: user?.id },
-              data: {
-                usedCredits: usedCredits + 1,
-                profiles: {
-                  create: {
-                    linkedinUrl: linkedinProfile.linkedinUrl,
-                    company: linkedinProfile.company,
-                    product,
-                    fullName: linkedinProfile.fullName,
-                    profileData: profile as unknown as Prisma.InputJsonValue
-                  }
-                }
-              }
+              data: { usedCredits: usedCredits + 1 }
             });
 
             if (stripe_customer_id && subscription_name === 'PAY_AS_YOU_GO') {
@@ -159,39 +149,6 @@ export async function POST(request: NextRequest) {
                 payload: { value: '1', stripe_customer_id }
               });
             }
-
-            // const batch = adminDb.batch();
-            // const profileRef = adminDb.collection('profiles').doc(id);
-            // batch.set(profileRef, {
-            //   ...profile,
-            //   userId: uid,
-            //   lang,
-            //   createdAt: admin.firestore.Timestamp.now()
-            //   // ...(profile.sources && { sources: profile.sources })
-            // });
-
-            // const userRef = adminDb.collection('users').doc(uid);
-            // batch.set(
-            //   userRef,
-            //   { used_credits: admin.firestore.FieldValue.increment(1) },
-            //   { merge: true }
-            // );
-
-            // await batch.commit();
-
-            // if (stripe_customer_id && subscription_name === 'pay_as_you_go') {
-            //   await stripe.billing.meterEvents.create({
-            //     event_name: 'generated_result',
-            //     payload: { value: '1', stripe_customer_id }
-            //   });
-            // }
-
-            // // Send final profile data
-            // sendMessage({
-            //   type: 'profile',
-            //   status: 'success',
-            //   data: profile
-            // });
 
             controller.close();
           } catch (e) {
@@ -463,135 +420,3 @@ export const generateProfile = async ({
     throw e;
   }
 };
-
-// const generateGeminiProfile = async ({
-//   fullName,
-//   company,
-//   linkedinUrl
-// }: PromptProps): Promise<EnhancedAPIProfile> => {
-//   try {
-//     if (!fullName || !company) {
-//       throw new Error('Full name and company are required');
-//     }
-
-//     // Get the model
-//     const model = genAI.getGenerativeModel({
-//       model: 'gemini-1.5-pro'
-//     });
-
-//     // Create prompt parts with explicit JSON instruction
-//     const prompt = [
-//       { text: systemPrompt({ fullName, company, linkedinUrl }) },
-//       { text: userPrompt(fullName, company) }
-//     ];
-//     // Generate content
-//     const result = await model.generateContent({
-//       contents: [
-//         {
-//           role: 'user',
-//           parts: prompt
-//         }
-//       ],
-//       // generationConfig: {},
-//       tools: [
-//         {
-//           googleSearchRetrieval: {
-//             dynamicRetrievalConfig: {
-//               mode: DynamicRetrievalMode.MODE_UNSPECIFIED
-//             }
-//           }
-//         }
-//       ]
-//     });
-
-//     const response = result.response;
-//     console.log('response', response);
-//     const content = response.text().trim();
-//     console.log('content', content);
-//     // Extract grounding metadata
-//     const groundingMetadata: GroundingMetadata = {
-//       citations: [],
-//       searchQueries: []
-//     };
-
-//     // // Get citations if available
-//     // if (response.candidates?.[0]?.citationMetadata?.citationSources) {
-//     //   groundingMetadata.citations =
-//     //     response.candidates[0].citationMetadata.citationSources.map((citation) => ({
-//     //       startIndex: citation.startIndex,
-//     //       endIndex: citation.endIndex,
-//     //       url: citation.uri,
-//     //       // title: citation.title,
-//     //       // snippet: citation.snippet,
-//     //       // publishedDate: citation.publishedDate
-//     //     }));
-//     // }
-
-//     // // Get search queries if available
-//     // if (response.promptFeedback?.) {
-//     //   groundingMetadata.searchQueries = response.promptFeedback.searchQueries;
-//     // }
-
-//     let profileData: APIProfile;
-//     try {
-//       // Try to parse the content directly first
-//       profileData = JSON.parse(content);
-//     } catch (e) {
-//       // If direct parsing fails, try to clean the content
-//       const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
-//       try {
-//         profileData = JSON.parse(jsonString);
-//       } catch (e) {
-//         console.error('Failed to parse profile data:', content);
-//         throw new Error('Invalid JSON format in API response: ' + e);
-//       }
-//     }
-
-//     // Validate the JSON structure
-//     const requiredFields = [
-//       'fullName',
-//       'company',
-//       'role',
-//       'missions',
-//       'background',
-//       'education',
-//       'company_description',
-//       'personality_traits',
-//       'communication_insights',
-//       'country',
-//       'city',
-//       'industry',
-//       'seo_title',
-//       'seo_description',
-//       'seo_keywords'
-//     ];
-
-//     for (const field of requiredFields) {
-//       if (!(field in profileData)) {
-//         throw new Error(`Missing required field in API response: ${field}`);
-//       }
-//     }
-
-//     if (!Array.isArray(profileData.seo_keywords)) {
-//       throw new Error('seo_keywords must be an array');
-//     }
-
-//     // if (!Array.isArray(profileData.personality_traits)) {
-//     //   throw new Error('personality_traits must be an array');
-//     // }
-
-//     // Combine profile data with grounding metadata
-//     const enhancedProfile: EnhancedAPIProfile = {
-//       ...profileData,
-//       sources: groundingMetadata
-//     };
-
-//     return enhancedProfile;
-//   } catch (error) {
-//     console.error(
-//       'Error generating profile:',
-//       error instanceof Error ? error.message : 'Unknown error'
-//     );
-//     throw error;
-//   }
-// };

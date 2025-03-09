@@ -29,8 +29,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const linkedinUrl = searchParams.get('linkedinUrl');
 
-    console.log('linkedinUrl', linkedinUrl);
-
     if (!linkedinUrl) {
       return NextResponse.json(
         { message: 'Linkedin URL is required' },
@@ -60,7 +58,12 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    console.log('history', history);
+    if (!history) {
+      return NextResponse.json(
+        { message: 'History not found' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ history });
   } catch (error) {
