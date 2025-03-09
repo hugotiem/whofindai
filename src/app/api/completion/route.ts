@@ -442,7 +442,12 @@ export const generateProfile = async ({
         JSON.stringify({
           type: 'profile',
           status: 'success',
-          data: { content: profileData }
+          data: {
+            content: {
+              ...profileData,
+              linkedinUrl: linkedinProfile?.linkedinUrl
+            }
+          }
         }) + '\n'
       )
     );

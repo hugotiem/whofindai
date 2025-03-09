@@ -46,6 +46,7 @@ export interface ProfileResponseSchema {
     education: Education[];
     product: string;
   };
+  linkedinUrl?: string;
   // citations: string[];
 }
 
