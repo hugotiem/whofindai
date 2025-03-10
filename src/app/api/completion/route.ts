@@ -1,4 +1,4 @@
-export const maxDuration = 60; // This function can run for a maximum of 60 seconds
+export const maxDuration = 120; // This function can run for a maximum of 60 seconds
 
 import { NextRequest, NextResponse } from 'next/server';
 import { promptContext, PromptProps } from './prompt';
@@ -18,8 +18,6 @@ interface StreamMessage {
 }
 
 export async function POST(request: NextRequest) {
-  // const start = new Date();
-
   // const local = request.headers.get('accept-language')!.split(',')[1];
 
   const {
@@ -340,6 +338,18 @@ export const generateProfile = async ({
                   //     }) + '\n'
                   //   )
                   // );
+
+                  // if (timeElapsed > 20000) {
+                  //   console.log('warning');
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'profile',
+                        status: 'loading'
+                      }) + '\n'
+                    )
+                  );
+                  // }
                   accumulatedContent = content.slice(end + 7);
                 }
               }

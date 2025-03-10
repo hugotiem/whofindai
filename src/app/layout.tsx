@@ -20,15 +20,16 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Winanycall.com - Know Your Prospects Like Never Before',
+  title: 'Leedinsight - Know Your Prospects Like Never Before',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.',
   icons: {
+    icon: '/icon.svg',
     apple: '/favicons/iPhone.png',
-    shortcut: '/favicon.ico'
+    shortcut: '/icon.svg'
   },
   openGraph: {
-    title: 'Winanycall.com - Know Your Prospects Like Never Before',
+    title: 'Leedinsight - Know Your Prospects Like Never Before',
     description:
       'Elevate your sales game with AI-powered insights that boost your meetings.',
     url: process.env.BASE_URL,

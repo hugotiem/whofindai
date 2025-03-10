@@ -15,10 +15,13 @@ import { HistorySidebarItem } from './custom/history-sidebar-item';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { HistorySkeleton } from './custom/history-skeleton';
-import AppIcon from './custom/icons/app-icon';
 import { User } from '@supabase/supabase-js';
 
-export function AppSidebar({ session }: { session: { user: User | undefined } }) {
+export function AppSidebar({
+  session
+}: {
+  session: { user: User | undefined };
+}) {
   const items = [
     {
       title: 'New profile',
@@ -41,9 +44,11 @@ export function AppSidebar({ session }: { session: { user: User | undefined } })
     <Sidebar>
       <SidebarContent>
         <SidebarHeader className="sticky top-0 z-50 bg-sidebar">
-          <div className="z-50 bg-sidebar py-4">
+          <div className="z-50 bg-sidebar py-4 px-2">
             <Link href={'/'}>
-              <AppIcon />
+            {/* add app green color */}
+              <h1 className="text-2xl font-bold text-[#7FFFD4]">Leedinsight</h1>
+              {/* <AppIcon /> */}
             </Link>
           </div>
         </SidebarHeader>

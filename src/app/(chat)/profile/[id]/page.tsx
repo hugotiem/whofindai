@@ -10,7 +10,7 @@ export async function generateMetadata({
   const profile = await prisma.profile.findUnique({
     where: { id }
   });
-  return { title: `${profile?.fullName} - Winanycall` };
+  return { title: `${profile?.fullName} - Leedinsight` };
 }
 
 export default async function Page({
@@ -39,7 +39,7 @@ const ChatPage = async ({
   });
 
   if (!profile && !from_storage) redirect('/');
-  
+
   return (
     <PreviewChat
       // profile={{
@@ -73,4 +73,3 @@ const ChatPage = async ({
     />
   );
 };
-

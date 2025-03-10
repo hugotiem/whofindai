@@ -1,6 +1,6 @@
-# Winanycall - AI-Powered Sales Call Assistant
+# Leedinsight - AI-Powered Sales Call Assistant
 
-Winanycall is a sophisticated web application that helps sales professionals prepare for calls and meetings by generating detailed prospect profiles and engagement strategies using AI.
+Leedinsight is a sophisticated web application that helps sales professionals prepare for calls and meetings by generating detailed prospect profiles and engagement strategies using AI.
 
 ## Features
 
@@ -27,7 +27,7 @@ Winanycall is a sophisticated web application that helps sales professionals pre
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd winanycall
+cd leedinsight
 ```
 
 2. Install dependencies:
@@ -110,7 +110,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For support, email hello@winanycall.com.
+For support, email hello@tiemh.com.
 
 ## Learn More
 

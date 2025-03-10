@@ -5,7 +5,7 @@ import GoogleButton from '@/components/custom/buttons/GoogleButton';
 import { signInWithGoogle } from '@/lib/supabase/auth';
 
 export const metadata: Metadata = {
-  title: 'Winanycall.com - Log In',
+  title: 'Leedinsight - Log In',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.'
 };

@@ -66,8 +66,8 @@ export function Chat({
         });
       }
     }
-    const initialPrompt = localStorage.getItem('app.winanycall.com/prompt');
-    const initialLang = localStorage.getItem('app.winanycall.com/lang');
+    const initialPrompt = localStorage.getItem('app.leedinsight.com/prompt');
+    const initialLang = localStorage.getItem('app.leedinsight.com/lang');
 
     if (input && initialPrompt && (!input.prompt || input.prompt === '')) {
       setInput((prev) => {

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { signInWithGoogle } from '@/lib/supabase/auth';
 
 export const metadata: Metadata = {
-  title: 'WinAnyCall.com - Sign up',
+  title: 'Leedinsight - Sign up',
   description:
     'Elevate your sales game with AI-powered insights that boost your meetings.'
 };

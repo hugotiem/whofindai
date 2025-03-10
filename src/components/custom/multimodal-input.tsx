@@ -110,7 +110,7 @@ export function MultimodalInput({
             onChange={(value) => {
               setInput?.((prev) => ({ ...prev, prompt: value.target.value }));
               localStorage.setItem(
-                'app.winanycall.com/prompt',
+                'app.leedinsight.com/prompt',
                 value.target.value
               );
             }}
@@ -235,7 +235,7 @@ export function MultimodalInput({
                     onValueChange={(value) => {
                       if (value !== input?.lang && value !== '') {
                         setInput?.((prev) => ({ ...prev, lang: value }));
-                        localStorage.setItem('app.winanycall.com/lang', value);
+                        localStorage.setItem('app.leedinsight.com/lang', value);
                       }
                     }}
                   >
