@@ -129,6 +129,7 @@ export async function POST(request: NextRequest) {
                 profileData: profile as unknown as Prisma.InputJsonValue
               },
               create: {
+                id: id,
                 linkedinUrl: linkedinProfile.linkedinUrl,
                 company: linkedinProfile.company,
                 product,
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
 
 export const generateProfile = async ({
   product,
-  // lang,
+  id,
   controller,
   linkedinProfile,
   sysPrompt,
@@ -401,8 +402,12 @@ export const generateProfile = async ({
           status: 'success',
           data: {
             content: {
-              ...profileData,
-              linkedinUrl: linkedinProfile?.linkedinUrl
+              id,
+              fullName: linkedinProfile?.fullName,
+              company: linkedinProfile?.company,
+              product,
+              linkedinUrl: linkedinProfile?.linkedinUrl,
+              profileData
             }
           }
         }) + '\n'
