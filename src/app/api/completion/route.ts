@@ -281,7 +281,6 @@ export const generateProfile = async ({
                 parsed.citations.length > 0 &&
                 !citationsReturned
               ) {
-                console.log('citations', parsed.citations);
                 citations = parsed.citations;
                 citationsReturned = true;
                 controller.enqueue(
@@ -305,10 +304,6 @@ export const generateProfile = async ({
                   const thinkingContent = content.slice(start + 7);
 
                   if (end !== -1) {
-                    console.log(
-                      'thinkingEnded',
-                      thinkingContent.split('</think>')[0]
-                    );
                     thinkingEnded = true;
                     controller.enqueue(
                       encoder.encode(
@@ -322,7 +317,6 @@ export const generateProfile = async ({
                       )
                     );
                   } else {
-                    // console.log('thinkingContent', thinkingContent);
                     controller.enqueue(
                       encoder.encode(
                         JSON.stringify({
@@ -392,8 +386,6 @@ export const generateProfile = async ({
         }
       }
     }
-
-    console.log('profileData', profileData);
 
     controller.enqueue(
       encoder.encode(

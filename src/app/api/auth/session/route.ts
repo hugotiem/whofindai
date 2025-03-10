@@ -57,8 +57,6 @@ export async function GET(request: NextRequest) {
     refresh_token: dbSession.refreshToken
   });
 
-  console.log(session);
-
   if (!session.data.session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

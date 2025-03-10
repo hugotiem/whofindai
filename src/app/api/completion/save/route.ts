@@ -16,11 +16,7 @@ export async function POST(request: NextRequest) {
     const stripe_customer_id = user?.stripe_customer_id;
     const subscription = user?.subscription;
     const used_credits = user?.used_credits;
-    console.log(
-      used_credits &&
-        used_credits >= 5 &&
-        (!subscription || subscription === 'free')
-    );
+   
     if (
       used_credits &&
       used_credits >= 5 &&
