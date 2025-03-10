@@ -76,7 +76,12 @@ export async function signInWithEmail(
 }
 
 export async function signInWithGoogle() {
+  console.log(
+    'process.env.NEXT_PUBLIC_BASE_URL',
+    process.env.NEXT_PUBLIC_BASE_URL
+  );
   const supabase = await createClient();
+  console.log('login with google...');
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
