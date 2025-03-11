@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
-import { createClient } from '@/lib/supabase/server';
 
 // This is your Stripe webhook secret for testing your endpoint locally.
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -26,8 +25,6 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
-        const supabase = await createClient();
-
         const subscription = event.data.object as Stripe.Subscription;
         const priceId = subscription.items.data[0].price.id;
         const customerId = subscription.customer as string;
@@ -51,7 +48,6 @@ export async function POST(request: NextRequest) {
             subscriptionStatus: subscription.status
           }
         });
-        supabase.auth.updateUser({ data: { plan } });
         break;
       }
 

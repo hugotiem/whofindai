@@ -1,42 +1,48 @@
 import { NextResponse } from 'next/server';
 
-import { NextRequest } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const email = searchParams.get('email');
+import { createClient } from '@/lib/supabase/server';
 
-  console.log(email);
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
 
-  if (!email) {
-    return NextResponse.json({ error: 'Email is required' }, { status: 400 });
-  }
+    if (!user) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
 
-  const customers = await stripe.customers.list({ email });
-  console.log(customers);
-  if (customers.data.length === 0) {
-    return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
-  }
+    const customers = await stripe.customers.list({ email: user.email });
 
-  const customer = customers.data[0];
+    if (customers.data.length === 0) {
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
+    }
 
-  const session = await stripe.checkout.sessions.create({
-    customer: customer.id,
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
-    line_items: [
-      {
-        price: 'price_1QP0YqBF5MiC7mCxSMZFsRXR'
-      }
-    ],
-    mode: 'subscription'
-  });
+    const customer = customers.data[0];
 
-  if (!session.url) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customer.id,
+      return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`
+    });
+
+    if (!session.url) {
+      return NextResponse.json(
+        { error: 'Checkout session failed' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.redirect(session.url);
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: 'Checkout session failed' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-
-  return NextResponse.redirect(session.url);
 }

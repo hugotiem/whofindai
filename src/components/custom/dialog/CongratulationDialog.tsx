@@ -30,7 +30,10 @@ export default function CongratulationDialog({
           <DialogTitle>Congratulations!</DialogTitle>
         </DialogHeader>
         <div>
-          <p>You have successfully subscribed to the {plan} plan.</p>
+          <p>
+            You have successfully subscribed to the {plan.replaceAll('_', ' ')}
+            plan.
+          </p>
         </div>
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

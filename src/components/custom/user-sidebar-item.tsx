@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu';
-import { Cog, LogIn, LogOut } from 'lucide-react';
+import { Cog, LogIn, LogOut, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
@@ -90,15 +90,23 @@ export const UserSidebarItem = () => {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[250px]">
-            {!session.plan && (
+            {!session.user.user_metadata.plan && (
               <DropdownMenuItem onClick={() => setOpen(true)}>
                 <Cog className="mr-2 h-4 w-4" />
                 <span>View Plans</span>
               </DropdownMenuItem>
             )}
-            {session.plan && (
-              <DropdownMenuItem>
-                <span>Current Plan: {session.plan}</span>
+            {session.user.user_metadata.plan && (
+              <DropdownMenuItem
+                onClick={() => router.push('/api/stripe/checkout')}
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                <div className="flex justify-between w-full">
+                  <span>Manage Plan </span>
+                  <span className="text-xs font-bold text-[#7FFFD4]">
+                    {session.user.user_metadata.plan.replaceAll('_', ' ')}
+                  </span>
+                </div>
               </DropdownMenuItem>
             )}
             <DialogTrigger asChild>
