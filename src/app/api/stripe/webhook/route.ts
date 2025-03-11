@@ -38,6 +38,9 @@ export async function POST(request: NextRequest) {
           [process.env.STRIPE_PRO_PRICE_ID!]: 'PRO'
         };
 
+        console.log('priceId', priceId);
+        console.log('planMap', planMap);
+
         const plan = planMap[priceId] || 'FREE';
 
         // Update user's plan in your database
