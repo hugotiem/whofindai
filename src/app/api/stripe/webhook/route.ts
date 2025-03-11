@@ -34,12 +34,9 @@ export async function POST(request: NextRequest) {
 
         // Get the plan name from metadata or use a mapping
         const planMap: { [key: string]: string } = {
-          [process.env.STRIPE_PAY_AS_YOU_GO_PLAN_ID!]: 'PAY_AS_YOU_GO',
+          [process.env.STRIPE_PAY_AS_YOU_GO_PRICE_ID!]: 'PAY_AS_YOU_GO',
           [process.env.STRIPE_PRO_PRICE_ID!]: 'PRO'
         };
-
-        console.log('priceId', priceId);
-        console.log('planMap', planMap);
 
         const plan = planMap[priceId] || 'FREE';
 
