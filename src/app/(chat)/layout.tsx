@@ -17,15 +17,17 @@ export default async function RootLayout({
 
   let currentUser = user;
 
-  const userData = await prisma.user.findUnique({
-    where: { id: user?.id }
-  });
-
-  if (userData?.plan && userData?.plan !== user?.user_metadata?.plan) {
-    const updatedUser = await client.auth.updateUser({
-      data: { plan: userData?.plan }
+  if (currentUser) {
+    const userData = await prisma.user.findUnique({
+      where: { id: user?.id }
     });
-    currentUser = updatedUser?.data?.user;
+
+    if (userData?.plan && userData?.plan !== user?.user_metadata?.plan) {
+      const updatedUser = await client.auth.updateUser({
+        data: { plan: userData?.plan }
+      });
+      currentUser = updatedUser?.data?.user;
+    }
   }
 
   return (

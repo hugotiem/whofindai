@@ -36,6 +36,8 @@ export function ProfileDetailsNew({
     }));
   };
 
+  const profile = initialProfile.profileData;
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Engagement Strategy Section */}
@@ -58,14 +60,15 @@ export function ProfileDetailsNew({
         </button>
         {expandedSections.engagement_strategy && (
           <div className="px-6 py-4 border-t border-gray-700 space-y-6">
-            {initialProfile.engagementStrategy?.icebreakers?.length > 0 && (
-              <div>
-                <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
-                  <MessageCircle className="w-4 h-4 text-[#7FFFD4]" />
+            {profile?.engagementStrategy?.icebreakers &&
+              profile?.engagementStrategy?.icebreakers?.length > 0 && (
+                <div>
+                  <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
+                    <MessageCircle className="w-4 h-4 text-[#7FFFD4]" />
                   Ice Breakers
                 </h4>
                 <ul className="list-disc list-inside space-y-2 text-gray-400">
-                  {initialProfile.engagementStrategy.icebreakers.map(
+                  {profile?.engagementStrategy?.icebreakers?.map(
                     (icebreaker, index) => (
                       <li key={index}>{icebreaker}</li>
                     )
@@ -74,15 +77,15 @@ export function ProfileDetailsNew({
               </div>
             )}
 
-            {initialProfile.engagementStrategy?.strategicQuestions?.length >
-              0 && (
+            {profile?.engagementStrategy?.strategicQuestions &&
+              profile?.engagementStrategy?.strategicQuestions?.length > 0 && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Target className="w-4 h-4 text-[#7FFFD4]" />
                   Strategic Questions
                 </h4>
                 <div className="space-y-4">
-                  {initialProfile.engagementStrategy.strategicQuestions.map(
+                  {profile?.engagementStrategy?.strategicQuestions?.map(
                     (item, index) => (
                       <div
                         key={index}
@@ -124,62 +127,62 @@ export function ProfileDetailsNew({
         </button>
         {expandedSections.company_overview && (
           <div className="px-6 py-4 border-t border-gray-700 space-y-6">
-            {initialProfile.companyOverview?.currentRoleSummary && (
+            {profile?.companyOverview?.currentRoleSummary && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Briefcase className="w-4 h-4 text-[#7FFFD4]" />
                   Current Role
                 </h4>
                 <p className="text-gray-400 whitespace-pre-wrap">
-                  {initialProfile.companyOverview.currentRoleSummary}
+                  {profile?.companyOverview?.currentRoleSummary}
                 </p>
               </div>
             )}
 
-            {initialProfile.companyOverview?.companyDescription && (
+            {profile?.companyOverview?.companyDescription && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Building2 className="w-4 h-4 text-[#7FFFD4]" />
                   Company Description
                 </h4>
                 <p className="text-gray-400 whitespace-pre-wrap">
-                  {initialProfile.companyOverview.companyDescription}
+                  {profile?.companyOverview?.companyDescription}
                 </p>
               </div>
             )}
 
-            {initialProfile.companyOverview?.marketPosition && (
+            {profile?.companyOverview?.marketPosition && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Target className="w-4 h-4 text-[#7FFFD4]" />
                   Market Position
                 </h4>
                 <p className="text-gray-400 whitespace-pre-wrap">
-                  {initialProfile.companyOverview.marketPosition}
+                  {profile?.companyOverview?.marketPosition}
                 </p>
               </div>
             )}
 
-            {initialProfile.companyOverview?.recentDevelopments && (
+            {profile?.companyOverview?.recentDevelopments && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Rocket className="w-4 h-4 text-[#7FFFD4]" />
                   Recent Developments
                 </h4>
                 <p className="text-gray-400 whitespace-pre-wrap">
-                  {initialProfile.companyOverview.recentDevelopments}
+                  {profile?.companyOverview?.recentDevelopments}
                 </p>
               </div>
             )}
 
-            {initialProfile.companyOverview?.productFit && (
+            {profile?.companyOverview?.productFit && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <MessageCircle className="w-4 h-4 text-[#7FFFD4]" />
                   Product Fit
                 </h4>
                 <p className="text-gray-400 whitespace-pre-wrap">
-                  {initialProfile.companyOverview.productFit}
+                  {profile?.companyOverview?.productFit}
                 </p>
               </div>
             )}
@@ -213,19 +216,20 @@ export function ProfileDetailsNew({
                 Background
               </h4>
               <p className="text-gray-400 whitespace-pre-wrap">
-                {initialProfile.professionalOverview?.background ||
+                {profile?.professionalOverview?.background ||
                   'No background information available'}
               </p>
             </div>
 
-            {initialProfile.professionalOverview?.achievements?.length > 0 && (
-              <div>
-                <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
-                  <Award className="w-4 h-4 text-[#7FFFD4]" />
+            {profile?.professionalOverview?.achievements &&
+              profile?.professionalOverview?.achievements?.length > 0 && (
+                <div>
+                  <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
+                    <Award className="w-4 h-4 text-[#7FFFD4]" />
                   Key Achievements
                 </h4>
                 <ul className="list-disc list-inside space-y-2 text-gray-400">
-                  {initialProfile.professionalOverview.achievements.map(
+                  {profile?.professionalOverview?.achievements?.map(
                     (achievement, index) => (
                       <li key={index}>{achievement}</li>
                     )
@@ -234,15 +238,15 @@ export function ProfileDetailsNew({
               </div>
             )}
 
-            {initialProfile.professionalOverview?.hobbiesAndPassions?.length >
-              0 && (
-              <div>
-                <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
+            {profile?.professionalOverview?.hobbiesAndPassions &&
+              profile?.professionalOverview?.hobbiesAndPassions?.length > 0 && (
+                <div>
+                  <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                   <Heart className="w-4 h-4 text-[#7FFFD4]" />
                   Hobbies & Passions
                 </h4>
                 <ul className="list-disc list-inside space-y-2 text-gray-400">
-                  {initialProfile.professionalOverview.hobbiesAndPassions.map(
+                  {profile?.professionalOverview?.hobbiesAndPassions?.map(
                     (hobby, index) => (
                       <li key={index}>{hobby}</li>
                     )

@@ -13,9 +13,9 @@ import { useShare } from '@/hooks/use-share';
 import { useRouter } from 'next/navigation';
 // import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { UpgradeDialog } from './dialog/UpgradeDialog';
-import { ProfileDetails } from './profile-details';
+import { ProfileDetailsNew } from './profile-details-new';
 import { APIProfile } from '@/app/api/completion/prompt';
-
+import { BottomBar } from './bottom-bar';
 export function Chat({
   id,
   profile,
@@ -92,30 +92,6 @@ export function Chat({
 
   return (
     <>
-      <div className="flex justify-end sticky top-10 items-center mb-6 container mx-auto">
-        {profile && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => copyLink({ path: `/profile/${id}` })}
-              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#1C2128] hover:bg-[#1C2128]/80`}
-            >
-              <Share className={`w-4 h-4 mr-2`} />
-              Share
-            </button>
-            <button
-              onClick={() => fetchCompletion()}
-              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isLoading
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'
-              }`}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2`} />
-              Update Profile
-            </button>
-          </div>
-        )}
-      </div>
       {showUpgradeDialog && (
         <UpgradeDialog
           open={showUpgradeDialog}
@@ -179,7 +155,7 @@ export function Chat({
 
               {completion && (
                 <>
-                  <ProfileDetails initialProfile={profile} />
+                  <ProfileDetailsNew initialProfile={completion} />
                 </>
               )}
               {/* <div
@@ -211,6 +187,34 @@ export function Chat({
             </form>
           )}
         </div>
+      </div>
+      <div className="fixed bottom-4 mt-8 flex justify-center sticky top-10 items-center mb-6 container mx-auto">
+        {profile && (
+          <div className="flex gap-2">
+            <div className=" bottom-8 z-50 flex justify-center">
+              <BottomBar fetchCompletion={fetchCompletion} />
+            </div>
+
+            {/* <button
+              onClick={() => copyLink({ path: `/profile/${id}` })}
+              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#1C2128] hover:bg-[#1C2128]/80`}
+            >
+              <Share className={`w-4 h-4 mr-2`} />
+              Share
+            </button>
+            <button
+              onClick={() => fetchCompletion()}
+              className={`inline-flex sticky top-0 items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isLoading
+                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  : 'bg-[#7FFFD4] text-[#0D1117] hover:bg-[#6CE9C1]'
+              }`}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2`} />
+              Update Profile
+            </button> */}
+          </div>
+        )}
       </div>
       {/* {completion && !isLoading && (
         <div className="sticky left-[50%] translate-x-[-50%] mx-auto bottom-8 z-50 bg-background border border-border rounded-full w-fit p-2">

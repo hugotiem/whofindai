@@ -1,6 +1,8 @@
 import { Chat as PreviewChat } from '@/components/custom/chat';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { ProfileResponseSchema } from '@/lib/prompts/profile';
+
 export async function generateMetadata({
   params
 }: {
@@ -42,34 +44,18 @@ const ChatPage = async ({
 
   return (
     <PreviewChat
-      // profile={{
-      //   id: profile!.id,
-      //   userId: profile!.userId,
-      //   created_at: profile!.created_at,
-      //   updated_at: profile!.updated_at,
-      //   full_name: profile!.full_name,
-      //   company: profile!.company,
-      //   contact_details: profile!.contact_details,
-      //   ice_breakers: profile!.ice_breakers,
-      //   professional_overview: profile!.professional_overview,
-      //   company_overview: profile!.company_overview,
-      //   engagement_insights: profile!.engagement_insights,
-      //   education: profile!.education,
-      //   personality_and_interests: profile!.personality_and_interests,
-      //   country: profile!.country,
-      //   city: profile!.city,
-      //   industry: profile!.industry,
-      //   prompt: profile!.prompt,
-      //   role: profile!.role,
-      //   citations: profile!.citations
-      //   // seo_title: profile!.seo_title,
-      //   // seo_description: profile!.seo_description,
-      //   // seo_keywords: profile!.seo_keywords
-      // }}
+      profile={
+        profile
+          ? {
+              ...profile,
+              profileData: profile.profileData as unknown as ProfileResponseSchema
+            }
+          : undefined
+      }
       // lang: profile?.lang
       // initialCompletion={profile && profile.content}
       id={id}
-      from_storage={from_storage}
+      from_storage={false}
     />
   );
 };

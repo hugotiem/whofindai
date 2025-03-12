@@ -3,7 +3,7 @@ import { ProfileResponseSchema } from '@/lib/prompts/profile';
 export const promptContext =
   "You are an AI assistant helping sales professionals prepare for calls or meetings by creating profiles of prospects. Based on a person's name, company, and the product/service offered, you will generate a structured overview with actionable insights to help guide engagement.";
 
-export interface APIProfile extends Omit<ProfileResponseSchema, 'citations'> {
+export interface APIProfile {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -12,7 +12,7 @@ export interface APIProfile extends Omit<ProfileResponseSchema, 'citations'> {
   product: string | null;
   company: string | null;
   // linkedinUrl: string | null;
-  profileData: JSON | null;
+  profileData: ProfileResponseSchema | null;
 }
 
 export const systemPrompt = ({
