@@ -7,8 +7,6 @@ import { Overview } from './overview';
 import { cn } from '@/lib/utils';
 import { useCompletionAPI } from '@/hooks/use-completion-api';
 import { useSession } from '@/hooks/use-session';
-import { RefreshCw, Share } from 'lucide-react';
-import { useShare } from '@/hooks/use-share';
 
 import { useRouter } from 'next/navigation';
 // import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
@@ -43,7 +41,6 @@ export function Chat({
   });
 
   const { session } = useSession();
-  const { copyLink } = useShare();
   const router = useRouter();
 
   useEffect(() => {
