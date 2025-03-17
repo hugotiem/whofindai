@@ -24,8 +24,8 @@ export function AppSidebar({
 }) {
   const items = [
     {
-      title: 'New profile',
-      url: '/prompt',
+      title: 'Dashboard',
+      url: '/dashboard',
       icon: CirclePlus
     },
     ...(session?.user?.email &&

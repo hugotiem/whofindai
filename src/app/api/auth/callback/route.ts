@@ -15,6 +15,12 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
+    if (error) {
+      return new NextResponse('Error exchanging code for session', {
+        status: 500
+      });
+    }
+
     const user = data.user;
 
     if (!user || !user.email) {
@@ -37,16 +43,10 @@ export async function GET(request: Request) {
           id: user?.id,
           email: user?.email,
           plan: 'FREE',
+          emailVerified: user.email_confirmed_at,
           provider: user.app_metadata.provider || 'email',
           stripeCustomerId: stripeCustomer.id
         }
-      });
-      
-    }
-
-    if (error) {
-      return new NextResponse('Error exchanging code for session', {
-        status: 500
       });
     }
 
