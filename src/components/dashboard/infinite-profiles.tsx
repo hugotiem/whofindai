@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
@@ -24,13 +24,7 @@ export function InfiniteProfiles({
   const { ref, inView } = useInView();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (inView && hasMore && !isLoading) {
-      loadMore();
-    }
-  }, [inView, hasMore, isLoading, loadMore]);
-
-  async function loadMore() {
+  const loadMore = useCallback(async () => {
     if (!nextCursor) return;
 
     setIsLoading(true);
@@ -47,7 +41,13 @@ export function InfiniteProfiles({
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [nextCursor]);
+
+  useEffect(() => {
+    if (inView && hasMore && !isLoading) {
+      loadMore();
+    }
+  }, [inView, hasMore, isLoading, loadMore]);
 
   return (
     <div ref={containerRef} className="h-full overflow-y-auto">
