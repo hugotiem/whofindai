@@ -4,7 +4,8 @@ import { SECTION_REQUIREMENTS } from './instructions';
 
 export function formatProfilePrompt(
   profileData: ProfileData,
-  product: string
+  product: string,
+  lang: string
 ): string {
   // Format work experience
   const experienceContext = profileData.experiences?.length
@@ -26,6 +27,7 @@ export function formatProfilePrompt(
 
   const inputData = `
 Input Variables:
+• lang: ${lang}
 • fullName: ${profileData.fullName}
 • pictureUrl: ${profileData.pictureUrl || 'Not provided'}
 • company: ${profileData.company}
@@ -41,7 +43,7 @@ Input Variables:
     })
     .join('\n\n');
 
-  return `Generate a comprehensive sales profile for ${profileData.fullName} at ${profileData.company} regarding ${product}.
+  return `Generate a comprehensive sales profile for ${profileData.fullName} at ${profileData.company} regarding ${product} in ${lang}.
 
 ${inputData}
 
@@ -74,7 +76,7 @@ Additional Guidelines:
 • Use clear and concise language, maintaining professional tone throughout
 • Cross-reference all research findings for accuracy and relevance
 • Prioritize recent information (within the last 2 years when possible)
-• The final answer must be a valid JSON object containing the following structure:
+• The final answer must be a valid JSON object containing the following structure and in the language specified:
 {
   "professionalOverview": {
     "background": "string",

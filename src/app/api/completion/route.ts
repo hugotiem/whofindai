@@ -20,14 +20,8 @@ interface StreamMessage {
 export async function POST(request: NextRequest) {
   // const local = request.headers.get('accept-language')!.split(',')[1];
 
-  const {
-    id,
-    // fullName,
-    product,
-    // company,
-    lang,
-    linkedinProfile
-  }: PromptProps = await request.json();
+  const { id, product, lang, linkedinProfile }: PromptProps =
+    await request.json();
 
   const trialSession = request.cookies.get('__trial_session')?.value;
   const session = request.cookies.get('__session')?.value;
@@ -116,7 +110,9 @@ export async function POST(request: NextRequest) {
               controller
             });
 
-            await prisma.profile.upsert({
+            const {
+              user: { billingHistory, plan }
+            } = await prisma.profile.upsert({
               where: {
                 userId_linkedinUrl: {
                   userId: user?.id as string,
@@ -124,7 +120,8 @@ export async function POST(request: NextRequest) {
                 }
               },
               update: {
-                profileData: profile as unknown as Prisma.InputJsonValue
+                profileData: profile as unknown as Prisma.InputJsonValue,
+                usedCredits: { increment: 1 }
               },
               create: {
                 id: id,
@@ -134,12 +131,34 @@ export async function POST(request: NextRequest) {
                 fullName: linkedinProfile.fullName,
                 profileData: profile as unknown as Prisma.InputJsonValue,
                 user: { connect: { id: user?.id as string } }
-              }
+              },
+              select: { user: { select: { billingHistory: true, plan: true } } }
             });
 
             await prisma.user.update({
               where: { id: user?.id },
+              data: {
+                usedCredits: { increment: 1 },
+                billingHistory: {
+                  update: {
+                    where: { id: billingHistory[0].id },
+                    data: {
+                      usedCredits: { increment: 1 },
+                      amount:
+                        plan === 'PAY_AS_YOU_GO' ? { increment: 50 } : undefined
+                    }
+                  }
+                }
+              }
+            });
+
+            await prisma.billing.update({
+              where: { id: billingHistory[0].id },
               data: { usedCredits: { increment: 1 } }
+            });
+
+            supabase.auth.updateUser({
+              data: { usedCredits: usedCredits + 1 }
             });
 
             if (stripe_customer_id && subscription_name === 'PAY_AS_YOU_GO') {
@@ -201,6 +220,7 @@ export const generateProfile = async ({
   controller,
   linkedinProfile,
   sysPrompt,
+  lang,
   userPrompt
 }: PromptProps & {
   controller: ReadableStreamDefaultController;
@@ -237,7 +257,7 @@ export const generateProfile = async ({
           {
             role: 'user',
             content:
-              userPrompt || formatProfilePrompt(linkedinProfile!, product)
+              userPrompt || formatProfilePrompt(linkedinProfile!, product, lang || 'en')
           }
         ],
         max_tokens: 2048,

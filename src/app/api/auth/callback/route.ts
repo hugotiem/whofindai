@@ -1,3 +1,4 @@
+import brevoClient from '@/lib/brevo/client';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
         name: user.user_metadata.full_name
       });
 
-      await prisma.user.create({
+      const dbUser = await prisma.user.create({
         data: {
           id: user?.id,
           email: user?.email,
@@ -46,6 +47,28 @@ export async function GET(request: Request) {
           emailVerified: user.email_confirmed_at,
           provider: user.app_metadata.provider || 'email',
           stripeCustomerId: stripeCustomer.id
+        }
+      });
+
+      const fullName = user.user_metadata.full_name;
+      let firstName = null;
+      let lastName = null;
+
+      if (fullName) {
+        const nameParts = fullName.split(' ');
+        firstName = nameParts[0];
+        lastName = nameParts.slice(1).join(' ');
+      }
+
+      await brevoClient.contacts.createContact({
+        email: user?.email,
+        updateEnabled: true,
+        extId: dbUser.id,
+        attributes: {
+          NOM: lastName,
+          PRENOM: firstName,
+          STRIPE_ID: stripeCustomer.id,
+          SUBSCRIPTION: 'FREE'
         }
       });
     }

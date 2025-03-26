@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
+import brevoClient from '@/lib/brevo/client';
 
 // This is your Stripe webhook secret for testing your endpoint locally.
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -38,16 +39,31 @@ export async function POST(request: NextRequest) {
         const plan = planMap[priceId] || 'FREE';
 
         // Update user's plan in your database
-        await prisma.user.update({
+        const { email } = await prisma.user.update({
           where: {
             stripeCustomerId: customerId
           },
           data: {
             plan,
             subscriptionId: subscription.id,
-            subscriptionStatus: subscription.status
-          }
+            subscriptionStatus: subscription.status,
+            subscriptionStartedAt: new Date(subscription.created),
+            nextBillingDate: new Date(subscription.current_period_end),
+            billingHistory: {
+              create: {
+                startAt: new Date(subscription.current_period_start),
+                endAt: new Date(subscription.current_period_end),
+                amount: subscription.items.data[0].price.unit_amount || 0
+              }
+            }
+          },
+          select: { email: true }
         });
+
+        await brevoClient.contacts.updateContact(email, {
+          attributes: { SUBSCRIPTION: plan }
+        });
+
         break;
       }
 

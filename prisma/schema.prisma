@@ -24,12 +24,28 @@ model User {
   usedCredits   Int       @default(0)
 
   // Stripe related fields
-  stripeCustomerId   String?   @unique
-  subscriptionId     String?
-  subscriptionStatus String?
-  plan               String    @default("FREE")
-  paymentStatus      String?
-  lastPaymentDate    DateTime?
+  stripeCustomerId      String?   @unique
+  subscriptionId        String?
+  subscriptionStatus    String?
+  subscriptionStartedAt DateTime?
+  nextBillingDate       DateTime?
+  plan                  String    @default("FREE")
+  paymentStatus         String?
+  lastPaymentDate       DateTime?
+  billingHistory        Billing[]
+}
+
+model Billing {
+  id          String   @id @default(cuid())
+  amount      Int
+  usedCredits Int      @default(0)
+  startAt     DateTime
+  endAt       DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Session {
@@ -56,6 +72,7 @@ model Profile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   profileData Json?
+  usedCredits Int      @default(1)
 
   @@unique([userId, linkedinUrl])
 }

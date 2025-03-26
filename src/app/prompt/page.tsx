@@ -184,7 +184,6 @@ export default function Prompt() {
 
           try {
             const message = JSON.parse(line) as StreamMessage;
-            console.log('Received message:', message);
 
             switch (message.type) {
               case 'linkedin':
@@ -198,7 +197,6 @@ export default function Prompt() {
                 break;
 
               case 'sources':
-                console.log('Sources message received:', message);
                 // Convert sources data to the expected format
                 if (message.data) {
                   const sourcesArray = Array.isArray(message.data)
@@ -234,7 +232,6 @@ export default function Prompt() {
                 break;
 
               case 'profile':
-                console.log('Profile message received:', message);
                 if (
                   message.status === 'success' &&
                   message.data &&
