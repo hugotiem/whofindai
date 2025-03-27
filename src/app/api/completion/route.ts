@@ -237,14 +237,14 @@ export const generateProfile = async ({
   try {
     const requestBody = {
       model: 'sonar-reasoning-pro',
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          schema: {
-            type: 'object'
-          }
-        }
-      },
+      // response_format: {
+      //   type: 'json_schema',
+      //   json_schema: {
+      //     schema: {
+      //       type: 'object'
+      //     }
+      //   }
+      // },
       messages: [
         {
           role: 'system',
@@ -261,8 +261,6 @@ export const generateProfile = async ({
       temperature: 0.3,
       stream: true
     };
-
-    console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
