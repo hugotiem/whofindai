@@ -107,7 +107,8 @@ export async function POST(request: NextRequest) {
               product,
               lang,
               linkedinProfile,
-              controller
+              controller,
+              id
             });
 
             const {
