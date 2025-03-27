@@ -228,46 +228,62 @@ export const generateProfile = async ({
   sysPrompt?: string;
   userPrompt?: string;
 }): Promise<ProfileResponseSchema & { citations: { url: string }[] }> => {
-  // return generateGeminiProfile({ fullName, company });
-  // const date = new Date();
   const encoder = new TextEncoder();
 
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY environment variable is not set');
+  }
+
   try {
+    const requestBody = {
+      model: 'sonar-reasoning-pro',
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          schema: {
+            type: 'object'
+          }
+        }
+      },
+      messages: [
+        {
+          role: 'system',
+          content: sysPrompt || promptContext
+        },
+        {
+          role: 'user',
+          content:
+            userPrompt ||
+            formatProfilePrompt(linkedinProfile!, product, lang || 'en')
+        }
+      ],
+      max_tokens: 2048,
+      temperature: 0.3,
+      stream: true
+    };
+
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
-      body: JSON.stringify({
-        model: 'sonar-reasoning-pro',
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            schema: {
-              type: 'object'
-            }
-          }
-        },
-        messages: [
-          {
-            role: 'system',
-            content: sysPrompt || promptContext
-          },
-          {
-            role: 'user',
-            content:
-              userPrompt || formatProfilePrompt(linkedinProfile!, product, lang || 'en')
-          }
-        ],
-        max_tokens: 2048,
-        temperature: 0.3,
-        stream: true
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => null);
+      console.error('Perplexity API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      throw new Error(
+        `Perplexity API error: ${response.status} ${response.statusText}`
+      );
     }
 
     const reader = response.body!.getReader();

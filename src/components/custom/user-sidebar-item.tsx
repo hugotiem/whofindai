@@ -109,6 +109,30 @@ export const UserSidebarItem = () => {
                 </div>
               </DropdownMenuItem>
             )}
+            {/* <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                fetch('/api/feedback', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    email: session?.user?.email,
+                    feedback: 'Feedback from user',
+                    rating: 5
+                  })
+                }).then(async (res) => {
+                  if (res.ok) {
+                    console.log('Feedback submitted');
+                    // toast.success('Feedback submitted');
+                  } else {
+                    console.log(await res.json());
+                    // toast.error('Failed to submit feedback');
+                  }
+                }).catch((e) => console.error(e));
+              }}
+            >
+              <Cog className="mr-2 h-4 w-4" />
+              <span>Feedback</span>
+            </DropdownMenuItem> */}
             <DialogTrigger asChild>
               <DropdownMenuItem>
                 <Cog className="mr-2 h-4 w-4" />
