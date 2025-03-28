@@ -1,24 +1,34 @@
 import { NextResponse } from 'next/server';
 import { notionClient, NOTION_DATABASE_ID } from '@/lib/notion/client';
 import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
+   const authorization = request.headers.get('Authorization')?.split(' ')[1];
   try {
     const supabase = await createClient();
     const {
       data: { user }
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser(authorization);
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { feedback, rating } = body;
+    const userInfo = await prisma.user.findUnique({
+      where: { id: user?.id }
+    });
 
-    if (!feedback || !rating) {
+    if (!userInfo) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const body = await request.json();
+    const { feedback } = body;
+
+    if (!feedback) {
       return NextResponse.json(
-        { error: 'Feedback and rating are required' },
+        { error: 'Feedback is required' },
         { status: 400 }
       );
     }
@@ -37,24 +47,46 @@ export async function POST(req: Request) {
         database_id: NOTION_DATABASE_ID
       },
       properties: {
-        Nom: {
+        UserId: {
           title: [
             {
               text: {
-                content: `Feedback from ${user.email}`
+                content: userInfo.id
               }
             }
           ]
         },
-        État: {
-          status: {
-            name: 'À faire'
+        Email: {
+          title: [
+            {
+              text: {
+                content: userInfo.email
+              }
+            }
+          ]
+        },
+        'Customer Id': {
+          rich_text: [
+            {
+              text: {
+                content: userInfo.id
+              }
+            }
+          ]
+        },
+        Plan: {
+          select: {
+            name: userInfo.plan || 'FREE'
           }
         },
-        Priorité: {
-          select: {
-            name: 'Medium'
-          }
+        Message: {
+          rich_text: [
+            {
+              text: {
+                content: feedback
+              }
+            }
+          ]
         }
         // Responsable: {
         //   people: [
