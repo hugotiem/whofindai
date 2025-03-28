@@ -36,9 +36,18 @@ export async function POST(request: Request) {
     const response = await notionClient.pages.create({
       parent: { database_id: NOTION_DATABASE_ID },
       properties: {
+        'Full Name': {
+          title: [
+            {
+              text: { content: user.user_metadata.full_name || userInfo.email }
+            }
+          ]
+        },
         UserId: { title: [{ text: { content: userInfo.id } }] },
         Email: { email: userInfo.email },
-        'Customer Id': { rich_text: [{ text: { content: userInfo.id } }] },
+        'Customer Id': {
+          rich_text: [{ text: { content: userInfo.stripeCustomerId || 'N/A' } }]
+        },
         Plan: { select: { name: userInfo.plan || 'FREE' } },
         Message: { rich_text: [{ text: { content: feedback } }] }
       }
