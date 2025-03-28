@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
-   const authorization = request.headers.get('Authorization')?.split(' ')[1];
+  const authorization = request.headers.get('Authorization')?.split(' ')[1];
   try {
     const supabase = await createClient();
     const {
@@ -33,68 +33,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // First, get the database schema to see available properties
-    const database = await notionClient.databases.retrieve({
-      database_id: NOTION_DATABASE_ID
-    });
-
-    console.log('Available properties:', database.properties);
-
-    console.log(database.id);
-
     const response = await notionClient.pages.create({
-      parent: {
-        database_id: NOTION_DATABASE_ID
-      },
+      parent: { database_id: NOTION_DATABASE_ID },
       properties: {
-        UserId: {
-          title: [
-            {
-              text: {
-                content: userInfo.id
-              }
-            }
-          ]
-        },
-        Email: {
-          title: [
-            {
-              text: {
-                content: userInfo.email
-              }
-            }
-          ]
-        },
-        'Customer Id': {
-          rich_text: [
-            {
-              text: {
-                content: userInfo.id
-              }
-            }
-          ]
-        },
-        Plan: {
-          select: {
-            name: userInfo.plan || 'FREE'
-          }
-        },
-        Message: {
-          rich_text: [
-            {
-              text: {
-                content: feedback
-              }
-            }
-          ]
-        }
-        // Responsable: {
-        //   people: [
-        //     {
-        //       id: user.id
-        //     }
-        //   ]
-        // }
+        UserId: { title: [{ text: { content: userInfo.id } }] },
+        Email: { email: userInfo.email },
+        'Customer Id': { rich_text: [{ text: { content: userInfo.id } }] },
+        Plan: { select: { name: userInfo.plan || 'FREE' } },
+        Message: { rich_text: [{ text: { content: feedback } }] }
       }
     });
 
