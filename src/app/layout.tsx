@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     'Elevate your sales game with AI-powered insights that boost your meetings.',
   icons: {
     icon: '/icon.svg',
-    apple: '/favicons/iPhone.png',
+    apple: '/icon.svg',
     shortcut: '/icon.svg'
   },
   openGraph: {
