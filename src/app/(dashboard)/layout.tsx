@@ -4,7 +4,7 @@ import { SessionProvider } from '@/providers/sessionProvider';
 import { HistoryProvider } from '@/providers/historyProvider';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
-
+import { redirect } from 'next/navigation';
 export default async function RootLayout({
   children
 }: Readonly<{
@@ -14,6 +14,10 @@ export default async function RootLayout({
   const {
     data: { user }
   } = await client.auth.getUser();
+
+  if (!user) {
+    return redirect('/auth/signIn');
+  }
 
   let currentUser = user;
 
@@ -26,7 +30,7 @@ export default async function RootLayout({
       const updatedUser = await client.auth.updateUser({
         data: { plan: userData?.plan }
       });
-      currentUser = updatedUser?.data?.user;
+      currentUser = updatedUser?.data?.user || user;
     }
   }
 
