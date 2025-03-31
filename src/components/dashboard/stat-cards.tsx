@@ -33,6 +33,21 @@ const StatCard = ({ title, value, change, icon }: StatCardProps) => {
   );
 };
 
+const formatTimeSaved = (seconds: number): string => {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (remainingSeconds > 0) parts.push(`${remainingSeconds}s`);
+
+  return parts.join(' ') || '0s';
+};
+
 export const StatCards = async () => {
   const supabase = await createClient();
   const {
@@ -52,13 +67,19 @@ export const StatCards = async () => {
   const usedCredits = currentBilling?.usedCredits || 0;
   const lastWeekUsedCredit = userData?.billingHistory[1]?.usedCredits || 1;
 
-  // i want to get the first day of last two months
+  // Calculate time saved for current and previous week
+  const currentTimeSaved = (usedCredits || 0) * 15.8 * 60;
+  const lastWeekTimeSaved =
+    (userData?.billingHistory[1]?.usedCredits || 0) * 15.8 * 60;
+  console.log(currentTimeSaved, lastWeekTimeSaved);
+  const timeSavedPercentageDifference =
+    ((currentTimeSaved - lastWeekTimeSaved) /
+      (lastWeekTimeSaved === 0 ? 1 : lastWeekTimeSaved)) *
+    100;
 
   const percentageDifference = (usedCredits / lastWeekUsedCredit) * 100;
 
   const differenceWithPro = (currentBilling?.usedCredits || 0) * 0.5 - 2.5;
-
-  // do it for the last month
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
@@ -76,8 +97,8 @@ export const StatCards = async () => {
       />
       <StatCard
         title="estimated saved time"
-        value={`${(usedCredits || 0) * 15.8}s`}
-        change="+19% from last month"
+        value={formatTimeSaved(currentTimeSaved)}
+        change={`${timeSavedPercentageDifference >= 0 ? '+' : ''}${timeSavedPercentageDifference.toFixed(1)}% from last week`}
         icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
       />
     </div>

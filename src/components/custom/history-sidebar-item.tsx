@@ -16,7 +16,7 @@ export const HistorySidebarItem = async () => {
 
   const history = await prisma.profile.findMany({
     where: { userId: user.id },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { updatedAt: 'desc' },
     select: {
       id: true,
       fullName: true,

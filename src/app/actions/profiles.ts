@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 
 export async function getLastGeneratedProfiles(
-  cursor: string = '',
+  // cursor: string = '',
   limit: number = 10
 ) {
   const supabase = await createClient();
@@ -19,10 +19,10 @@ export async function getLastGeneratedProfiles(
       userId: user.id
     },
     orderBy: {
-      createdAt: 'desc'
+      updatedAt: 'desc'
     },
     take: limit,
-    cursor: cursor ? { id: cursor } : undefined
+    // cursor: cursor ? { id: cursor } : undefined
   });
 
   return {

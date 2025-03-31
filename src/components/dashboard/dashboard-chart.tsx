@@ -10,7 +10,7 @@ import {
   isSameMonth,
   endOfMonth
 } from 'date-fns';
-
+import { redirect } from 'next/navigation';
 const ChartSkeleton = () => {
   return <Skeleton className="h-[472px] w-full" />;
 };
@@ -22,24 +22,24 @@ async function ChartContent() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    return redirect('/auth/signIn');
   }
 
   const now = new Date();
   const fiveMonthsAgo = startOfMonth(subMonths(now, 5));
 
   const count = await prisma.profile.groupBy({
-    by: ['createdAt'],
+    by: ['updatedAt'],
     where: {
       userId: user.id,
-      createdAt: {
+      updatedAt: {
         gte: fiveMonthsAgo,
         lte: endOfMonth(now)
       }
     },
     _count: true,
     orderBy: {
-      createdAt: 'asc'
+      updatedAt: 'asc'
     }
   });
 
@@ -52,7 +52,7 @@ async function ChartContent() {
   // Transform the data to group by month and include zeros
   const monthlyCount = allMonths.map((month) => {
     const monthData = count
-      .filter((item) => isSameMonth(new Date(item.createdAt), month))
+      .filter((item) => isSameMonth(new Date(item.updatedAt), month))
       .reduce((sum, curr) => sum + curr._count, 0);
 
     return {

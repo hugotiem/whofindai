@@ -56,7 +56,7 @@ export function InfiniteProfiles({
           <div key={profile.id} className="space-y-1">
             <p className="font-medium">{profile.fullName}</p>
             <p className="text-sm text-muted-foreground">
-              {formatDistanceToNow(new Date(profile.createdAt), {
+              {formatDistanceToNow(new Date(profile.updatedAt), {
                 addSuffix: true
               })}
             </p>

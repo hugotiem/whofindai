@@ -16,23 +16,23 @@ export async function GET() {
   const sixMonthsAgo = subMonths(new Date(), 6);
 
   const count = await prisma.profile.groupBy({
-    by: ['createdAt'],
+    by: ['updatedAt'],
     where: {
       userId: user.id,
-      createdAt: {
+      updatedAt: {
         gte: sixMonthsAgo
       }
     },
     _count: true,
     orderBy: {
-      createdAt: 'desc'
+      updatedAt: 'desc'
     }
   });
 
   // Transform the data to group by month
   const monthlyCount = count.reduce(
     (acc, curr) => {
-      const month = new Date(curr.createdAt);
+      const month = new Date(curr.updatedAt);
       month.setDate(1); // Set to first day of month
       month.setHours(0, 0, 0, 0); // Reset time
 
