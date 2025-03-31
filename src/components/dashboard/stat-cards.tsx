@@ -71,7 +71,7 @@ export const StatCards = async () => {
   const currentTimeSaved = (usedCredits || 0) * 15.8 * 60;
   const lastWeekTimeSaved =
     (userData?.billingHistory[1]?.usedCredits || 0) * 15.8 * 60;
-  console.log(currentTimeSaved, lastWeekTimeSaved);
+
   const timeSavedPercentageDifference =
     ((currentTimeSaved - lastWeekTimeSaved) /
       (lastWeekTimeSaved === 0 ? 1 : lastWeekTimeSaved)) *
