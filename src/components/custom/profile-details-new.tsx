@@ -41,10 +41,10 @@ export function ProfileDetailsNew({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Engagement Strategy Section */}
-      <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-secondary/50 rounded-lg border border-border overflow-hidden">
         <button
           onClick={() => toggleSection('engagement_strategy')}
-          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
+          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary"
         >
           <div className="flex items-center space-x-2">
             <Lightbulb className="w-5 h-5 text-[#7FFFD4]" />
@@ -53,13 +53,13 @@ export function ProfileDetailsNew({
             </h3>
           </div>
           {expandedSections.engagement_strategy ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
+            <ChevronUp className="w-5 h-5 text-[#7FFFD4]" />
           ) : (
             <ChevronDown className="w-5 h-5 text-gray-400" />
           )}
         </button>
-        {expandedSections.engagement_strategy && (
-          <div className="px-6 py-4 border-t border-gray-700 space-y-6">
+        {expandedSections.engagement_strategy && (  
+          <div className="px-6 py-4 border-t border-border space-y-6">
             {profile?.engagementStrategy?.icebreakers &&
               profile?.engagementStrategy?.icebreakers?.length > 0 && (
                 <div>
@@ -89,7 +89,7 @@ export function ProfileDetailsNew({
                     (item, index) => (
                       <div
                         key={index}
-                        className="bg-gray-800/30 rounded-lg p-4"
+                        className="bg-secondary rounded-lg p-4"
                       >
                         <p className="text-white font-medium mb-2">
                           {item?.question || ''}
@@ -108,10 +108,10 @@ export function ProfileDetailsNew({
       </div>
 
       {/* Company Overview Section */}
-      <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-secondary/50 rounded-lg border border-border overflow-hidden">
         <button
           onClick={() => toggleSection('company_overview')}
-          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
+          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary"
         >
           <div className="flex items-center space-x-2">
             <Building2 className="w-5 h-5 text-[#7FFFD4]" />
@@ -120,13 +120,13 @@ export function ProfileDetailsNew({
             </h3>
           </div>
           {expandedSections.company_overview ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
+            <ChevronUp className="w-5 h-5 text-[#7FFFD4]" />
           ) : (
             <ChevronDown className="w-5 h-5 text-gray-400" />
           )}
         </button>
         {expandedSections.company_overview && (
-          <div className="px-6 py-4 border-t border-gray-700 space-y-6">
+          <div className="px-6 py-4 border-t border-border space-y-6">
             {profile?.companyOverview?.currentRoleSummary && (
               <div>
                 <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
@@ -191,10 +191,10 @@ export function ProfileDetailsNew({
       </div>
 
       {/* Professional Overview Section */}
-      <div className="bg-[#1C2128] rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-secondary/50 rounded-lg border border-border overflow-hidden">
         <button
           onClick={() => toggleSection('professional_overview')}
-          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800/50"
+          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary"
         >
           <div className="flex items-center space-x-2">
             <User className="w-5 h-5 text-[#7FFFD4]" />
@@ -203,13 +203,13 @@ export function ProfileDetailsNew({
             </h3>
           </div>
           {expandedSections.professional_overview ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
+            <ChevronUp className="w-5 h-5 text-[#7FFFD4]" />
           ) : (
             <ChevronDown className="w-5 h-5 text-gray-400" />
           )}
         </button>
         {expandedSections.professional_overview && (
-          <div className="px-6 py-4 border-t border-gray-700 space-y-6">
+          <div className="px-6 py-4 border-t border-border space-y-6">
             <div>
               <h4 className="text-white font-semibold flex items-center gap-2 mb-3">
                 <Briefcase className="w-4 h-4 text-[#7FFFD4]" />
