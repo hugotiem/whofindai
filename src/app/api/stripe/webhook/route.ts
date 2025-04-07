@@ -47,12 +47,12 @@ export async function POST(request: NextRequest) {
             plan,
             subscriptionId: subscription.id,
             subscriptionStatus: subscription.status,
-            subscriptionStartedAt: new Date(subscription.created),
-            nextBillingDate: new Date(subscription.current_period_end),
+            subscriptionStartedAt: new Date(subscription.created * 1000),
+            nextBillingDate: new Date(subscription.current_period_end * 1000),
             billingHistory: {
               create: {
-                startAt: new Date(subscription.current_period_start),
-                endAt: new Date(subscription.current_period_end),
+                startAt: new Date(subscription.current_period_start * 1000),
+                endAt: new Date(subscription.current_period_end * 1000),
                 amount: subscription.items.data[0].price.unit_amount || 0
               }
             }

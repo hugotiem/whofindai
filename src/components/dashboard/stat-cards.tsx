@@ -58,7 +58,7 @@ export const StatCards = async () => {
     where: { id: user?.id },
     select: {
       plan: true,
-      billingHistory: { take: 2, orderBy: { endAt: 'desc' } }
+      billingHistory: { take: 2, orderBy: { endAt: 'asc' } }
     }
   });
 
