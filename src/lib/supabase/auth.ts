@@ -93,3 +93,34 @@ export async function signInWithGoogle() {
     redirect(data.url);
   }
 }
+
+export const handleSave = async (
+  _: {
+    status: 'error' | 'success' | 'initial';
+    errorMessage?: string;
+  },
+  formData: FormData
+): Promise<{
+  status: 'error' | 'success' | 'initial';
+  errorMessage?: string;
+}> => {
+  const fullName = formData.get('fullName') as string;
+  const companyName = formData.get('companyName') as string;
+  if (!fullName || !companyName) {
+    return { status: 'error', errorMessage: 'Please fill in all fields' };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      full_name: fullName,
+      company_name: companyName
+    }
+  });
+  if (error) {
+    return { status: 'error', errorMessage: error.message };
+  }
+
+  // add new data to CRM
+
+  return { status: 'success' };
+};

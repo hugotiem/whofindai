@@ -5,6 +5,7 @@ import { HistoryProvider } from '@/providers/historyProvider';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import CompleteProfileDialog from '@/components/custom/dialog/CompleteProfileDialog';
 export default async function RootLayout({
   children
 }: Readonly<{
@@ -15,11 +16,17 @@ export default async function RootLayout({
     data: { user }
   } = await client.auth.getUser();
 
-  if (!user) {
+  if (!user || user === null) {
     return redirect('/auth/signIn');
   }
 
   let currentUser = user;
+
+  const completed: boolean =
+    user?.user_metadata?.full_name !== undefined &&
+    user?.user_metadata?.company_name !== undefined &&
+    user?.user_metadata?.full_name !== '' &&
+    user?.user_metadata?.company_name !== '';
 
   if (currentUser) {
     const userData = await prisma.user.findUnique({
@@ -44,6 +51,7 @@ export default async function RootLayout({
               <SidebarTrigger />
             </div>
             {children}
+            {!completed && <CompleteProfileDialog user={user} />}
           </main>
         </SidebarProvider>
       </HistoryProvider>

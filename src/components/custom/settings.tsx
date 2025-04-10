@@ -9,13 +9,14 @@ import { useState } from 'react';
 import { User } from '@supabase/supabase-js';
 
 export const Settings = ({ user }: { user: User }) => {
-  const { session, deleteAccount, updateDisplayName } = useSession();
+  const { session, deleteAccount, updateUserInfo } = useSession();
 
   const [displayName, setDisplayName] = useState<string | undefined>(
     user.user_metadata.full_name
   );
-
-  console.log('user', user);
+  const [companyName, setCompanyName] = useState<string | undefined>(
+    user.user_metadata.company_name
+  );
   return (
     <>
       <DialogHeader>
@@ -33,7 +34,7 @@ export const Settings = ({ user }: { user: User }) => {
 
                 // }}
                 value={session.user.email as string | undefined}
-                placeholder="Name Surname"
+                placeholder="Email"
               />
             </div>
             <div>
@@ -44,7 +45,7 @@ export const Settings = ({ user }: { user: User }) => {
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Name Surname"
                 />
-                <Button
+                {/* <Button
                   disabled={
                     user.user_metadata.full_name === displayName?.trim() &&
                     displayName !== undefined
@@ -57,8 +58,31 @@ export const Settings = ({ user }: { user: User }) => {
                   size="sm"
                 >
                   Save
-                </Button>
+                </Button> */}
               </div>
+            </div>
+            <div>
+              <Label>Company</Label>
+              <Input
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Company"
+              />
+            </div>
+            <div className="flex justify-end">    
+              <Button
+                className="w-fit self-end"
+                disabled={
+                  user.user_metadata.full_name === displayName?.trim() &&
+                  user.user_metadata.company_name === companyName?.trim()
+                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  updateUserInfo(displayName!.trim(), companyName!.trim());
+                }}
+              >
+                Save
+              </Button>
             </div>
           </div>
         )}

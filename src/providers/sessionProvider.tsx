@@ -10,7 +10,7 @@ interface SessionProviderContextType {
   session: { user: User | undefined; plan?: string } | undefined;
   signOut?: () => Promise<void>;
   deleteAccount: () => Promise<void>;
-  updateDisplayName: (displayName: string) => Promise<void>;
+  updateUserInfo: (displayName: string, companyName: string) => Promise<void>;
 }
 
 export const SessionProviderContext = createContext<
@@ -50,19 +50,20 @@ export const SessionProvider = ({
     });
   };
 
-  const updateDisplayName = async (displayName: string) => {
+  const updateUserInfo = async (displayName: string, companyName: string) => {
     const supabase = createClient();
     supabase.auth
       .updateUser({
         data: {
-          full_name: displayName
+          full_name: displayName,
+          company_name: companyName
         }
       })
       .then(({ error }) => {
         if (error) {
-          toast.error('Error updating display name');
+          toast.error('Error updating user info');
         } else {
-          toast.success('Display name updated');
+          toast.success('User info updated');
         }
       });
   };
@@ -91,7 +92,7 @@ export const SessionProvider = ({
         session,
         signOut,
         deleteAccount,
-        updateDisplayName
+        updateUserInfo
       }}
     >
       {children}
