@@ -6,11 +6,22 @@ import { Input } from '@/components/ui/input';
 import { useFormState } from 'react-dom';
 import { toast } from 'sonner';
 import { handleSave } from '@/lib/supabase/auth';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter
+} from '@/components/ui/alert-dialog';
 import { User } from '@supabase/supabase-js';
 const CompleteProfileDialog = ({ user }: { user: User }) => {
-  const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
-  const [companyName, setCompanyName] = useState(user?.user_metadata?.company_name || '');
+  const [fullName, setFullName] = useState(
+    user?.user_metadata?.full_name || ''
+  );
+  const [companyName, setCompanyName] = useState(
+    user?.user_metadata?.company_name || ''
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
 
@@ -29,7 +40,7 @@ const CompleteProfileDialog = ({ user }: { user: User }) => {
       toast.error(state.errorMessage);
       setIsOpen(false);
     }
-  }, [state.status]);
+  }, [state]);
 
   return (
     <AlertDialog open={isOpen}>
@@ -72,4 +83,3 @@ const CompleteProfileDialog = ({ user }: { user: User }) => {
 };
 
 export default CompleteProfileDialog;
-
