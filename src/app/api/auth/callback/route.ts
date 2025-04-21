@@ -1,4 +1,5 @@
 import brevoClient from '@/lib/brevo/client';
+import pipedrive from '@/lib/pipedrive/client';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
@@ -60,17 +61,30 @@ export async function GET(request: Request) {
         lastName = nameParts.slice(1).join(' ');
       }
 
-      await brevoClient.contacts.createContact({
-        email: user?.email,
-        updateEnabled: true,
-        extId: dbUser.id,
-        attributes: {
-          NOM: lastName,
-          PRENOM: firstName,
-          STRIPE_ID: stripeCustomer.id,
-          SUBSCRIPTION: 'FREE'
+      await pipedrive.persons.addPerson({
+        AddPersonRequest: {
+          emails: [
+            {
+              value: user?.email,
+              primary: true
+            }
+          ],
+          name: fullName,
+          owner_id: 1,
         }
       });
+
+      // await brevoClient.contacts.createContact({
+      //   email: user?.email,
+      //   updateEnabled: true,
+      //   extId: dbUser.id,
+      //   attributes: {
+      //     NOM: lastName,
+      //     PRENOM: firstName,
+      //     STRIPE_ID: stripeCustomer.id,
+      //     SUBSCRIPTION: 'FREE'
+      //   }
+      // });
     }
 
     return NextResponse.redirect(url.origin);

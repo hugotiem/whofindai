@@ -1,4 +1,5 @@
-import brevoClient from '@/lib/brevo/client';
+// import brevoClient from '@/lib/brevo/client';
+import pipedrive from '@/lib/pipedrive/client';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
@@ -22,7 +23,9 @@ export async function DELETE() {
       where: { id: user?.id },
       select: { email: true, stripeCustomerId: true }
     });
-    await brevoClient.contacts.deleteContact(email);
+    await pipedrive.persons.deletePerson({
+      id: parseInt(email.split('@')[0])
+    });
     if (stripeCustomerId) {
       await stripe.customers.del(stripeCustomerId);
     }
