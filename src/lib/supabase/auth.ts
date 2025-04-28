@@ -94,6 +94,25 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithLinkedin() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'linkedin_oidc',
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback`
+    }
+  });
+
+  if (error) {
+    console.error('Error signing in with LinkedIn', error);
+    // return { message: error.message };
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+
 export const handleSave = async (
   _: {
     status: 'error' | 'success' | 'initial';

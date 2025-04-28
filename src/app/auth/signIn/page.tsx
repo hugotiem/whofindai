@@ -3,7 +3,8 @@ import { SignInForm } from './sign-in-form';
 import Link from 'next/link';
 import GoogleButton from '@/components/custom/buttons/GoogleButton';
 import { signInWithGoogle } from '@/lib/supabase/auth';
-
+import { signInWithLinkedin } from '@/lib/supabase/auth';
+import LinkedinButton from '@/components/custom/buttons/LinkedinButton';
 export const metadata: Metadata = {
   title: 'Leedinsight - Log In',
   description:
@@ -16,6 +17,9 @@ export default async function Login() {
       <SignInForm />
       <form action={signInWithGoogle} className="w-full">
         <GoogleButton />
+      </form>
+      <form action={signInWithLinkedin} className="w-full">
+        <LinkedinButton />
       </form>
       <div className="text-sm">
         <span className="opacity-50">You don&apos;t have an account? </span>

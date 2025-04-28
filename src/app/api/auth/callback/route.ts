@@ -60,17 +60,17 @@ export async function GET(request: Request) {
         lastName = nameParts.slice(1).join(' ');
       }
 
-      await brevoClient.contacts.createContact({
-        email: user?.email,
-        updateEnabled: true,
-        extId: dbUser.id,
-        attributes: {
-          NOM: lastName,
-          PRENOM: firstName,
-          STRIPE_ID: stripeCustomer.id,
-          SUBSCRIPTION: 'FREE'
-        }
-      });
+      // await brevoClient.contacts.createContact({
+      //   email: user?.email,
+      //   updateEnabled: true,
+      //   extId: dbUser.id,
+      //   attributes: {
+      //     NOM: lastName,
+      //     PRENOM: firstName,
+      //     STRIPE_ID: stripeCustomer.id,
+      //     SUBSCRIPTION: 'FREE'
+      //   }
+      // });
     }
 
     return NextResponse.redirect(url.origin);

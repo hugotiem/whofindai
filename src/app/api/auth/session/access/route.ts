@@ -17,3 +17,4 @@ export async function GET(request: NextRequest) {
   response.cookies.set('has_access', 'false');
   return response;
 }
+  

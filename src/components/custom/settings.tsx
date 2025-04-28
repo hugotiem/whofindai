@@ -7,6 +7,7 @@ import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { User } from '@supabase/supabase-js';
+import linkedin from '@/lib/linkedin/client';
 
 export const Settings = ({ user }: { user: User }) => {
   const { session, deleteAccount, updateUserInfo } = useSession();
@@ -69,6 +70,15 @@ export const Settings = ({ user }: { user: User }) => {
                 placeholder="Company"
               />
             </div>
+            {/* <div>
+              <Button variant="outline" size="sm" onClick={async () => {
+                const response = await fetch('/api/auth/linkedin');
+                const data = await response.json();
+                window.open(data.url, '_blank');
+              }}>
+                Link your LinkedIn profile  
+              </Button>
+            </div> */}
             <div className="flex justify-end">    
               <Button
                 className="w-fit self-end"
