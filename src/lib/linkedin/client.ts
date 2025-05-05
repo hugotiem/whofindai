@@ -13,7 +13,7 @@ type LinkedinAccessTokenResponse = {
 type GenerateAuthUrlOptions = {
   scope?: string;
   state?: string;
-}
+};
 
 const linkedin = {
   generateAuthUrl: (options?: GenerateAuthUrlOptions) => {

@@ -1,5 +1,6 @@
 import brevoClient from '@/lib/brevo/client';
 import { prisma } from '@/lib/prisma';
+import { resend } from '@/lib/resend/client';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -71,6 +72,18 @@ export async function GET(request: Request) {
       //     SUBSCRIPTION: 'FREE'
       //   }
       // });
+    }
+    try {
+      const { data, error } = await resend.broadcasts.send(
+        'e32d8c8e-7cce-402b-a725-fb8cd9c18147',
+        {
+          
+        }
+      );
+      console.log('Broadcast sent successfully', data);
+      console.log('Broadcast error', error);
+    } catch (error) {
+      console.error('Error sending broadcast', error);
     }
 
     return NextResponse.redirect(url.origin);

@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { signInWithEmail } from '@/lib/supabase/auth';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 
 export const SignInForm = () => {
   const initialState = {
     message: ''
   };
-  const [, formAction] = useFormState(signInWithEmail, initialState);
+  const [, formAction] = useActionState(signInWithEmail, initialState);
 
   return (
     <form
