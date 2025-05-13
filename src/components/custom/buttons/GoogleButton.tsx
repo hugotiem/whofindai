@@ -7,24 +7,27 @@ import { Button } from '../../ui/button';
 // import { useProgressBar } from '@/hooks/use-progress-bar';
 
 const GoogleButton = () => {
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = () => {
+    setLoading(true);
+  };
 
   return (
-    <Button className="relative w-full" type="submit" variant="outline">
-      <Loader2
-        className="animate-spin absolute"
-        style={{
-          display: loading ? 'block' : 'none'
-        }}
-      />
-
-      <div
-        className="flex items-center space-x-3 justify-center"
-        style={{ opacity: loading ? 0 : 1 }}
-      >
-        <FcGoogle size={30} />
-        <span>Continue With Google</span>
-      </div>
+    <Button
+      className="relative w-full bg-white text-black hover:bg-gray-100 border border-gray-300 shadow-sm transition-all duration-200"
+      type="submit"
+      // variant="outline"
+      onClick={handleClick}
+    >
+      {loading ? (
+        <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
+      ) : (
+        <div className="flex items-center justify-center gap-3">
+          <FcGoogle className="h-5 w-5" />
+          <span className="font-medium">Continue with Google</span>
+        </div>
+      )}
     </Button>
   );
 };

@@ -7,7 +7,6 @@ import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { User } from '@supabase/supabase-js';
-import linkedin from '@/lib/linkedin/client';
 
 export const Settings = ({ user }: { user: User }) => {
   const { session, deleteAccount, updateUserInfo } = useSession();

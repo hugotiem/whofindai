@@ -1,6 +1,7 @@
-import brevoClient from '@/lib/brevo/client';
+// import brevoClient from '@/lib/brevo/client';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend/client';
+import { welcomeEmailOptions } from '@/lib/resend/templates/welcome';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
         name: user.user_metadata.full_name
       });
 
-      const dbUser = await prisma.user.create({
+      await prisma.user.create({
         data: {
           id: user?.id,
           email: user?.email,
@@ -51,15 +52,15 @@ export async function GET(request: Request) {
         }
       });
 
-      const fullName = user.user_metadata.full_name;
-      let firstName = null;
-      let lastName = null;
+      // const fullName = user.user_metadata.full_name;
+      // let firstName = null;
+      // let lastName = null;
 
-      if (fullName) {
-        const nameParts = fullName.split(' ');
-        firstName = nameParts[0];
-        lastName = nameParts.slice(1).join(' ');
-      }
+      // if (fullName) {
+      //   const nameParts = fullName.split(' ');
+      //   firstName = nameParts[0];
+      //   lastName = nameParts.slice(1).join(' ');
+      // }
 
       // await brevoClient.contacts.createContact({
       //   email: user?.email,
@@ -72,18 +73,20 @@ export async function GET(request: Request) {
       //     SUBSCRIPTION: 'FREE'
       //   }
       // });
-    }
-    try {
-      const { data, error } = await resend.broadcasts.send(
-        'e32d8c8e-7cce-402b-a725-fb8cd9c18147',
-        {
-          
-        }
-      );
-      console.log('Broadcast sent successfully', data);
-      console.log('Broadcast error', error);
-    } catch (error) {
-      console.error('Error sending broadcast', error);
+
+      try {
+        // Extract first name from user metadata
+        const userName = user.user_metadata.full_name || '';
+        const firstName = userName.split(' ')[0] || 'there';
+
+        const { data, error } = await resend.emails.send(
+          welcomeEmailOptions(user?.email, firstName)
+        );
+        console.log('Welcome email sent successfully', data);
+        if (error) console.log('Email error', error);
+      } catch (error) {
+        console.error('Error sending welcome email', error);
+      }
     }
 
     return NextResponse.redirect(url.origin);

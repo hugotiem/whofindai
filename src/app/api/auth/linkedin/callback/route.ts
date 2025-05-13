@@ -1,6 +1,4 @@
 import linkedin from '@/lib/linkedin/client';
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -20,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Exchange code for access token
-    const tokenData = await linkedin.getAccessToken(code);
+    await linkedin.getAccessToken(code);
 
     // Get user profile and store LinkedIn connection
     // Add implementation based on your requirements

@@ -15,11 +15,27 @@ type GenerateAuthUrlOptions = {
   state?: string;
 };
 
+/**
+ * LeedInsight LinkedIn client
+ * @description LinkedIn client for generating auth URL and getting access token
+ */
 const linkedin = {
+  /**
+   * Generate auth URL
+   * @description Generate auth URL for LinkedIn
+   * @param options - GenerateAuthUrlOptions
+   * @returns Auth URL
+   */
   generateAuthUrl: (options?: GenerateAuthUrlOptions) => {
     const scope = options?.scope || 'r_liteprofile';
     return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}`;
   },
+  /**
+   * Get access token
+   * @description Get access token from LinkedIn
+   * @param code - Authorization code
+   * @returns Access token
+   */
   getAccessToken: async (code: string) => {
     const response = await fetch(
       `https://www.linkedin.com/oauth/v2/accessToken`,
