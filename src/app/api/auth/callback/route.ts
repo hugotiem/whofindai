@@ -75,12 +75,47 @@ export async function GET(request: Request) {
       // });
 
       try {
+        const payAsYouGoPromoCode = await stripe.promotionCodes.create({
+          coupon: 'QB5OoQam',
+          code:
+            user.email
+              .split('@')[0]
+              .replace(/[^a-zA-Z0-9]/g, '')
+              .toUpperCase() + '50',
+          expires_at: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 5, // 5 days from now
+          max_redemptions: 1,
+          customer: stripeCustomer.id,
+          metadata: {
+            user_id: user.id
+          }
+        });
+
+        const proPromoCode = await stripe.promotionCodes.create({
+          coupon: 'spavUnyC',
+          code:
+            user.email
+              .split('@')[0]
+              .replace(/[^a-zA-Z0-9]/g, '')
+              .toUpperCase() + '75',
+          expires_at: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 5, // 5 days from now
+          max_redemptions: 1,
+          customer: stripeCustomer.id,
+          metadata: {
+            user_id: user.id
+          }
+        });
+
         // Extract first name from user metadata
         const userName = user.user_metadata.full_name || '';
         const firstName = userName.split(' ')[0] || 'there';
 
         const { data, error } = await resend.emails.send(
-          welcomeEmailOptions(user?.email, firstName)
+          welcomeEmailOptions(
+            user?.email,
+            firstName ?? user?.email.split('@')[0],
+            payAsYouGoPromoCode.code,
+            proPromoCode.code
+          )
         );
         console.log('Welcome email sent successfully', data);
         if (error) console.log('Email error', error);

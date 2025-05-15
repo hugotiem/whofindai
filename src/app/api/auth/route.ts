@@ -1,4 +1,4 @@
-import brevoClient from '@/lib/brevo/client';
+
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
 import { createClient } from '@/lib/supabase/server';
@@ -18,16 +18,17 @@ export async function DELETE() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     await supabase.auth.admin.deleteUser(user.id);
-    const { email, stripeCustomerId } = await prisma.user.delete({
+    const { stripeCustomerId } = await prisma.user.delete({
       where: { id: user?.id },
       select: { email: true, stripeCustomerId: true }
     });
-    await brevoClient.contacts.deleteContact(email);
+    // await brevoClient.contacts.deleteContact(email);
     if (stripeCustomerId) {
       await stripe.customers.del(stripeCustomerId);
     }
     return NextResponse.json({ message: 'User deleted' }, { status: 200 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : `Unknown error ${error}`

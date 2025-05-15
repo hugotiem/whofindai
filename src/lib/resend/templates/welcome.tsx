@@ -4,6 +4,8 @@ import { CreateEmailOptions } from 'resend';
 
 interface WelcomeTemplateProps {
   name: string;
+  payAsYouGoPromoCode: string;
+  proPromoCode: string;
 }
 
 const welcomeMarkdown = `
@@ -11,7 +13,7 @@ Hi {{name}},
 
 Welcome to LeedInsight! We're excited to have you join us.
 
-Your account is now active with **5 free searches** to help you experience how our Chrome extension can transform your sales approach.
+*Your account is now active with a 14-day trial to help you experience how our Chrome extension can transform your sales approach.*
 
 These searches give you access to:
 
@@ -19,7 +21,10 @@ These searches give you access to:
 * **Personalized conversation starters**: Tailored to your specific offering
 * **Comprehensive prospect data**: Company details and personal insights delivered directly in your browser
 
-Once you've used your 5 free searches, you can upgrade to our Pay-As-You-Go plan, which includes 5 free searches every week plus additional searches at just 0,5 $/€ each.
+🎁 Use one of the following codes within the next 5 days to unlock exclusive discounts on paid plans:
+
+* **{{proPromoCode}}** – Get **75% off** your first month on the **Pro plan**
+* **{{payAsYouGoPromoCode}}** – Get **50% off** your first purchase on the **Pay-As-You-Go plan**
 
 **Getting Started:**
 
@@ -38,12 +43,12 @@ Best regards,
 ![LeedInsight Logo](https://resend-attachments.s3.amazonaws.com/MtPJX7XyZU3Gm4D)
 `;
 
-const WelcomeTemplate = ({ name }: WelcomeTemplateProps) => {
+const WelcomeTemplate = ({ name, payAsYouGoPromoCode, proPromoCode }: WelcomeTemplateProps) => {
   return (
     <Html>
       <Body>
         <Container>
-          <Markdown>{welcomeMarkdown.replace('{{name}}', name)}</Markdown>
+          <Markdown>{welcomeMarkdown.replace('{{name}}', name).replace('{{payAsYouGoPromoCode}}', payAsYouGoPromoCode).replace('{{proPromoCode}}', proPromoCode)}</Markdown>
           <Hr />
 
         </Container>
@@ -54,12 +59,14 @@ const WelcomeTemplate = ({ name }: WelcomeTemplateProps) => {
 
 const welcomeEmailOptions = (
   email: string,
-  name: string
+  name: string,
+  payAsYouGoPromoCode: string,
+  proPromoCode: string
 ): CreateEmailOptions => ({
   from: 'LeedInsight <leedinsight@tiemh.com>',
   to: [email],
   subject: 'Welcome to LeadInsight',
-  react: WelcomeTemplate({ name })
+  react: WelcomeTemplate({ name, payAsYouGoPromoCode, proPromoCode })
 });
 
 export { welcomeEmailOptions };
