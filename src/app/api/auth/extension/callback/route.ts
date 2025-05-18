@@ -55,17 +55,17 @@ export async function POST(request: NextRequest) {
         lastName = nameParts.slice(1).join(' ');
       }
 
-      await brevoClient.contacts.createContact({
-        email: user?.email,
-        updateEnabled: true,
-        extId: dbUser.id,
-        attributes: {
-          NOM: lastName,
-          PRENOM: firstName,
-          STRIPE_ID: stripeCustomer.id,
-          SUBSCRIPTION: 'FREE'
-        }
-      });
+      // await brevoClient.contacts.createContact({
+      //   email: user?.email,
+      //   updateEnabled: true,
+      //   extId: dbUser.id,
+      //   attributes: {
+      //     NOM: lastName,
+      //     PRENOM: firstName,
+      //     STRIPE_ID: stripeCustomer.id,
+      //     SUBSCRIPTION: 'FREE'
+      //   }
+      // });
     }
     return NextResponse.json({ message: 'User created' }, { status: 200 });
   } catch (error) {

@@ -3,8 +3,8 @@ import { SignUpForm } from './sign-up-form';
 import GoogleButton from '@/components/custom/buttons/GoogleButton';
 import Link from 'next/link';
 import { signInWithGoogle } from '@/lib/supabase/auth';
-// import { signInWithLinkedin } from '@/lib/supabase/auth';
-// import LinkedinButton from '@/components/custom/buttons/LinkedinButton';
+import { signInWithLinkedin } from '@/lib/supabase/auth';
+import LinkedinButton from '@/components/custom/buttons/LinkedinButton';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
@@ -38,9 +38,9 @@ export default async function SignUp() {
           <form action={signInWithGoogle} className="w-full">
             <GoogleButton />
           </form>
-          {/* <form action={signInWithLinkedin} className="w-full">
+          <form action={signInWithLinkedin} className="w-full">
             <LinkedinButton />
-          </form> */}
+          </form>
         </div>
 
         <div className="mt-8 text-center text-sm">
