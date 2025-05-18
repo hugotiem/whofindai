@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
-import brevoClient from '@/lib/brevo/client';
+// import brevoClient from '@/lib/brevo/client';
 
 export async function POST(request: NextRequest) {
   const token = request.headers.get('Authorization')?.split(' ')[1];
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         name: user.user_metadata.full_name
       });
 
-      const dbUser = await prisma.user.create({
+      await prisma.user.create({
         data: {
           id: user.id,
           email: user.email,
@@ -45,15 +45,15 @@ export async function POST(request: NextRequest) {
         }
       });
 
-       const fullName = user.user_metadata.full_name;
-      let firstName = null;
-      let lastName = null;
+      //  const fullName = user.user_metadata.full_name;
+      // let firstName = null;
+      // let lastName = null;
 
-      if (fullName) {
-        const nameParts = fullName.split(' ');
-        firstName = nameParts[0];
-        lastName = nameParts.slice(1).join(' ');
-      }
+      // if (fullName) {
+      //   const nameParts = fullName.split(' ');
+      //   firstName = nameParts[0];
+      //   lastName = nameParts.slice(1).join(' ');
+      // }
 
       // await brevoClient.contacts.createContact({
       //   email: user?.email,
