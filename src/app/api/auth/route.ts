@@ -1,12 +1,12 @@
-
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe/client';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function DELETE() {
   try {
     const supabase = await createClient();
+    const supabaseAdmin = await createAdminClient();
     const {
       data: { user }
     } = await supabase.auth.getUser();
@@ -17,7 +17,12 @@ export async function DELETE() {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    await supabase.auth.admin.deleteUser(user.id);
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+      user.id
+    );
+    if (deleteError) {
+      return NextResponse.json({ error: deleteError.message }, { status: 500 });
+    }
     const { stripeCustomerId } = await prisma.user.delete({
       where: { id: user?.id },
       select: { email: true, stripeCustomerId: true }

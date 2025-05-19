@@ -109,6 +109,14 @@ export async function GET(request: Request) {
         const userName = user.user_metadata.full_name || '';
         const firstName = userName.split(' ')[0] || 'there';
 
+        await resend.contacts.create({
+          email: user?.email,
+          audienceId: process.env.RESEND_GENERAL_AUDIENCES_ID || '',
+          firstName,
+          lastName: userName.split(' ')[1] || '',
+          unsubscribed: false,
+        });
+
         const { data, error } = await resend.emails.send(
           welcomeEmailOptions(
             user?.email,
