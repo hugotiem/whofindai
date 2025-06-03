@@ -17,14 +17,12 @@ import {
   TrendingUp,
   Users
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 
 export default function InstallExtensionPage() {
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstalled] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
+  // const router = useRouter();
+  // const supabase = createClient();
 
   const handleInstallExtension = () => {
     setIsInstalling(true);
@@ -44,26 +42,6 @@ export default function InstallExtensionPage() {
     }, 3000);
   };
 
-  const handleExtensionInstalled = async () => {
-    try {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from('User')
-          .update({ useExtension: true })
-          .eq('id', user.id);
-        setIsInstalled(true);
-
-        setTimeout(() => {
-          router.push('/');
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error updating user:', error);
-    }
-  };
 
   if (isInstalled) {
     return (
