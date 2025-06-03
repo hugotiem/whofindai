@@ -26,6 +26,7 @@ model User {
   subscriptionStartedAt DateTime?
   billingHistory        Billing[]
   profiles              Profile[]
+  useExtension          Boolean   @default(false)
 }
 
 model Billing {

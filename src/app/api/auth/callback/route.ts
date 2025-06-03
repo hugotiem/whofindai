@@ -127,6 +127,8 @@ export async function GET(request: Request) {
         );
         console.log('Welcome email sent successfully', data);
         if (error) console.log('Email error', error);
+
+        // return NextResponse.redirect(url.origin);
       } catch (error) {
         console.error('Error sending welcome email', error);
       }

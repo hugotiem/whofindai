@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
           plan: 'FREE',
           emailVerified: user.email_confirmed_at,
           provider: user.app_metadata.provider || 'email',
-          stripeCustomerId: stripeCustomer.id
+          stripeCustomerId: stripeCustomer.id,
+          useExtension: true
         }
       });
 
@@ -119,6 +120,13 @@ export async function POST(request: NextRequest) {
       //   }
       // });
     }
+    if (!existingUser?.useExtension) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { useExtension: true }
+      });
+    }
+
     return NextResponse.json({ message: 'User created' }, { status: 200 });
   } catch (error) {
     console.error(error);

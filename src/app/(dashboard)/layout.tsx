@@ -28,17 +28,19 @@ export default async function RootLayout({
     user?.user_metadata?.full_name !== '' &&
     user?.user_metadata?.company_name !== '';
 
-  if (currentUser) {
-    const userData = await prisma.user.findUnique({
-      where: { id: user?.id }
-    });
+  const userData = await prisma.user.findUnique({
+    where: { id: user?.id }
+  });
 
-    if (userData?.plan && userData?.plan !== user?.user_metadata?.plan) {
-      const updatedUser = await client.auth.updateUser({
-        data: { plan: userData?.plan }
-      });
-      currentUser = updatedUser?.data?.user || user;
-    }
+  if (userData?.plan && userData?.plan !== user?.user_metadata?.plan) {
+    const updatedUser = await client.auth.updateUser({
+      data: { plan: userData?.plan }
+    });
+    currentUser = updatedUser?.data?.user || user;
+  }
+
+  if (!userData?.useExtension) {
+    return redirect('/install-extension');
   }
 
   return (
