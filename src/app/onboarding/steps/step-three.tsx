@@ -10,7 +10,6 @@ import {
   Users,
   CheckCircle
 } from 'lucide-react';
-import Link from 'next/link';
 
 export default function StepThree() {
   return (
