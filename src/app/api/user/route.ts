@@ -3,14 +3,9 @@ import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
-  const token = request.headers.get('Authorization');
-  if (!token) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
+export async function GET() {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser(token);
+  const { data, error } = await supabase.auth.getUser();
   if (error) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }

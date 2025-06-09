@@ -1,6 +1,3 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,70 +6,27 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import {
-  CheckCircle,
-  Chrome,
-  Download,
-  Clock,
-  TrendingUp,
-  Users
-} from 'lucide-react';
-import { useSession } from '@/hooks/use-session';
-import { useRouter } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import { Chrome, Download, Clock, TrendingUp, Users } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-export default function InstallExtensionPage() {
-  const [isInstalled] = useState(false);
-  const [isInstalling, setIsInstalling] = useState(false);
-  const { session } = useSession();
-  const router = useRouter();
-  // const supabase = createClient();
+export default async function InstallExtensionPage() {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
-  const handleInstallExtension = () => {
-    setIsInstalling(true);
-    window.open(
-      'https://chromewebstore.google.com/detail/leedinsight/cajahcmijndaehcpgdecbijaklbbnmne',
-      '_blank'
-    );
+  if (!user) return redirect('/auth/signIn');
 
-    setTimeout(() => {
-      setIsInstalling(false);
-      // const installed = confirm(
-      //   'Have you successfully installed the extension? Click OK to continue.'
-      // );
-      // if (installed) {
-      //   handleExtensionInstalled();
-      // }
-    }, 3000);
-  };
-
-  useEffect(() => {
-    const checkExtension = async () => {
-      const response = await fetch('/api/user');
-      const data = await response.json();
-      if (data.user.useExtension) {
-        router.push('/');
-      }
-    };
-
-    checkExtension();
-  }, [session, router]);
-
-  if (isInstalled) {
-    return (
-      <section className="container mx-auto flex flex-col gap-4 p-4 min-h-screen items-center justify-center">
-        <Card className="max-w-md w-full text-center">
-          <CardHeader>
-            <div className="mx-auto w-16 h-16 bg-[#7FFFD4]/10 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-8 w-8 text-[#7FFFD4]" />
-            </div>
-            <CardTitle className="text-2xl">All Set!</CardTitle>
-            <CardDescription>Redirecting to your dashboard...</CardDescription>
-          </CardHeader>
-        </Card>
-      </section>
-    );
+  const userData = await prisma.user.findUnique({
+    where: { id: user.id }
+  });
+  if (userData?.useExtension) {
+    return redirect('/');
   }
-
+  
   return (
     <section className="container mx-auto flex flex-col gap-6 p-4 max-w-2xl min-h-screen items-center justify-center">
       <div className="text-center space-y-2">
@@ -123,24 +77,15 @@ export default function InstallExtensionPage() {
             </div>
           </div>
 
-          <Button
-            onClick={handleInstallExtension}
-            disabled={isInstalling}
-            size="lg"
-            className="w-full"
+          <Link
+            href="https://chromewebstore.google.com/detail/leedinsight/cajahcmijndaehcpgdecbijaklbbnmne"
+            target="_blank"
           >
-            {isInstalling ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Installing...
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 mr-2" />
-                Install Chrome Extension
-              </>
-            )}
-          </Button>
+            <Button size="lg" className="w-full">
+              <Download className="h-4 w-4 mr-2" />
+              Install Chrome Extension
+            </Button>
+          </Link>
 
           <p className="text-center text-xs text-muted-foreground">
             Free • Works inside LinkedIn • 30 second setup
