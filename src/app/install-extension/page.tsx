@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,11 +17,14 @@ import {
   TrendingUp,
   Users
 } from 'lucide-react';
+import { useSession } from '@/hooks/use-session';
+import { useRouter } from 'next/navigation';
 
 export default function InstallExtensionPage() {
   const [isInstalled] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
-  // const router = useRouter();
+  const { session } = useSession();
+  const router = useRouter();
   // const supabase = createClient();
 
   const handleInstallExtension = () => {
@@ -42,6 +45,17 @@ export default function InstallExtensionPage() {
     }, 3000);
   };
 
+  useEffect(() => {
+    const checkExtension = async () => {
+      const response = await fetch('/api/user');
+      const data = await response.json();
+      if (data.user.useExtension) {
+        router.push('/');
+      }
+    };
+
+    checkExtension();
+  }, [session]);
 
   if (isInstalled) {
     return (
