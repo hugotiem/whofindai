@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/client"
+  // output   = "../src/generated/client"
 }
 
 datasource db {
@@ -28,6 +28,17 @@ model User {
   billingHistory        Billing[]
   profiles              Profile[]
   useExtension          Boolean   @default(false)
+
+  // Onboarding fields
+  onboardingCompleted Boolean @default(false)
+  firstName           String?
+  lastName            String?
+  jobRole             String?
+  callsPerWeek        Int?
+  meetingsPerWeek     Int?
+  whatYouSell         String?
+  whoYouSellTo        String?
+  mainBenefit         String?
 }
 
 model Billing {

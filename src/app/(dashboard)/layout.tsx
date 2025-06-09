@@ -39,6 +39,11 @@ export default async function RootLayout({
     currentUser = updatedUser?.data?.user || user;
   }
 
+  // Check if user needs to complete onboarding
+  if (userData && !userData.onboardingCompleted) {
+    return redirect('/onboarding');
+  }
+
   if (userData?.useExtension === false) {
     return redirect('/install-extension');
   }

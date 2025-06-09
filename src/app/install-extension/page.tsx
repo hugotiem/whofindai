@@ -26,7 +26,15 @@ export default async function InstallExtensionPage() {
   if (userData?.useExtension) {
     return redirect('/');
   }
-  
+
+  // If user comes from onboarding, mark as completed
+  if (userData && !userData.onboardingCompleted) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { onboardingCompleted: true }
+    });
+  }
+
   return (
     <section className="container mx-auto flex flex-col gap-6 p-4 max-w-2xl min-h-screen items-center justify-center">
       <div className="text-center space-y-2">
