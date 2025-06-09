@@ -39,7 +39,7 @@ export default async function RootLayout({
     currentUser = updatedUser?.data?.user || user;
   }
 
-  if (!userData?.useExtension) {
+  if (userData?.useExtension === false) {
     return redirect('/install-extension');
   }
 

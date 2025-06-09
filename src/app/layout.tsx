@@ -48,7 +48,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
         {/* <div className="fixed inset-0 z-0 will-change-transform">
         <MemoizedSquares 
