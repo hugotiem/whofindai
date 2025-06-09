@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
-import StepOne from './steps/step-one';
+import StepOneA from './steps/step-one-a';
+import StepOneB from './steps/step-one-b';
+import StepOneC from './steps/step-one-c';
 import StepTwo from './steps/step-two';
 import StepThree from './steps/step-three';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -44,7 +46,7 @@ export default function OnboardingPage() {
   };
 
   const handleNext = async () => {
-    if (currentStep < 3) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
       // Complete onboarding
@@ -83,25 +85,37 @@ export default function OnboardingPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return (
-          data.firstName &&
-          data.lastName &&
-          data.jobRole &&
-          data.callsPerWeek > 0 &&
-          data.meetingsPerWeek >= 0 &&
-          data.whatYouSell &&
-          data.whoYouSellTo &&
-          data.mainBenefit
-        );
+        return data.firstName && data.lastName && data.jobRole;
       case 2:
+        return data.callsPerWeek > 0 && data.meetingsPerWeek >= 0;
       case 3:
+        return data.whatYouSell && data.whoYouSellTo && data.mainBenefit;
+      case 4:
+      case 5:
         return true;
       default:
         return false;
     }
   };
 
-  const progressPercentage = (currentStep / 3) * 100;
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case 1:
+        return 'Personal Info';
+      case 2:
+        return 'Your Workflow';
+      case 3:
+        return 'Sales Info';
+      case 4:
+        return 'Sales Snapshot';
+      case 5:
+        return 'Install Extension';
+      default:
+        return '';
+    }
+  };
+
+  const progressPercentage = (currentStep / 5) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -110,7 +124,7 @@ export default function OnboardingPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">
-              Step {currentStep} of 3
+              Step {currentStep} of 5 • {getStepTitle()}
             </span>
             <span className="text-sm font-medium text-muted-foreground">
               {Math.round(progressPercentage)}% Complete
@@ -122,7 +136,7 @@ export default function OnboardingPage() {
         {/* Step Indicators */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-4">
-            {[1, 2, 3].map((step) => (
+            {[1, 2, 3, 4, 5].map((step) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
@@ -133,7 +147,7 @@ export default function OnboardingPage() {
                 >
                   {step}
                 </div>
-                {step < 3 && (
+                {step < 5 && (
                   <div
                     className={`w-12 h-0.5 mx-2 transition-colors ${
                       step < currentStep ? 'bg-primary' : 'bg-muted'
@@ -149,10 +163,16 @@ export default function OnboardingPage() {
         <Card className="min-h-[600px]">
           <CardContent className="p-8">
             {currentStep === 1 && (
-              <StepOne data={data} updateData={updateData} />
+              <StepOneA data={data} updateData={updateData} />
             )}
-            {currentStep === 2 && <StepTwo data={data} />}
-            {currentStep === 3 && <StepThree />}
+            {currentStep === 2 && (
+              <StepOneB data={data} updateData={updateData} />
+            )}
+            {currentStep === 3 && (
+              <StepOneC data={data} updateData={updateData} />
+            )}
+            {currentStep === 4 && <StepTwo data={data} />}
+            {currentStep === 5 && <StepThree />}
           </CardContent>
         </Card>
 
@@ -173,8 +193,8 @@ export default function OnboardingPage() {
             disabled={!canProceed() || isLoading}
             className="flex items-center gap-2"
           >
-            {currentStep === 3 ? 'Complete' : 'Next'}
-            {currentStep < 3 && <ArrowRight className="h-4 w-4" />}
+            {currentStep === 5 ? 'Complete' : 'Next'}
+            {currentStep < 5 && <ArrowRight className="h-4 w-4" />}
           </Button>
         </div>
       </div>
