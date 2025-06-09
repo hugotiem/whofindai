@@ -55,7 +55,7 @@ export default function InstallExtensionPage() {
     };
 
     checkExtension();
-  }, [session]);
+  }, [session, router]);
 
   if (isInstalled) {
     return (
